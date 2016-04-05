@@ -1,15 +1,15 @@
 package io.pivotal.singapore.marvin.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.pivotal.singapore.marvin.commands.Command;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
 import org.junit.runner.RunWith;
 import org.junit.runners.JUnit4;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
 import static org.hamcrest.core.Is.is;
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -19,11 +19,15 @@ import static org.junit.Assert.*;
 public class RemoteApiServiceResponseTest {
     protected final Map<String, String> responseBody = new HashMap<>();
     protected RemoteApiServiceResponse subject;
-    protected Command command = new Command();
+
+    protected String defaultResponseSuccess;
+    protected String defaultResponseFailure;
 
     @Before
     public void setUp() throws Exception {
-        subject = new RemoteApiServiceResponse(true, responseBody, command);
+        defaultResponseSuccess = "I succeeded! :-)";
+        defaultResponseFailure = "I failed :-(";
+        subject = new RemoteApiServiceResponse(true, responseBody, defaultResponseSuccess, defaultResponseFailure);
     }
 
     @RunWith(JUnit4.class)
@@ -62,25 +66,23 @@ public class RemoteApiServiceResponseTest {
 
         @Test
         public void getDefaultSuccessResponse() throws Exception {
-            String defaultSuccessMessage = "Marvin is meh.";
-            command.setDefaultResponseSuccess(defaultSuccessMessage);
+            String defaultResponseSuccess = "Marvin is meh.";
+            subject.setDefaultResponseSuccess(defaultResponseSuccess);
 
-            assertThat(subject.getMessage(), is(equalTo(defaultSuccessMessage)));
+            assertThat(subject.getMessage(), is(equalTo(defaultResponseSuccess)));
         }
 
         @Test
         public void getDefaultFailureResponse() throws Exception {
-            String defaultFailureMessage = "Marvin is very meh.";
-            command.setDefaultResponseFailure(defaultFailureMessage);
-            subject = new RemoteApiServiceResponse(false, responseBody, command);
+            defaultResponseFailure = "Marvin is very meh.";
+            subject = new RemoteApiServiceResponse(false, responseBody, defaultResponseSuccess, defaultResponseFailure);
 
-            assertThat(subject.getMessage(), is(equalTo(defaultFailureMessage)));
+            assertThat(subject.getMessage(), is(equalTo(defaultResponseFailure)));
         }
 
         @Test
         public void getInterpolatedMessage() throws Exception {
-            String defaultSuccessMessage = "Marvin says hi to {name}.";
-            command.setDefaultResponseSuccess(defaultSuccessMessage);
+            subject.setDefaultResponseSuccess("Marvin says hi to {name}.");
 
             String userName = "Jarvis";
             responseBody.put("name", userName);
@@ -103,7 +105,7 @@ public class RemoteApiServiceResponseTest {
             ObjectMapper mapper = new ObjectMapper();
             HashMap<String, String> responseBody = mapper.readValue(json, HashMap.class);
 
-            subject = new RemoteApiServiceResponse(true, responseBody, command);
+            subject = new RemoteApiServiceResponse(true, responseBody);
 
             assertThat(subject.getMessage(), is(equalTo(
                 "{errors=[{entity=CalendarEvent, message=The Event/Date field is not valid, " +

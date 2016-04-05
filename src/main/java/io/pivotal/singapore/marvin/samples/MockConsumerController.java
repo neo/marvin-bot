@@ -1,5 +1,6 @@
 package io.pivotal.singapore.marvin.samples;
 
+import lombok.Synchronized;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,6 +52,7 @@ public class MockConsumerController {
         return response;
     }
 
+    @Synchronized
     private void incrementCounter(String endpoint) {
         int counter = counters.getOrDefault(endpoint, 0);
         counter++;

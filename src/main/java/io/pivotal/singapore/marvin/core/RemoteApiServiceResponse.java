@@ -10,19 +10,25 @@ import java.util.Map;
 import java.util.Optional;
 
 public class RemoteApiServiceResponse {
+    @Getter
+    @Setter
+    String defaultResponseSuccess;
+    @Getter
+    @Setter
+    String defaultResponseFailure;
     private Boolean success;
     @Getter private Map<String, String> body;
     @Setter @Accessors(chain = true) private ICommand command;
 
     public RemoteApiServiceResponse(Boolean successful, Map<String, String> body) {
-        this.success = successful;
-        this.body = body;
+        this(successful, body, null, null);
     }
 
-    public RemoteApiServiceResponse(Boolean successful, Map<String, String> body, ICommand command) {
+    public RemoteApiServiceResponse(Boolean successful, Map<String, String> body, String defaultResponseSuccess, String defaultResponseFailure) {
         this.success = successful;
         this.body = body;
-        this.command = command;
+        this.defaultResponseSuccess = defaultResponseSuccess;
+        this.defaultResponseFailure = defaultResponseFailure;
     }
 
     public Boolean isSuccessful() {
@@ -56,7 +62,7 @@ public class RemoteApiServiceResponse {
     }
 
     private String getDefaultResponse() {
-        return isSuccessful() ? command.getDefaultResponseSuccess() : command.getDefaultResponseFailure();
+        return isSuccessful() ? getDefaultResponseSuccess() : getDefaultResponseFailure();
     }
 
     private String interpolate(String message) {
