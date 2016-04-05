@@ -1,7 +1,8 @@
-Marvin - a depressed bot
-========================
+[![](https://circleci.com/gh/neo/marvin-bot.svg?style=shield)](https://circleci.com/gh/neo/marvin-bot)
 
-# Database migrations
+# Marvin - A Depressed SlackBot
+
+## Database migrations
 
 This project uses [Flyway] for migrations. The decision has been made to keep the PostgreSQL sequence generation instead
 of the global one sequence to rule them all of Hibernate.
@@ -55,14 +56,13 @@ CREATE UNIQUE INDEX uk_py1b1n9yenhsrtlh4gj3p7b4g ON commands (name);
 
 [Flyway] will automatically migrate the database to the latest version on boot.
 
-
 [Flyway]: https://flywaydb.org/
 
-# Build failing from mossing accessors?
+## Build failing from missing accessors?
 
-It's probably because IntelliJ hasn't been configured to support annotation processors.
+This is probably because IntelliJ hasn't been configured to support annotation processors.
 
-Do so by:
+Fix it with:
 
 1. Opening the settings window for "Annotation processors"
 2. Click "Enable annotation processors"
