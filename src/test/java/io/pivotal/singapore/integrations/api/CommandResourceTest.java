@@ -183,7 +183,7 @@ public class CommandResourceTest {
         then().
             statusCode(SC_BAD_REQUEST).
             body("errors[0].property", is("subCommands[0].arguments")).
-            body("errors[0].message", is("Invalid argument type for value '/form1'"));
+            body("errors[0].message", is("Argument 'zzz' has an invalid argument pattern '/form1'"));
 
     }
 

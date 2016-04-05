@@ -19,7 +19,7 @@ public class ArgumentsValidator implements Validator {
             .forEach(argument -> e.rejectValue(
                 "arguments",
                 String.format("arguments.%s.invalidUrl", argument.getName()),
-                String.format("Invalid argument type for value '%s'", argument.getPattern())
+                String.format("Argument '%s' has an invalid argument pattern '%s'", argument.getName(), argument.getPattern())
             ));
     }
 }
