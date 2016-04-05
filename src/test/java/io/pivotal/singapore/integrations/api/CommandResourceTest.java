@@ -2,6 +2,7 @@ package io.pivotal.singapore.integrations.api;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
+import edu.emory.mathcs.backport.java.util.Collections;
 import io.pivotal.singapore.MarvinApplication;
 import io.pivotal.singapore.models.Command;
 import io.pivotal.singapore.repositories.CommandRepository;
@@ -20,7 +21,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
-import java.util.HashMap;
+import java.util.Arrays;
+import java.util.Map;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
@@ -35,12 +37,10 @@ import static org.hamcrest.core.Is.is;
 @WebAppConfiguration
 @ActiveProfiles(profiles = "test")
 @IntegrationTest("server.port:0")
-
 public class CommandResourceTest {
-    @Autowired private CommandRepository commandRepository;
-
     @Value("${local.server.port}")
     protected int port;
+    @Autowired private CommandRepository commandRepository;
 
     @Before
     public void setUp() throws Exception {
@@ -71,13 +71,7 @@ public class CommandResourceTest {
 
     @Test
     public void testCommandsCreation() throws Exception {
-        String json = new JSONObject()
-                .put("name", "command")
-                .put("endpoint", "http://localhost/9")
-                .put("defaultResponseSuccess", "I'm a success")
-                .put("defaultResponseFailure", "I'm a failure")
-                .put("method", "GET")
-                .toString();
+        String json = getCommand().toString();
 
         given().
                 contentType(ContentType.JSON).
@@ -98,13 +92,8 @@ public class CommandResourceTest {
     }
 
     @Test
-    public void testCommandsUpdateViaName() throws Exception {
-        JSONObject originalJson = new JSONObject()
-                .put("name", "foobar")
-                .put("endpoint", "http://localhost/9")
-                .put("defaultResponseSuccess", "I'm a success")
-                .put("defaultResponseFailure", "I'm a failure")
-                .put("method", "GET");
+    public void testCommandsUpsertViaName() throws Exception {
+        JSONObject originalJson = getCommand();
 
         given().
                 contentType(ContentType.JSON).
@@ -112,7 +101,7 @@ public class CommandResourceTest {
         when().
                 post("/api/v1/commands/").
         then().
-            log().all().
+
                 statusCode(SC_CREATED);
 
         JSONObject newJson = originalJson.put("method", "POST")
@@ -131,7 +120,7 @@ public class CommandResourceTest {
                 get("/api/v1/commands/").
         then().
                 content("page.totalElements", equalTo(1)).
-                body("_embedded.commands[0].name", is("foobar")).
+                body("_embedded.commands[0].name", is("command")).
                 body("_embedded.commands[0].endpoint", is("http://localhost/9")).
                 body("_embedded.commands[0].defaultResponseSuccess", is("Its successful")).
                 body("_embedded.commands[0].defaultResponseFailure", is("Its failed")).
@@ -140,54 +129,26 @@ public class CommandResourceTest {
 
     @Test
     public void testCommandCreationWithSubCommands() {
-        JSONArray subCommands = new JSONArray();
-        JSONArray argsArray = new JSONArray();
-
-        HashMap<String, String> arg1 = new HashMap<>();
-        arg1.put("zzz", "/form1/");
-        argsArray.put(arg1);
-
-        HashMap<String, String> arg2 = new HashMap<>();
-        arg2.put("lll", "/force-json-esc\\aping/");
-        argsArray.put(arg2);
-
-        HashMap<String, String> arg3 = new HashMap<>();
-        arg3.put("aaa", "/form3/");
-        argsArray.put(arg3);
-
-        JSONObject subCommandObject = new JSONObject()
-                .put("name", "bar")
-                .put("endpoint", "http://somewhere.tld/bar")
-                .put("method", "POST")
-                .put("defaultResponseSuccess", "I'm a success")
-                .put("defaultResponseFailure", "I'm a failure")
-                .put("arguments", argsArray);
-
-        subCommands.put(subCommandObject);
-
-
-        JSONObject json = new JSONObject()
-                .put("name", "pity")
-                .put("endpoint", "http://localhost/9")
-                .put("method", "GET")
-                .put("subCommands", subCommands);
+        JSONArray argsArray = new JSONArray(Arrays.asList(
+            map("zzz", "/form1/"),
+            map("lll", "/force-json-esc\\aping/"),
+            map("aaa", "/form3/")
+        ));
+        JSONObject json = getCommand()
+                .put("subCommands", getSubCommands(argsArray));
 
         String commandURI = given().
-                log().all().
+
                 contentType(ContentType.JSON).
                 content(json.toString()).
         when().
-                log().all().
                 post("/api/v1/commands/").
         then().
-                log().all().
                 statusCode(SC_CREATED).
         extract().
             path("_links.self.href");
 
         // Ensure that the object is persisted and serialized/deserialized.
-        given().
-                log().all().
         when().
                 get(commandURI).
         then().
@@ -204,43 +165,58 @@ public class CommandResourceTest {
 
     @Test
     public void returnsErrorResponseWhenInvalidArgumentSent() {
-        Command command = new Command("time", "http://localhost/9");
+        Command command = new Command("command", "http://localhost/9");
         commandRepository.save(command);
 
-        JSONArray subCommands = new JSONArray();
-        JSONArray argsArray = new JSONArray();
+        JSONArray subCommands = getSubCommands(new JSONArray()
+                .put(map("zzz", "/form1"))
+        );
 
-        HashMap<String, String> arg1 = new HashMap<>();
-        arg1.put("zzz", "/form1");  // doesn't have finishing / to denote a regex
-        argsArray.put(arg1);
-
-        JSONObject subCommandObject = new JSONObject()
-            .put("name", "bar")
-            .put("endpoint", "http://somewhere.tld/bar")
-            .put("method", "POST")
-            .put("defaultResponseSuccess", "I'm a success")
-            .put("defaultResponseFailure", "I'm a failure")
-            .put("arguments", argsArray);
-
-        subCommands.put(subCommandObject);
-
-        JSONObject commandJson = new JSONObject()
-            .put("name", "time")
-            .put("endpoint", "http://localhost/9")
-            .put("method", "GET")
+        JSONObject commandJson = getCommand()
             .put("subCommands", subCommands);
+
         given().
-            log().all().
             contentType(ContentType.JSON).
             content(commandJson.toString()).
-            when().
-            log().all().
+        when().
             post("/api/v1/commands/").
-            then().
-            log().all().
+        then().
             statusCode(SC_BAD_REQUEST).
             body("errors[0].property", is("subCommands[0].arguments")).
             body("errors[0].message", is("Invalid argument type for value '/form1'"));
 
     }
+
+    private JSONObject getCommand() {
+        return new JSONObject()
+            .put("name", "command")
+            .put("endpoint", "http://localhost/9")
+            .put("defaultResponseSuccess", "I'm a success")
+            .put("defaultResponseFailure", "I'm a failure")
+            .put("method", "GET");
+    }
+
+    private JSONObject getSubCommand() {
+        return new JSONObject()
+            .put("name", "bar")
+            .put("endpoint", "http://somewhere.tld/bar")
+            .put("method", "POST")
+            .put("defaultResponseSuccess", "I'm a success")
+            .put("defaultResponseFailure", "I'm a failure");
+    }
+
+    private JSONArray getSubCommands(JSONArray argsArray) {
+        JSONArray subCommands = new JSONArray();
+        subCommands.put(
+                getSubCommand()
+                        .put("arguments", argsArray)
+        );
+
+        return subCommands;
+    }
+
+    private Map map(String key, String value) {
+        return Collections.singletonMap(key, value);
+    }
+
 }
