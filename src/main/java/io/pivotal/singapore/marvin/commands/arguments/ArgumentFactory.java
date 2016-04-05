@@ -1,7 +1,7 @@
 package io.pivotal.singapore.marvin.commands.arguments;
 
-class ArgumentFactory {
-    static Argument getArgument(String name, String pattern) {
+public class ArgumentFactory {
+    public static Argument getArgument(String name, String pattern) {
 
         if (RegexArgument.canParse(pattern)) {
             return new RegexArgument(name, pattern);
@@ -12,7 +12,7 @@ class ArgumentFactory {
         }
     }
 
-    static Argument getWithEmptyArgument(String name, String pattern) {
+    public static Argument getWithEmptyArgument(String name, String pattern) {
         try {
             return getArgument(name, pattern);
         } catch (IllegalArgumentException e) {

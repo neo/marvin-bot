@@ -112,6 +112,7 @@ public class CommandResourceTest {
         when().
                 post("/api/v1/commands/").
         then().
+            log().all().
                 statusCode(SC_CREATED);
 
         JSONObject newJson = originalJson.put("method", "POST")
@@ -156,7 +157,7 @@ public class CommandResourceTest {
 
         JSONObject subCommandObject = new JSONObject()
                 .put("name", "bar")
-                .put("endpoint", "/bar")
+                .put("endpoint", "http://somewhere.tld/bar")
                 .put("method", "POST")
                 .put("defaultResponseSuccess", "I'm a success")
                 .put("defaultResponseFailure", "I'm a failure")
@@ -166,7 +167,7 @@ public class CommandResourceTest {
 
 
         JSONObject json = new JSONObject()
-                .put("name", "pity the fool")
+                .put("name", "pity")
                 .put("endpoint", "http://localhost/9")
                 .put("method", "GET")
                 .put("subCommands", subCommands);
@@ -193,7 +194,7 @@ public class CommandResourceTest {
                 statusCode(SC_OK).
                 body("subCommands[0].name", is("bar")).
                 body("subCommands[0].method", is("POST")).
-                body("subCommands[0].endpoint", is("/bar")).
+                body("subCommands[0].endpoint", is("http://somewhere.tld/bar")).
                 body("subCommands[0].defaultResponseSuccess", is("I'm a success")).
                 body("subCommands[0].defaultResponseFailure", is("I'm a failure")).
                 body("subCommands[0].arguments[0].zzz", is("/form1/")).
@@ -203,7 +204,7 @@ public class CommandResourceTest {
 
     @Test
     public void returnsErrorResponseWhenInvalidArgumentSent() {
-        Command command = new Command("pity the fool", "http://localhost/9");
+        Command command = new Command("time", "http://localhost/9");
         commandRepository.save(command);
 
         JSONArray subCommands = new JSONArray();
@@ -215,7 +216,7 @@ public class CommandResourceTest {
 
         JSONObject subCommandObject = new JSONObject()
             .put("name", "bar")
-            .put("endpoint", "/bar")
+            .put("endpoint", "http://somewhere.tld/bar")
             .put("method", "POST")
             .put("defaultResponseSuccess", "I'm a success")
             .put("defaultResponseFailure", "I'm a failure")
@@ -223,9 +224,8 @@ public class CommandResourceTest {
 
         subCommands.put(subCommandObject);
 
-
         JSONObject commandJson = new JSONObject()
-            .put("name", "pity the fool")
+            .put("name", "time")
             .put("endpoint", "http://localhost/9")
             .put("method", "GET")
             .put("subCommands", subCommands);
@@ -239,8 +239,8 @@ public class CommandResourceTest {
             then().
             log().all().
             statusCode(SC_BAD_REQUEST).
-            body("errors[0].property", is("subCommands[0].arguments[0]")).
-            body("errors[0].message", is("The argument 'zzz' is an invalid type"));
+            body("errors[0].property", is("subCommands[0].arguments")).
+            body("errors[0].message", is("Invalid argument type for value '/form1'"));
 
     }
 }

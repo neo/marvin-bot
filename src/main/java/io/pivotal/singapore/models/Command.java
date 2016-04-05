@@ -28,8 +28,8 @@ public class Command implements ICommand {
     @Getter @Setter private RequestMethod method;
 
     @OneToMany(cascade = {CascadeType.ALL})
-    @JoinColumn(name="COMMAND_ID", referencedColumnName="ID")
-    @Getter @Setter List<SubCommand> subCommands;
+    @JoinColumn(name = "COMMAND_ID", referencedColumnName = "ID")
+    @Getter @Setter List<SubCommand> subCommands = new ArrayList<>();
 
     public Command(String name, String endpoint) {
         this.name = name;

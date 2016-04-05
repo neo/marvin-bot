@@ -1,47 +1,45 @@
 package io.pivotal.singapore.models;
 
-import io.pivotal.singapore.marvin.commands.arguments.Argument;
-import io.pivotal.singapore.marvin.commands.arguments.Arguments;
-import io.pivotal.singapore.marvin.commands.arguments.InvalidArgument;
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentsValidator;
+import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
 
-import java.util.List;
-
 public class CommandValidator implements Validator {
-    /**
-     * This Validator validates *just* Person instances
-     */
+
     public boolean supports(Class clazz) {
-        return Command.class.equals(clazz);
+        return ICommand.class.isAssignableFrom(clazz);
     }
 
     public void validate(Object obj, Errors e) {
-        Command command = (Command) obj;
+        ICommand command = (ICommand) obj;
         ValidationUtils.rejectIfEmptyOrWhitespace(e, "name", "name.empty");
 
         if (command.getName() != null && command.getName().contains(" ")) {
             e.rejectValue("name", "name.nospaces", "Name can't contain spaces");
         }
 
+        if (command.getEndpoint() == null ||
+            (!command.getEndpoint().startsWith("http://") && !command.getEndpoint().startsWith("https://"))) {
+            e.rejectValue("endpoint", "endpoint.invalidUrl", "Endpoint isn't a valid URL");
+        }
 
-        List<SubCommand> subCommand = command.getSubCommands();
-        int i = 0;
-        for (SubCommand cmd : subCommand) {
-            Arguments arguments = cmd.getArguments();
-            int j = 0;
-            for (Argument arg : arguments.getArguments()) {
-                if (arg instanceof InvalidArgument) {
-                    e.rejectValue(
-                        String.format("subCommands[%d].arguments[%d]", i, j),
-                        null,
-                        String.format("The argument '%s' is an invalid type", arg.getName())
-                    );
-                }
-                j++;
-            }
-            i++;
+        if (!command.getArguments().getArguments().isEmpty()) {
+            ValidationUtils.invokeValidator(new ArgumentsValidator(), command.getArguments(), e);
+        }
+
+        // Validate sub commands the same way as commands, just as a key under it
+        if (command.getClass().equals(Command.class)) {
+            AtomicInteger idx = new AtomicInteger();
+            Command cmd = (Command) command;
+            cmd.getSubCommands()
+                .stream()
+                .forEach(subCommand -> {
+                    e.pushNestedPath("subCommands[" + idx.getAndIncrement() + "]");
+                    ValidationUtils.invokeValidator(new CommandValidator(), subCommand, e);
+                    e.popNestedPath();
+                });
         }
     }
 }
