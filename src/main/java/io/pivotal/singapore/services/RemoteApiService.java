@@ -40,6 +40,9 @@ public class RemoteApiService {
     }
 
     public RemoteApiServiceResponse call(RequestMethod method, String endpoint, Map params) {
+        if(method == null) {
+            throw new IllegalArgumentException("HTTP method was not defined by the command provider");
+        }
         try {
             switch (method) {
                 case POST:

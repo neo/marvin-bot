@@ -25,6 +25,13 @@ public class CommandValidatorTest {
     }
 
     @Test
+    public void checkCommandHttpMethodNotNull(){
+        Command command = getValidCommand();
+        command.setMethod(null);
+        assertError(command, "method", "method.undefined");
+    }
+
+    @Test
     public void checkEndpoint() {
         Command command = getValidCommand();
         command.setEndpoint(null);

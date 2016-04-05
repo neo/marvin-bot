@@ -178,10 +178,7 @@ public class SlackControllerTest {
             slackInputParams.put("text", "time in London");
             Arguments arguments = mock(Arguments.class);
 
-            SubCommand subCommand = new SubCommand();
-            subCommand.setName("in");
-            subCommand.setMethod(RequestMethod.POST);
-            subCommand.setEndpoint("http://example.com/hello");
+            SubCommand subCommand = createSubCommand();
             subCommand.setArguments(arguments);
 
             List<SubCommand> subCommands = new ArrayList<>();
@@ -250,12 +247,7 @@ public class SlackControllerTest {
             slackInputParams.put("text", "time in London");
             Arguments arguments = mock(Arguments.class);
 
-            SubCommand subCommand = new SubCommand();
-            subCommand.setName("in");
-            subCommand.setMethod(RequestMethod.POST);
-            subCommand.setEndpoint("http://example.com/hello");
-            subCommand.setDefaultResponseFailure("Shucks... something went wrong.");
-            subCommand.setDefaultResponseSuccess("w00t!");
+            SubCommand subCommand = createSubCommand();
             subCommand.setArguments(arguments);
 
             List<SubCommand> subCommands = new ArrayList<>();
@@ -283,12 +275,7 @@ public class SlackControllerTest {
             slackInputParams.put("text", "time in London");
             Arguments arguments = mock(Arguments.class);
 
-            SubCommand subCommand = new SubCommand();
-            subCommand.setName("in");
-            subCommand.setMethod(RequestMethod.POST);
-            subCommand.setEndpoint("http://example.com/hello");
-            subCommand.setDefaultResponseFailure("Shucks... something went wrong.");
-            subCommand.setDefaultResponseSuccess("w00t!");
+            SubCommand subCommand = createSubCommand();
             subCommand.setArguments(arguments);
 
             List<SubCommand> subCommands = new ArrayList<>();
@@ -311,17 +298,14 @@ public class SlackControllerTest {
             assertThat(response.get("text"), is(equalTo(subCommand.getDefaultResponseSuccess())));
         }
 
-
         @Test
         public void testNoDefaultSuccessResponse() throws Exception {
             slackInputParams.put("text", "time in London");
             Arguments arguments = mock(Arguments.class);
 
-            SubCommand subCommand = new SubCommand();
-            subCommand.setName("in");
-            subCommand.setMethod(RequestMethod.POST);
-            subCommand.setEndpoint("http://example.com/hello");
+            SubCommand subCommand = createSubCommand();
             subCommand.setArguments(arguments);
+            subCommand.setDefaultResponseSuccess(null);
 
             List<SubCommand> subCommands = new ArrayList<>();
             subCommands.add(subCommand);
@@ -343,6 +327,7 @@ public class SlackControllerTest {
             Map<String, String> response = controller.index(slackInputParams);
             assertThat(response.get("text"), is(equalTo("{}")));
         }
+
 
         @Test(expected = UnrecognizedApiToken.class)
         public void ignoresRequestWhenSlackTokenIsMissing() throws Exception {
@@ -374,6 +359,30 @@ public class SlackControllerTest {
             Map<String, String> response = controller.index(slackInputParams);
             assertThat(response.get("text"), is(equalTo("It is time for breakfast, Wilson! Have a good time, Wilson!")));
         }
-    }
 
+        @Test
+        public void returnsDefaultResponseIfSubCommandsAreParsedButAreNotDefined() throws Exception {
+            slackInputParams.put("text", "command pinkberry argsssss");
+            List<SubCommand> subCommands = new ArrayList<>();
+
+            subCommands.add(createSubCommand());
+            Optional<Command> command = Optional.of(new Command("command", "http://fake-endpoint.tld") {{
+                setSubCommands(subCommands);
+            }});
+            when(commandRepository.findOneByName("command")).thenReturn(command);
+
+            Map<String, String> response = controller.index(slackInputParams);
+            assertThat(response.get("text"), is(equalTo("This will all end in tears.")));
+        }
+
+        private SubCommand createSubCommand() {
+            SubCommand subCommand = new SubCommand();
+            subCommand.setName("in");
+            subCommand.setMethod(RequestMethod.POST);
+            subCommand.setEndpoint("http://example.com/hello");
+            subCommand.setDefaultResponseFailure("Shucks... something went wrong.");
+            subCommand.setDefaultResponseSuccess("w00t!");
+            return subCommand;
+        }
+    }
 }

@@ -8,6 +8,7 @@ import java.util.HashMap;
 @Service
 public class CommandParserService {
 
+    // FIXME: Use a typed object for this...
     public HashMap<String,String> parse(@NotNull String textComamnd) {
         HashMap<String, String> result = new HashMap<>();
         result.put("command", "");

@@ -66,8 +66,14 @@ class SlackController {
         // Makes remote API calls
         RemoteApiServiceResponse response;
         Optional<ICommand> subCommandOptional = commandOptional.get().findSubCommand(parsedCommand.get("sub_command"));
+
+        if( !subCommandOptional.isPresent() && !commandOptional.get().getSubCommands().isEmpty()) {
+            return defaultResponse();
+        }
+
         Map _params = remoteServiceParams(params);
 
+        // FIXME: Only fallback to command if there are no subcommands
         ICommand cmd = subCommandOptional.orElse(commandOptional.get());
 
         Map args = cmd.getArguments().parse(parsedCommand.get("arguments"));
