@@ -14,7 +14,7 @@ public class CommandValidator implements Validator {
 
     public void validate(Object obj, Errors e) {
         ICommand command = (ICommand) obj;
-        ValidationUtils.rejectIfEmptyOrWhitespace(e, "name", "name.empty");
+        ValidationUtils.rejectIfEmptyOrWhitespace(e, "name", "name.empty", "Name can't be empty");
 
         if (command.getName() != null && command.getName().contains(" ")) {
             e.rejectValue("name", "name.nospaces", "Name can't contain spaces");
