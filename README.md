@@ -1,4 +1,4 @@
-[![](https://circleci.com/gh/neo/marvin-bot.svg?style=shield)](https://circleci.com/gh/neo/marvin-bot)
+[![](https://circleci.com/gh/neo/marvin-bot.svg?style=shield)](https://circleci.com/gh/neo/marvin-bot)&#42;
 
 # Marvin - A Depressed SlackBot
 
@@ -67,3 +67,5 @@ Fix it with:
 1. Opening the settings window for "Annotation processors"
 2. Click "Enable annotation processors"
 3. Recompile the entire project
+
+&#42;<sup>Note, when CircleCi is building, this will show the status of the last completed build.</sup>
