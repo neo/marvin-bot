@@ -32,4 +32,15 @@ public class SubCommand implements ICommand {
     @JsonDeserialize(converter = ArgumentsDeserializerJson.class)
     @JsonSerialize(converter = ArgumentsSerializerJson.class)
     @Getter @Setter private Arguments arguments = new Arguments();
+
+
+    @Override
+    public boolean requiresEndpoint() {
+        return true;
+    }
+
+    @Override
+    public boolean requiresMethod() {
+        return true;
+    }
 }

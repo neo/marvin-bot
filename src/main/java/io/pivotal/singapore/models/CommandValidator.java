@@ -20,12 +20,14 @@ public class CommandValidator implements Validator {
             e.rejectValue("name", "name.nospaces", "Name can't contain spaces");
         }
 
-        if (command.getMethod() == null) {
+        if (command.requiresMethod() && command.getMethod() == null) {
             e.rejectValue("method", "method.undefined", "HTTP Method MUST be provided");
         }
 
-        if (command.getEndpoint() == null ||
-            (!command.getEndpoint().startsWith("http://") && !command.getEndpoint().startsWith("https://"))) {
+        if (command.requiresEndpoint() &&
+                (command.getEndpoint() == null ||
+                (!command.getEndpoint().startsWith("http://")
+                        && !command.getEndpoint().startsWith("https://")))) {
             e.rejectValue("endpoint", "endpoint.invalidUrl", "Endpoint isn't a valid URL");
         }
 

@@ -52,4 +52,14 @@ public class Command implements ICommand {
     public Arguments getArguments(){
         return new Arguments();
     }
+
+    @Override
+    public boolean requiresEndpoint() {
+        return subCommands.isEmpty();
+    }
+
+    @Override
+    public boolean requiresMethod() {
+        return subCommands.isEmpty();
+    }
 }

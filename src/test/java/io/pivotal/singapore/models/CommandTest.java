@@ -39,6 +39,5 @@ public class CommandTest {
         assertThat(command.findSubCommand("in").get(), is(subCommand));
         assertThat(command.findSubCommand("missing"), is(Optional.empty()));
         assertThat(command.findSubCommand(null), is(Optional.empty()));
-
     }
 }

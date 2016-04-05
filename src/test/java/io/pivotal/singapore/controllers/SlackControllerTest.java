@@ -34,6 +34,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
 
+import static io.pivotal.singapore.utils.CommandFactory.createSubCommand;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -375,14 +376,5 @@ public class SlackControllerTest {
             assertThat(response.get("text"), is(equalTo("This will all end in tears.")));
         }
 
-        private SubCommand createSubCommand() {
-            SubCommand subCommand = new SubCommand();
-            subCommand.setName("in");
-            subCommand.setMethod(RequestMethod.POST);
-            subCommand.setEndpoint("http://example.com/hello");
-            subCommand.setDefaultResponseFailure("Shucks... something went wrong.");
-            subCommand.setDefaultResponseSuccess("w00t!");
-            return subCommand;
-        }
     }
 }

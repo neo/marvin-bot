@@ -5,10 +5,14 @@ import io.pivotal.singapore.marvin.commands.arguments.Arguments;
 import org.junit.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
+import org.springframework.web.bind.annotation.RequestMethod;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+import static io.pivotal.singapore.utils.CommandFactory.createSubCommand;
+import static io.pivotal.singapore.utils.CommandFactory.createSubCommands;
 import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
@@ -32,6 +36,14 @@ public class CommandValidatorTest {
     }
 
     @Test
+    public void checkCommandHttpMethodWhenNotRequired(){
+        Command command = getValidCommand();
+        command.setSubCommands(createSubCommands());
+        command.setMethod(null);
+        assertNoErrors(command);
+    }
+
+    @Test
     public void checkEndpoint() {
         Command command = getValidCommand();
         command.setEndpoint(null);
@@ -41,6 +53,14 @@ public class CommandValidatorTest {
         assertError(command, "endpoint", "endpoint.invalidUrl");
 
         command.setEndpoint("https://hello.tld/1");
+        assertNoErrors(command);
+    }
+
+    @Test
+    public void checkCommandHttpEndpointWhenNotRequired(){
+        Command command = getValidCommand();
+        command.setSubCommands(createSubCommands());
+        command.setEndpoint(null);
         assertNoErrors(command);
     }
 
