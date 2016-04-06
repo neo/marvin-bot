@@ -1,12 +1,12 @@
 package io.pivotal.singapore.controllers;
 
-import io.pivotal.singapore.MarvinApplication;
 import io.pivotal.singapore.marvin.commands.arguments.Arguments;
 import io.pivotal.singapore.models.Command;
 import io.pivotal.singapore.models.SubCommand;
 import io.pivotal.singapore.repositories.CommandRepository;
 import io.pivotal.singapore.services.CommandParserService;
 import io.pivotal.singapore.services.RemoteApiService;
+import io.pivotal.singapore.integrations.IntegrationBase;
 import io.pivotal.singapore.utils.FrozenTimeMachine;
 import io.pivotal.singapore.utils.MessageType;
 import io.pivotal.singapore.utils.RemoteApiServiceResponse;
@@ -18,17 +18,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.http.MediaType;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.context.WebApplicationContext;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -45,20 +36,12 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppContextSetup;
 
+// NOTE: Is there a good reason this is nested? Seems like a violation of SRP to me (Jasonm23)
+
 @RunWith(Enclosed.class)
 public class SlackControllerTest {
 
-    @RunWith(SpringJUnit4ClassRunner.class)
-    @SpringApplicationConfiguration(classes = MarvinApplication.class)
-    @WebAppConfiguration
-    @ActiveProfiles(profiles = "test")
-    public static class Integration {
-        @Value("${api.slack.token}")
-        String SLACK_TOKEN;
-        @Autowired
-        private WebApplicationContext wac;
-        private MockMvc mockMvc;
-
+    public static class SlackControllerIntegration extends IntegrationBase {
         @Before
         public void setUp() throws Exception {
             mockMvc = webAppContextSetup(wac).build();

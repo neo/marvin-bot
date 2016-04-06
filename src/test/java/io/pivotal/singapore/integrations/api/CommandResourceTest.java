@@ -3,23 +3,14 @@ package io.pivotal.singapore.integrations.api;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 import edu.emory.mathcs.backport.java.util.Collections;
-import io.pivotal.singapore.MarvinApplication;
 import io.pivotal.singapore.models.Command;
-import io.pivotal.singapore.repositories.CommandRepository;
+import io.pivotal.singapore.integrations.IntegrationBase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
 import org.springframework.hateoas.MediaTypes;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -32,15 +23,7 @@ import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.core.Is.is;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = MarvinApplication.class)
-@WebAppConfiguration
-@ActiveProfiles(profiles = "test")
-@IntegrationTest("server.port:0")
-public class CommandResourceTest {
-    @Value("${local.server.port}")
-    protected int port;
-    @Autowired private CommandRepository commandRepository;
+public class CommandResourceTest extends IntegrationBase {
 
     @Before
     public void setUp() throws Exception {
