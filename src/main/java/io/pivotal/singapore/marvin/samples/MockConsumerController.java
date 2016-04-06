@@ -4,6 +4,7 @@ import lombok.Synchronized;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -17,6 +18,12 @@ public class MockConsumerController {
         HashMap<String, Object> response = new HashMap<>();
         response.put("counter", counters.getOrDefault(endpoint, 0));
         return response;
+    }
+
+    @RequestMapping(value = "/counter", method = RequestMethod.DELETE, produces = MediaType.APPLICATION_JSON_VALUE)
+    public Map<String, Object> clearCounter(@RequestParam String endpoint) {
+        counters.put(endpoint, 0);
+        return Collections.singletonMap("counter", 0);
     }
 
     @RequestMapping(value = "/dummy", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE, consumes = MediaType.APPLICATION_JSON_VALUE)
