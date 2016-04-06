@@ -33,7 +33,7 @@ public class RemoteApiServiceTest {
         params.put("foo", "bar");
 
         HashMap<String, String> response = new HashMap();
-        response.put("_status", "success");
+        response.put("status", "yay! it works!");
         when(restTemplate.postForObject(endpoint, params, HashMap.class)).thenReturn(response);
 
         RemoteApiServiceResponse remoteApiServiceResponse = remoteApiService.call(command, params);

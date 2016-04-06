@@ -104,7 +104,6 @@ public class RemoteCommandTest {
         Map<String, String> result = remoteCommand.execute();
 
         assertThat(result.get("status"), is(equalTo("FAILED!!!!!")));
-        assertThat(result.get("_status"), is(equalTo("failure")));
     }
 
     @Test
@@ -118,7 +117,6 @@ public class RemoteCommandTest {
         Map<String, String> result = remoteCommand.execute();
 
         assertThat(result.get("errorBody"), is(equalTo("\"status\" : \"FAILED!!!!!\" }")));
-        assertThat(result.get("_status"), is(equalTo("failure")));
     }
 
     @Test
@@ -129,7 +127,6 @@ public class RemoteCommandTest {
         Map<String, String> result = remoteCommand.execute();
 
         assertThat(result.get("errorBody"), is(equalTo("FAILED!!!!!")));
-        assertThat(result.get("_status"), is(equalTo("failure")));
     }
 
     private void setupMockServer(String endpoint, HttpMethod method) {

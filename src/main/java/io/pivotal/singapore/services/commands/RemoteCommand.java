@@ -36,10 +36,6 @@ public class RemoteCommand extends HystrixCommand<Map<String, String>> {
 
     @Override
     protected Map<String, String> run() {
-        Map<String, String> body = new HashMap<>();
-
-        body.put("_status", "success");
-
         switch (method) {
             case POST:
                 return restTemplate.postForObject(endpoint, params, HashMap.class);
@@ -67,10 +63,9 @@ public class RemoteCommand extends HystrixCommand<Map<String, String>> {
             body = parseHttpError((HttpClientErrorException) exception);
         } else {
             body = new HashMap<>();
-            body.put("message", "The service cannot be reached at this moment... HYSTRIX CIRCUIT IS TRIPPED!");
+            body.put("message", "The service cannot be reached at this moment. You may wish to try again later.");
             body.put("message_type", "ephemeral");
         }
-        body.put("_status", "failure");
 
         return body;
     }
