@@ -1,10 +1,7 @@
 package io.pivotal.singapore.marvin.core;
 
-import io.pivotal.singapore.marvin.commands.ICommand;
-import io.pivotal.singapore.marvin.core.MessageType;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.experimental.Accessors;
 
 import java.util.Map;
 import java.util.Optional;
@@ -18,7 +15,6 @@ public class RemoteApiServiceResponse {
     String defaultResponseFailure;
     private Boolean success;
     @Getter private Map<String, String> body;
-    @Setter @Accessors(chain = true) private ICommand command;
 
     public RemoteApiServiceResponse(Boolean successful, Map<String, String> body) {
         this(successful, body, null, null);
