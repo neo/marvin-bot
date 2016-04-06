@@ -11,7 +11,7 @@ import org.springframework.http.HttpMethod;
 import java.io.IOException;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.allOf;
+import static org.hamcrest.Matchers.*;
 import static org.hamcrest.collection.IsMapContaining.hasEntry;
 import static org.junit.Assert.assertThat;
 
@@ -34,7 +34,7 @@ public class EchoConsumerControllerTest {
     }
 
     @Test
-    public void subCommandHandlerReturnsSubCommand() throws IOException {
+    public void subCommandHandlerReturnsSubCommand() throws IOException, SimulatedError {
         Map<String, String> actual = controller.handleSubcommand(ImmutableMap.of("a", 1), HttpMethod.DELETE, "sub_command");
         Map<String, String> message = jsonToMap(actual.get("message"));
         Map<String, String> arguments = jsonToMap(message.get("arguments"));
@@ -43,6 +43,30 @@ public class EchoConsumerControllerTest {
                 hasEntry("subCommand", "sub_command")));
         assertThat(arguments, hasEntry("a", 1));
         assertThat(actual, hasEntry("message_type", "channel"));
+    }
+
+    @Test
+    public void specialSubcommandSkipsMessageKeyInResponse() throws IOException, SimulatedError {
+        Map<String, String> actual = controller.handleSubcommand(ImmutableMap.of("a", 1), HttpMethod.DELETE, "empty");
+
+        assertThat(actual, not(hasKey("message")));
+        assertThat(actual, hasEntry("message_type", "channel"));
+    }
+
+    @Test(expected = SimulatedError.class)
+    public void specialSubcommandReturnsAnError() throws IOException, SimulatedError {
+        Map<String, String> actual = controller.handleSubcommand(ImmutableMap.of("a", 1), HttpMethod.DELETE, "error");
+    }
+
+    @Test
+    public void specialSubcommandFlattensTheResponse() throws IOException, SimulatedError {
+        Map<String, String> actual = controller.handleSubcommand(ImmutableMap.of("a", 1), HttpMethod.DELETE, "flatten");
+        Map<String, String> arguments = jsonToMap(actual.get("arguments"));
+
+        assertThat(actual, allOf(hasEntry("method", "DELETE"),
+                hasEntry("subCommand", "flatten"),
+                hasEntry("message_type", "channel")));
+        assertThat(arguments, hasEntry("a", 1));
     }
 
     private Map jsonToMap(String mes) throws IOException {
