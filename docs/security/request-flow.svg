@@ -1,0 +1,72 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.0//EN" "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg viewBox="0 0 832 676" xmlns="http://www.w3.org/2000/svg" xmlns:inkspace="http://www.inkscape.org/namespaces/inkscape" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs id="defs_block">
+    <filter height="1.504" id="filter_blur" inkspace:collect="always" width="1.1575" x="-0.07875" y="-0.252">
+      <feGaussianBlur id="feGaussianBlur3780" inkspace:collect="always" stdDeviation="4.2" />
+    </filter>
+  </defs>
+  <title>blockdiag</title>
+  <desc>seqdiag {
+    Slack  -&gt; Marvin [label="/marvin event create BBQ"];
+              Marvin  -&gt; OAuthServer [label="Authenticate user"];
+              Marvin &lt;-- OAuthServer [label="User id"];
+              Marvin  -&gt; PinkPony [label="access token + user id"];
+                         PinkPony  -&gt; OAuthServer [label="Auth user id"];
+                         PinkPony &lt;-- OAuthServer [label="User authed successfully"];
+              Marvin &lt;-- PinkPony [label="Event created successfully"];
+    Slack &lt;-- Marvin [label="Event created successfully, to RSVP ..."];
+}
+</desc>
+  <rect fill="rgb(0,0,0)" height="512" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="8" x="127" y="142" />
+  <rect fill="rgb(0,0,0)" height="466" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="8" x="319" y="142" />
+  <rect fill="rgb(0,0,0)" height="64" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="8" x="511" y="206" />
+  <rect fill="rgb(0,0,0)" height="66" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="8" x="511" y="398" />
+  <rect fill="rgb(0,0,0)" height="196" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="8" x="703" y="334" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="67" y="46" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="259" y="46" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="451" y="46" />
+  <rect fill="rgb(0,0,0)" height="40" stroke="rgb(0,0,0)" style="filter:url(#filter_blur);opacity:0.7;fill-opacity:1" width="128" x="643" y="46" />
+  <path d="M 128 80 L 128 664" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <rect fill="moccasin" height="512" stroke="rgb(0,0,0)" width="8" x="124" y="136" />
+  <path d="M 320 80 L 320 664" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <rect fill="moccasin" height="466" stroke="rgb(0,0,0)" width="8" x="316" y="136" />
+  <path d="M 512 80 L 512 664" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <rect fill="moccasin" height="64" stroke="rgb(0,0,0)" width="8" x="508" y="200" />
+  <rect fill="moccasin" height="66" stroke="rgb(0,0,0)" width="8" x="508" y="392" />
+  <path d="M 704 80 L 704 664" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="8 4" />
+  <rect fill="moccasin" height="196" stroke="rgb(0,0,0)" width="8" x="700" y="328" />
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="64" y="40" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="29" x="128" y="65">Slack</text>
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="256" y="40" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="37" x="320" y="65">Marvin</text>
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="448" y="40" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="71" x="512" y="65">OAuthServer</text>
+  <rect fill="rgb(255,255,255)" height="40" stroke="rgb(0,0,0)" width="128" x="640" y="40" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="51" x="704" y="66">PinkPony</text>
+  <path d="M 136 136 L 312 136" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="304,132 312,136 304,140" stroke="rgb(0,0,0)" />
+  <path d="M 328 200 L 504 200" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="496,196 504,200 496,204" stroke="rgb(0,0,0)" />
+  <path d="M 328 264 L 504 264" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(0,0,0)" points="336,260 328,264 336,268" stroke="rgb(0,0,0)" />
+  <path d="M 328 328 L 696 328" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="688,324 696,328 688,332" stroke="rgb(0,0,0)" />
+  <path d="M 520 392 L 696 392" fill="none" stroke="rgb(0,0,0)" />
+  <polygon fill="rgb(0,0,0)" points="528,388 520,392 528,396" stroke="rgb(0,0,0)" />
+  <path d="M 520 458 L 696 458" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(0,0,0)" points="688,454 696,458 688,462" stroke="rgb(0,0,0)" />
+  <path d="M 328 524 L 696 524" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(0,0,0)" points="336,520 328,524 336,528" stroke="rgb(0,0,0)" />
+  <path d="M 136 602 L 312 602" fill="none" stroke="rgb(0,0,0)" stroke-dasharray="4" />
+  <polygon fill="rgb(0,0,0)" points="144,598 136,602 144,606" stroke="rgb(0,0,0)" />
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="141" x="210" y="134">/marvin event create BBQ</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="97" x="380" y="198">Authenticate user</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="40" x="484" y="262">User id</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="123" x="393" y="326">access token + user id</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="68" x="662" y="390">Auth user id</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="139" x="593" y="456">User authed successfully</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="146" x="623" y="522">Event created successfully</text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="167" x="228" y="588">Event created successfully, to </text>
+  <text fill="rgb(0,0,0)" font-family="sans-serif" font-size="11" font-style="normal" font-weight="normal" text-anchor="middle" textLength="43" x="290" y="600">RSVP ...</text>
+</svg>

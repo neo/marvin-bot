@@ -1,0 +1,10 @@
+seqdiag {
+    Slack  -> Marvin [label="/marvin event create BBQ"];
+              Marvin  -> OAuthServer [label="Authenticate user"];
+              Marvin <-- OAuthServer [label="User id"];
+              Marvin  -> PinkPony [label="access token + user id"];
+                         PinkPony  -> OAuthServer [label="Auth user id"];
+                         PinkPony <-- OAuthServer [label="User authed successfully"];
+              Marvin <-- PinkPony [label="Event created successfully"];
+    Slack <-- Marvin [label="Event created successfully, to RSVP ..."];
+}
