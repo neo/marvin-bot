@@ -5,6 +5,7 @@ import com.jayway.restassured.http.ContentType;
 import edu.emory.mathcs.backport.java.util.Collections;
 import io.pivotal.singapore.marvin.commands.Command;
 import io.pivotal.singapore.marvin.commands.integrations.IntegrationBase;
+import org.hamcrest.CoreMatchers;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
@@ -21,6 +22,7 @@ import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
 import static org.apache.http.HttpStatus.SC_CREATED;
 import static org.apache.http.HttpStatus.SC_OK;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 
 public class CommandResourceTest extends IntegrationBase {
@@ -168,6 +170,20 @@ public class CommandResourceTest extends IntegrationBase {
             body("errors[0].property", is("subCommands[0].arguments")).
             body("errors[0].message", is("Argument 'zzz' has an invalid argument pattern '/form1'"));
 
+    }
+
+    @Test
+    public void returnsErrorWhenUpsertingWithInvalidJSON() {
+        String badJson = "{\"regex\": \"\\/(\\d+)\\/\"}";
+        String badJsonErrorMessage = "Unrecognized character";
+        given().
+                contentType(ContentType.JSON).
+                content(badJson).
+        when().
+                post("/api/v1/commands/").
+        then().log().all().
+                statusCode(SC_BAD_REQUEST).
+                body("message", containsString(badJsonErrorMessage));
     }
 
     private JSONObject getCommand() {
