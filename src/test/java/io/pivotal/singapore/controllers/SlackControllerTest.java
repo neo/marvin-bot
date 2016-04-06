@@ -363,17 +363,17 @@ public class SlackControllerTest {
 
         @Test
         public void returnsDefaultResponseIfSubCommandsAreParsedButAreNotDefined() throws Exception {
-            slackInputParams.put("text", "command pinkberry argsssss");
+            slackInputParams.put("text", "chocolate pinkberry argsssss");
             List<SubCommand> subCommands = new ArrayList<>();
 
             subCommands.add(createSubCommand());
-            Optional<Command> command = Optional.of(new Command("command", "http://fake-endpoint.tld") {{
+            Optional<Command> command = Optional.of(new Command("chocolate", "http://fake-endpoint.tld") {{
                 setSubCommands(subCommands);
             }});
-            when(commandRepository.findOneByName("command")).thenReturn(command);
+            when(commandRepository.findOneByName("chocolate")).thenReturn(command);
 
             Map<String, String> response = controller.index(slackInputParams);
-            assertThat(response.get("text"), is(equalTo("This will all end in tears.")));
+            assertThat(response.get("text"), is(equalTo("This sub command doesn't exist for chocolate")));
         }
 
     }

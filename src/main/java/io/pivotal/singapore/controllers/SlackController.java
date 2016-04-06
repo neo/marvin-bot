@@ -56,7 +56,6 @@ class SlackController {
         // Parses into command, sub-command, args as token strings
         HashMap<String, String> parsedCommand = commandParserService.parse(commandText);
 
-
         // Checks if Command exists
         Optional<Command> commandOptional = getCommand(parsedCommand.get("command"));
         if (!commandOptional.isPresent()) {
@@ -68,7 +67,7 @@ class SlackController {
         Optional<ICommand> subCommandOptional = commandOptional.get().findSubCommand(parsedCommand.get("sub_command"));
 
         if( !subCommandOptional.isPresent() && !commandOptional.get().getSubCommands().isEmpty()) {
-            return defaultResponse();
+            return defaultResponse(String.format("This sub command doesn't exist for %s", parsedCommand.get("command")));
         }
 
         Map _params = remoteServiceParams(params);
@@ -123,7 +122,11 @@ class SlackController {
     }
 
     private HashMap<String, String> defaultResponse() {
-        return textResponse(Optional.of(MessageType.user), "This will all end in tears.");
+        return defaultResponse("This will all end in tears.");
+    }
+
+    private HashMap<String, String> defaultResponse(String message) {
+        return textResponse(Optional.of(MessageType.user), message);
     }
 }
 
