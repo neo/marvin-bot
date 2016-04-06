@@ -27,7 +27,7 @@ public class Command implements ICommand {
 
     @Getter @Setter private RequestMethod method;
 
-    @OneToMany(cascade = {CascadeType.ALL})
+    @OneToMany(cascade = {CascadeType.ALL}, orphanRemoval = true)
     @JoinColumn(name = "COMMAND_ID", referencedColumnName = "ID")
     @Getter @Setter List<SubCommand> subCommands = new ArrayList<>();
 
