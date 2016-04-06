@@ -1,7 +1,6 @@
 package io.pivotal.singapore.marvin.commands.arguments;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import io.pivotal.singapore.utils.Pair;
+import io.pivotal.singapore.marvin.utils.Pair;
 
 public interface Argument {
     static Boolean canParse(String capture) {

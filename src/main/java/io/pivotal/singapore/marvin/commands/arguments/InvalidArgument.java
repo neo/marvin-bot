@@ -1,6 +1,6 @@
 package io.pivotal.singapore.marvin.commands.arguments;
 
-import io.pivotal.singapore.utils.Pair;
+import io.pivotal.singapore.marvin.utils.Pair;
 
 public class InvalidArgument extends AbstractArgument {
 

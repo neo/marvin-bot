@@ -1,6 +1,6 @@
 package io.pivotal.singapore.marvin.commands.arguments;
 
-import io.pivotal.singapore.utils.Pair;
+import io.pivotal.singapore.marvin.utils.Pair;
 
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;

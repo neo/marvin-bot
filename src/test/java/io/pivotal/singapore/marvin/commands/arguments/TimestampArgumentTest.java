@@ -1,7 +1,7 @@
 package io.pivotal.singapore.marvin.commands.arguments;
 
-import io.pivotal.singapore.utils.Pair;
-import io.pivotal.singapore.utils.ThrowableCatcher;
+import io.pivotal.singapore.marvin.utils.Pair;
+import io.pivotal.singapore.marvin.utils.ThrowableCatcher;
 import org.junit.Test;
 
 import java.util.Arrays;

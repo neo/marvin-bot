@@ -2,7 +2,7 @@ package io.pivotal.singapore.marvin.commands.arguments;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.pivotal.singapore.utils.Pair;
+import io.pivotal.singapore.marvin.utils.Pair;
 import lombok.Getter;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 

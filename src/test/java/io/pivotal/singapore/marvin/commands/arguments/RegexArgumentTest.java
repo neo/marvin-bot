@@ -1,7 +1,7 @@
 package io.pivotal.singapore.marvin.commands.arguments;
 
-import io.pivotal.singapore.utils.Pair;
-import org.junit.Before;
+import io.pivotal.singapore.marvin.utils.Pair;
+
 import org.junit.Test;
 
 import static org.hamcrest.core.IsEqual.equalTo;
@@ -10,7 +10,7 @@ import static org.junit.Assert.*;
 public class RegexArgumentTest {
     private String defaultName = "event_name";
     private String pattern = "/\"([^\"]+)\"/";
-    private RegexArgument subject = new RegexArgument(defaultName, pattern);;
+    private RegexArgument subject = new RegexArgument(defaultName, pattern);
 
     @Test
     public void charactersConsumedIsFullCaptureGroup() {
