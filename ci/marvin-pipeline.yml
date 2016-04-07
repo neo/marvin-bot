@@ -6,9 +6,9 @@ resources:
     uri: https://github.com/pivotal-sg/marvin-bot.git
 
 jobs:
-- name: marvin-unit
+- name: unit
   public: true
   plan:
   - get: marvin-source
   - task: marvin-unit-test
-    file: marvin-source/ci/marvin-unit.yml
+    file: marvin-source/ci/tasks/unit.yml

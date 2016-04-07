@@ -4,12 +4,11 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: java
-    tag: '8-jdk'
+    repository: pivotalsg/marvin
+    tag: '0.1.1'
 
 inputs:
 - name: marvin-source
 
 run:
-  path: marvin-source/gradlew
-  args: [test]
+  path: marvin-source/ci/tasks/unit.sh
