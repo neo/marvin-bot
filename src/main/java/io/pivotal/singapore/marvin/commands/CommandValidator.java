@@ -1,10 +1,11 @@
 package io.pivotal.singapore.marvin.commands;
 
-import io.pivotal.singapore.marvin.commands.arguments.ArgumentsValidator;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
+
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentsValidator;
 
 public class CommandValidator implements Validator {
 
@@ -14,7 +15,9 @@ public class CommandValidator implements Validator {
 
     public void validate(Object obj, Errors e) {
         ICommand command = (ICommand) obj;
-        ValidationUtils.rejectIfEmptyOrWhitespace(e, "name", "name.empty", "Name can't be empty");
+        if (command.getName() == null || command.getName().trim().isEmpty()) {
+            e.rejectValue("name", "name.empty", "Name can't be empty");
+        }
 
         if (command.getName() != null && command.getName().contains(" ")) {
             e.rejectValue("name", "name.nospaces", "Name can't contain spaces");

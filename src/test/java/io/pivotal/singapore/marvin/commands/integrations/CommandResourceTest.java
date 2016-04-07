@@ -2,10 +2,7 @@ package io.pivotal.singapore.marvin.commands.integrations;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
-import edu.emory.mathcs.backport.java.util.Collections;
-import io.pivotal.singapore.marvin.commands.Command;
-import io.pivotal.singapore.marvin.commands.integrations.IntegrationBase;
-import org.hamcrest.CoreMatchers;
+
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
@@ -15,6 +12,9 @@ import org.springframework.hateoas.MediaTypes;
 
 import java.util.Arrays;
 import java.util.Map;
+
+import edu.emory.mathcs.backport.java.util.Collections;
+import io.pivotal.singapore.marvin.commands.Command;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
@@ -184,6 +184,24 @@ public class CommandResourceTest extends IntegrationBase {
         then().log().all().
                 statusCode(SC_BAD_REQUEST).
                 body("message", containsString(badJsonErrorMessage));
+    }
+
+    @Test
+    public void returnsErrorWhenSubCommandNameIsBlank() {
+        JSONObject command = getCommand();
+        JSONObject subCommand = getSubCommand();
+        subCommand.put("name", "");
+        command.put("subCommands", new JSONArray().put(subCommand));
+
+        given().
+            contentType(ContentType.JSON).
+            content(command.toString()).
+        when().
+            post("/api/v1/commands/").
+        then().
+            statusCode(SC_BAD_REQUEST).
+            body("errors[0].property", is("subCommands[0].name")).
+            body("errors[0].message", is("Name can't be empty"));
     }
 
     private JSONObject getCommand() {
