@@ -1,4 +1,4 @@
-package io.pivotal.singapore.services.commands;
+package io.pivotal.singapore.marvin.commands;
 
 import org.junit.Before;
 import org.junit.Test;

@@ -1,4 +1,4 @@
-package io.pivotal.singapore.integrations.loadtest;
+package io.pivotal.singapore.marvin.slack;
 
 
 import com.jayway.restassured.RestAssured;
