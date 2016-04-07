@@ -32,7 +32,7 @@ repositories {
 // Remove when spring-data-rest has been upgraded to Hopper
 dependencyManagement {
     imports {
-        mavenBom 'org.springframework.data:spring-data-releasetrain:Hopper-BUILD-SNAPSHOT'
+        mavenBom 'org.springframework.data:spring-data-releasetrain:Hopper-SR1'
     }
 }
 
