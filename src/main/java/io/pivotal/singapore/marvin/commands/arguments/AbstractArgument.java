@@ -9,5 +9,5 @@ abstract public class AbstractArgument implements Argument {
     @Getter @Setter protected String pattern;
 
     @Override
-    abstract public Pair<Integer, String> parse(String rawCommand);
+    abstract public Pair<Integer, String> parse(String rawCommand) throws ArgumentParseException;
 }

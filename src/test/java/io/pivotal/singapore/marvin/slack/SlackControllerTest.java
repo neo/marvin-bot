@@ -1,5 +1,17 @@
 package io.pivotal.singapore.marvin.slack;
 
+import com.google.common.collect.Lists;
+import io.pivotal.singapore.marvin.commands.Command;
+import io.pivotal.singapore.marvin.commands.CommandRepository;
+import io.pivotal.singapore.marvin.commands.SubCommand;
+import io.pivotal.singapore.marvin.commands.arguments.Arguments;
+import io.pivotal.singapore.marvin.commands.arguments.RegexArgument;
+import io.pivotal.singapore.marvin.core.CommandParserService;
+import io.pivotal.singapore.marvin.core.MessageType;
+import io.pivotal.singapore.marvin.core.RemoteApiService;
+import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
+import io.pivotal.singapore.marvin.utils.FrozenTimeMachine;
+import io.pivotal.singapore.marvin.utils.IntegrationBase;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -13,31 +25,13 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.TreeMap;
-
-import io.pivotal.singapore.marvin.utils.IntegrationBase;
-import io.pivotal.singapore.marvin.commands.Command;
-import io.pivotal.singapore.marvin.commands.CommandRepository;
-import io.pivotal.singapore.marvin.commands.SubCommand;
-import io.pivotal.singapore.marvin.commands.arguments.Arguments;
-import io.pivotal.singapore.marvin.core.MessageType;
-import io.pivotal.singapore.marvin.core.CommandParserService;
-import io.pivotal.singapore.marvin.core.RemoteApiService;
-import io.pivotal.singapore.marvin.utils.FrozenTimeMachine;
-import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
+import java.util.*;
 
 import static io.pivotal.singapore.marvin.utils.CommandFactory.createSubCommand;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 import static org.mockito.internal.verification.VerificationModeFactory.times;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
@@ -365,6 +359,27 @@ public class SlackControllerTest {
 
             Map<String, String> response = controller.index(slackInputParams);
             assertThat(response.get("text"), is(equalTo("This sub command doesn't exist for chocolate")));
+        }
+
+        @Test
+        public void returnsDefaultResponseIfSubCommandArgumentsAreNotMatched() throws Exception {
+            slackInputParams.put("text", "time in");
+            List<SubCommand> subCommands = new ArrayList<>();
+
+            Arguments arguments = Arguments.of(Lists.newArrayList(new RegexArgument("location", "/.+/")));
+
+            SubCommand subCommand = createSubCommand();
+            subCommand.setArguments(arguments);
+            subCommands.add(subCommand);
+
+            Optional<Command> command = Optional.of(new Command("time", "http://fake-endpoint.tld") {{
+                setSubCommands(subCommands);
+            }});
+            when(commandRepository.findOneByName("time")).thenReturn(command);
+
+            Map<String, String> response = controller.index(slackInputParams);
+            assertThat(response.get("text"), is(equalTo("`location` is not found in your command.")));
+            assertThat(response.get("response_type"), is(equalTo("ephemeral")));
         }
 
     }

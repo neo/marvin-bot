@@ -21,13 +21,13 @@ public class ArgumentsTest {
         ));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void nonMatchingCommandTextRaisesException() {
+    @Test(expected = ArgumentParseException.class)
+    public void nonMatchingCommandTextRaisesException() throws ArgumentParseException {
         subject.parse("");
     }
 
     @Test
-    public void parseArgumentsShouldBeEvaluatedInOrder() {
+    public void parseArgumentsShouldBeEvaluatedInOrder() throws ArgumentParseException {
         String rawCommand = "23rd of March at 7pm \"BBQ At the Pivotal Labs Singapore office\"";
 
         Map<String, String> result = subject.parse(rawCommand);
@@ -36,15 +36,22 @@ public class ArgumentsTest {
         assertThat(result.get("event_name"), equalTo("BBQ At the Pivotal Labs Singapore office"));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void raisesExceptionWhenOnePartIsMissing() {
+    @Test(expected = ArgumentParseException.class)
+    public void raisesExceptionWhenOnePartIsInvalid() throws ArgumentParseException {
         String rawCommand = "23rd of March at 7pm 'not a valid event name string'";
 
         subject.parse(rawCommand);
     }
 
+    @Test(expected = ArgumentParseException.class)
+    public void raisesExceptionWhenOnePartIsMissing() throws ArgumentParseException {
+        String rawCommand = "23rd of March at 7pm";
+
+        subject.parse(rawCommand);
+    }
+
     @Test
-    public void commandTextIsTrimmedFromLeadingAndTrailingWhitespace() {
+    public void commandTextIsTrimmedFromLeadingAndTrailingWhitespace() throws ArgumentParseException {
         String rawCommand = "       23rd of March at 7pm        \"BBQ At the Pivotal Labs Singapore office\"        ";
 
         Map result = subject.parse(rawCommand);

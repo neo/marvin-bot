@@ -13,7 +13,7 @@ public class InvalidArgument extends AbstractArgument {
     }
 
     @Override
-    public Pair<Integer, String> parse(String rawCommand) {
-        throw new IllegalArgumentException("InvalidArgument can't parse.");
+    public Pair<Integer, String> parse(String rawCommand) throws ArgumentParseException {
+        throw new ArgumentParseException("InvalidArgument can't parse.");
     }
 }

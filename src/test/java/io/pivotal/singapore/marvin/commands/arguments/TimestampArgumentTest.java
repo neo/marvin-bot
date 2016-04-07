@@ -18,19 +18,19 @@ public class TimestampArgumentTest {
     private String expectedDateTimeString = "2016-03-23T19:00:00+08:00";
 
     @Test
-    public void parseTimestringOnItsOwn() {
+    public void parseTimestringOnItsOwn() throws ArgumentParseException {
         Pair<Integer, String> result = subject.parse("23rd of March at 7pm");
 
         assertThat(result.last, equalTo(expectedDateTimeString));
     }
 
-    @Test(expected = IllegalArgumentException.class)
-    public void noValidTimeString() {
+    @Test(expected = ArgumentParseException.class)
+    public void noValidTimeString() throws ArgumentParseException {
         subject.parse("I'm a fluffy ballonicorn!");
     }
 
     @Test
-    public void parseValidTimeStringWithOtherStuff() {
+    public void parseValidTimeStringWithOtherStuff() throws ArgumentParseException {
         Pair<Integer, String> result = subject.parse("BBQ At the Pivotal Labs Singapore office on the 23rd of March at 7pm");
 
         assertThat(result.last, equalTo(expectedDateTimeString));
@@ -54,7 +54,7 @@ public class TimestampArgumentTest {
     }
 
     @Test
-    public void noNanosecondsInOutput() {
+    public void noNanosecondsInOutput() throws ArgumentParseException {
         String s = "tomorrow";
 
         Pair<Integer, String> result  = subject.parse(s);

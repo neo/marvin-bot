@@ -22,22 +22,22 @@ public class RegexArgument extends AbstractArgument {
         return capture.startsWith("/") && capture.endsWith("/");
     }
 
-    private void setRegex(String regex) {
-        this.regex = Pattern.compile(
-            String.format("^%s", (String) regex.subSequence(1, regex.length() - 1))
-        );
-    }
-
     public Pattern getRegex() {
-        if(regex == null) {
+        if (regex == null) {
             setRegex(getPattern());
         }
 
         return regex;
     }
 
+    private void setRegex(String regex) {
+        this.regex = Pattern.compile(
+            String.format("^%s", (String) regex.subSequence(1, regex.length() - 1))
+        );
+    }
+
     @Override
-    public Pair<Integer, String> parse(String rawCommand) {
+    public Pair<Integer, String> parse(String rawCommand) throws ArgumentParseException {
         Matcher m = getRegex().matcher(rawCommand);
 
         try {
@@ -46,9 +46,10 @@ public class RegexArgument extends AbstractArgument {
 
             return new Pair<>(m.end(0), results.group(1));
         } catch (IndexOutOfBoundsException | IllegalStateException ex) {
-            throw new IllegalArgumentException(
-                String.format("Argument '%s' found no match with regex '%s' in '%s'", name, regex, rawCommand),
-                ex
+            throw new ArgumentParseException(
+                    String.format("Argument '%s' found no match with regex '%s' in '%s'", name, regex, rawCommand),
+                    ex,
+                    this
             );
         }
     }

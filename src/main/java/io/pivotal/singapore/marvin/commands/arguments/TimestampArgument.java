@@ -35,7 +35,7 @@ public class TimestampArgument extends AbstractArgument {
     }
 
     @Override
-    public Pair<Integer, String> parse(String rawCommand) {
+    public Pair<Integer, String> parse(String rawCommand) throws ArgumentParseException {
         List<DateGroup> parse = new PrettyTimeParser().parseSyntax(rawCommand);
 
         if (parse != null && !parse.isEmpty()) {
@@ -72,7 +72,7 @@ public class TimestampArgument extends AbstractArgument {
 
             return new Pair<>(charactersToRemove, zonedDateTime.format(ISO_OFFSET_DATE_TIME));
         } else {
-            throw new IllegalArgumentException(
+            throw new ArgumentParseException(
                 String.format("Argument '%s' found no match for '%s' in text '%s'", name, MACRO_NAME, rawCommand)
             );
         }

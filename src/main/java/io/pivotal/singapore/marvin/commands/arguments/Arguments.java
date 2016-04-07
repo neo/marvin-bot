@@ -19,6 +19,14 @@ public class Arguments {
     public Arguments() {
     }
 
+    public Arguments(List<Map<String, String>> argumentsJson) throws IllegalArgumentException {
+        for (Map<String, String> argsMap : argumentsJson) {
+            for (Map.Entry<String, String> captureGroup : argsMap.entrySet()) {
+                addArgument(ArgumentFactory.getWithEmptyArgument(captureGroup.getKey(), captureGroup.getValue()));
+            }
+        }
+    }
+
     public static Arguments of(String argumentsJson) {
         ObjectMapper mapper = new ObjectMapper();
         List<Map<String, String>> parsedArguments = new ArrayList<>();
@@ -40,14 +48,6 @@ public class Arguments {
         arguments.forEach(args::addArgument);
 
         return args;
-    }
-
-    public Arguments(List<Map<String, String>> argumentsJson) throws IllegalArgumentException {
-        for (Map<String, String> argsMap : argumentsJson) {
-            for (Map.Entry<String, String> captureGroup : argsMap.entrySet()) {
-                addArgument(ArgumentFactory.getWithEmptyArgument(captureGroup.getKey(), captureGroup.getValue()));
-            }
-        }
     }
 
     private Arguments addArgument(Argument argument) {
@@ -83,7 +83,7 @@ public class Arguments {
         return returnValue;
     }
 
-    public Map<String, String> parse(String rawCommand) {
+    public Map<String, String> parse(String rawCommand) throws ArgumentParseException {
         TreeMap<String, String> returnMap = new TreeMap<>();
         rawCommand = rawCommand.trim();
 

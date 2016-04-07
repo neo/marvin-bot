@@ -1,10 +1,13 @@
 package io.pivotal.singapore.marvin.slack;
 
+import com.google.common.collect.ImmutableMap;
 import io.pivotal.singapore.marvin.commands.Command;
-import io.pivotal.singapore.marvin.commands.ICommand;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
-import io.pivotal.singapore.marvin.core.MessageType;
+import io.pivotal.singapore.marvin.commands.ICommand;
+import io.pivotal.singapore.marvin.commands.arguments.Argument;
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentParseException;
 import io.pivotal.singapore.marvin.core.CommandParserService;
+import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -75,8 +78,15 @@ class SlackController {
         // FIXME: Only fallback to command if there are no subcommands
         ICommand cmd = subCommandOptional.orElse(commandOptional.get());
 
-        Map args = cmd.getArguments().parse(parsedCommand.get("arguments"));
-        _params.putAll(args);
+        try {
+            Map args = cmd.getArguments().parse(parsedCommand.get("arguments"));
+            _params.putAll(args);
+        } catch (ArgumentParseException ex) {
+            Argument argument = ((Argument) ex.getThrower());
+            String text = String.format("`%s` is not found in your command.", argument.getName());
+
+            return ImmutableMap.of("text", text, "response_type", getSlackResponseType(MessageType.user));
+        }
 
         response = remoteApiService.call(cmd, _params);
 

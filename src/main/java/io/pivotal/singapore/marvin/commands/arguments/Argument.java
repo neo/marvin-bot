@@ -7,10 +7,11 @@ public interface Argument {
         return false;
     }
 
-    Pair<Integer, String> parse(String rawCommand);
+    Pair<Integer, String> parse(String rawCommand) throws ArgumentParseException;
 
     String getName();
     void setName(String name);
     String getPattern();
     void setPattern(String pattern);
 }
+
