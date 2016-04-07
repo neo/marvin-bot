@@ -12,50 +12,33 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.test.IntegrationTest;
-import org.springframework.boot.test.SpringApplicationConfiguration;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.web.WebAppConfiguration;
 
 import java.io.IOException;
 import java.util.stream.IntStream;
 
-import io.pivotal.singapore.MarvinApplication;
+import io.pivotal.singapore.marvin.utils.IntegrationBase;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.apache.http.HttpStatus.SC_CREATED;
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;
 
-@RunWith(SpringJUnit4ClassRunner.class)
-@SpringApplicationConfiguration(classes = MarvinApplication.class)
-@WebAppConfiguration
-@ActiveProfiles(profiles = "test")
-@IntegrationTest("server.port:0")
-public class ExternalApiLoadTest {
-    @Value("${local.server.port}")
-    private String portNumber;
-
-    @Value("${api.slack.token}")
-    private String slackToken;
-
-    private String baseUrl;
-
+public class ExternalApiLoadTest extends IntegrationBase {
     private String counterEndpoint;
     private String slackApiEndpoint;
     private String dummyEndpoint;
 
     @Before
     public void setUp() {
-        baseUrl = "http://localhost:" + portNumber + "/";
+        String baseUrl = "http://localhost:" + port + "/";
         counterEndpoint = baseUrl + "counter/?endpoint=dummy";
         dummyEndpoint = baseUrl + "dummy";
-        slackApiEndpoint = baseUrl + "?text=dummy&token=" + slackToken;
+        slackApiEndpoint = baseUrl + "?text=dummy&token=" + SLACK_TOKEN;
 
-        RestAssured.port = Integer.parseInt(portNumber);
+        RestAssured.port = port;
     }
 
     @Test
@@ -88,7 +71,7 @@ public class ExternalApiLoadTest {
                 HttpGet httpGet = new HttpGet(slackApiEndpoint);
                 try {
                     try (CloseableHttpResponse response = httpclient.execute(httpGet)) {
-                        System.out.println(response.getStatusLine());
+                        assertThat(response.getStatusLine().getStatusCode(), is(200));
                         EntityUtils.consume(response.getEntity());
                     }
                 } catch (IOException e) {
