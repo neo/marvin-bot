@@ -3,6 +3,8 @@ package io.pivotal.singapore.marvin.commands.integrations;
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
 
+import edu.emory.mathcs.backport.java.util.Collections;
+import io.pivotal.singapore.marvin.commands.Command;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
@@ -21,10 +23,9 @@ import io.pivotal.singapore.marvin.utils.IntegrationBase;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
-import static org.apache.http.HttpStatus.SC_BAD_REQUEST;
-import static org.apache.http.HttpStatus.SC_CREATED;
-import static org.apache.http.HttpStatus.SC_OK;
+import static org.apache.http.HttpStatus.*;
 import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.startsWith;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 
@@ -180,7 +181,8 @@ public class CommandResourceTest extends IntegrationBase {
     @Test
     public void returnsErrorWhenUpsertingWithInvalidJSON() {
         String badJson = "{\"regex\": \"\\/(\\d+)\\/\"}";
-        String badJsonErrorMessage = "Unrecognized character";
+        String badJsonErrorMessage = "Unrecognized character escape";
+        String lineColumnOfError = "line: 1, column: 17";
         given().
                 contentType(ContentType.JSON).
                 content(badJson).
@@ -188,7 +190,8 @@ public class CommandResourceTest extends IntegrationBase {
                 post("/api/v1/commands/").
         then().log().all().
                 statusCode(SC_BAD_REQUEST).
-                body("message", containsString(badJsonErrorMessage));
+                body("error.message", startsWith(badJsonErrorMessage)).
+                body("error.message", containsString(lineColumnOfError));
     }
 
     @Test
