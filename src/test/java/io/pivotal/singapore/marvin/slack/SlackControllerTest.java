@@ -20,7 +20,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.TreeMap;
 
-import io.pivotal.singapore.marvin.commands.integrations.IntegrationBase;
+import io.pivotal.singapore.marvin.utils.IntegrationBase;
 import io.pivotal.singapore.marvin.commands.Command;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
 import io.pivotal.singapore.marvin.commands.SubCommand;

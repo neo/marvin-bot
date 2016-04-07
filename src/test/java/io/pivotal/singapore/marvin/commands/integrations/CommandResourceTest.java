@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.MediaTypes;
 
 import java.util.Arrays;
@@ -15,6 +16,8 @@ import java.util.Map;
 
 import edu.emory.mathcs.backport.java.util.Collections;
 import io.pivotal.singapore.marvin.commands.Command;
+import io.pivotal.singapore.marvin.commands.CommandRepository;
+import io.pivotal.singapore.marvin.utils.IntegrationBase;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
@@ -26,6 +29,8 @@ import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.core.Is.is;
 
 public class CommandResourceTest extends IntegrationBase {
+
+    @Autowired protected CommandRepository commandRepository;
 
     @Before
     public void setUp() throws Exception {

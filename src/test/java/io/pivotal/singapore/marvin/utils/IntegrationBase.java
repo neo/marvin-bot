@@ -1,4 +1,4 @@
-package io.pivotal.singapore.marvin.commands.integrations;
+package io.pivotal.singapore.marvin.utils;
 
 import io.pivotal.singapore.MarvinApplication;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
@@ -19,9 +19,6 @@ import org.springframework.web.context.WebApplicationContext;
 @ActiveProfiles(profiles = "test")
 @IntegrationTest("server.port:0")
 public abstract class IntegrationBase {
-
-    @Autowired protected CommandRepository commandRepository;
-
     @Value("${local.server.port}")
     protected int port;
 
