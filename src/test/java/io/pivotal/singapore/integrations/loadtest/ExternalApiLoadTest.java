@@ -3,7 +3,12 @@ package io.pivotal.singapore.integrations.loadtest;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
-import io.pivotal.singapore.MarvinApplication;
+
+import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.util.EntityUtils;
 import org.json.JSONObject;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,11 +20,14 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 
+import java.io.IOException;
+import java.util.stream.IntStream;
+
+import io.pivotal.singapore.MarvinApplication;
+
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.apache.http.HttpStatus.SC_CREATED;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.lessThan;
 
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -73,9 +81,20 @@ public class ExternalApiLoadTest {
     }
 
     private void makeMultipleFailedRequests() throws Exception {
-        Process process = Runtime.getRuntime().exec(new String[]{"ab", "-n", "100", slackApiEndpoint});
-        int exitCode = process.waitFor();
-        assertThat(exitCode, is(0));
+        CloseableHttpClient httpclient = HttpClients.createDefault();
+
+        IntStream.range(0, 100)
+            .forEach((int i) -> {
+                HttpGet httpGet = new HttpGet(slackApiEndpoint);
+                try {
+                    try (CloseableHttpResponse response = httpclient.execute(httpGet)) {
+                        System.out.println(response.getStatusLine());
+                        EntityUtils.consume(response.getEntity());
+                    }
+                } catch (IOException e) {
+                    throw new RuntimeException("Some problem accessing webserver");
+                }
+            });
     }
 
     private JSONObject getCommand() {
