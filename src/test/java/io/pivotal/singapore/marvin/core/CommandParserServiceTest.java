@@ -53,4 +53,15 @@ public class CommandParserServiceTest {
         assertThat(result.get("sub_command"), is("create"));
         assertThat(result.get("arguments"), is(""));
     }
+
+    @Test
+    public void testParseWhenSubcommandContainsArgument() {
+        String textCommand = "time in Singapore";
+
+        HashMap<String, String> result = service.parse(textCommand);
+
+        assertThat(result.get("command"), is("time"));
+        assertThat(result.get("sub_command"), is("in"));
+        assertThat(result.get("arguments"), is("Singapore"));
+    }
 }
