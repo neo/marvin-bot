@@ -19,6 +19,10 @@ import org.springframework.web.context.WebApplicationContext;
 @ActiveProfiles(profiles = "test")
 @IntegrationTest("server.port:0")
 public abstract class IntegrationBase {
+
+    @Value("${spring.data.rest.basePath}commands/")
+    protected String commandApiPath;
+
     @Value("${local.server.port}")
     protected int port;
 

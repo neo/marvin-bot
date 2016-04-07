@@ -58,7 +58,7 @@ public class ExternalApiLoadTest extends IntegrationBase {
                 contentType(ContentType.JSON).
                 content(getCommand().toString()).
                 when().
-                post("/api/v1/commands/").
+                post(commandApiPath).
                 then().
                 statusCode(SC_CREATED);
     }

@@ -2,24 +2,21 @@ package io.pivotal.singapore.marvin.commands.integrations;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
-
 import edu.emory.mathcs.backport.java.util.Collections;
 import io.pivotal.singapore.marvin.commands.Command;
+import io.pivotal.singapore.marvin.commands.CommandRepository;
+import io.pivotal.singapore.marvin.utils.IntegrationBase;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.hateoas.MediaTypes;
 
 import java.util.Arrays;
 import java.util.Map;
-
-import edu.emory.mathcs.backport.java.util.Collections;
-import io.pivotal.singapore.marvin.commands.Command;
-import io.pivotal.singapore.marvin.commands.CommandRepository;
-import io.pivotal.singapore.marvin.utils.IntegrationBase;
 
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
@@ -49,7 +46,7 @@ public class CommandResourceTest extends IntegrationBase {
         commandRepository.save(new Command("cmd2", "http://localhost/2"));
 
         when().
-                get("/api/v1/commands").
+                get(commandApiPath).
         then().
                 statusCode(SC_OK).
                 contentType(MediaTypes.HAL_JSON_VALUE).
@@ -68,12 +65,12 @@ public class CommandResourceTest extends IntegrationBase {
                 contentType(ContentType.JSON).
                 content(json).
         when().
-                post("/api/v1/commands/").
+                post(commandApiPath).
         then().
                 statusCode(SC_CREATED);
 
         when().
-                get("/api/v1/commands").
+                get(commandApiPath).
         then().
                 body("_embedded.commands.size()", is(1)).
                 body("_embedded.commands[0].name", is("command")).
@@ -90,7 +87,7 @@ public class CommandResourceTest extends IntegrationBase {
                 contentType(ContentType.JSON).
                 content(originalJson.toString()).
         when().
-                post("/api/v1/commands/").
+                post(commandApiPath).
         then().
 
                 statusCode(SC_CREATED);
@@ -103,12 +100,12 @@ public class CommandResourceTest extends IntegrationBase {
                 contentType(ContentType.JSON).
                 content(newJson.toString()).
         when().
-                post("/api/v1/commands/").
+                post(commandApiPath).
         then().
                 statusCode(SC_CREATED);
 
         when().
-                get("/api/v1/commands/").
+                get(commandApiPath).
         then().
                 content("page.totalElements", equalTo(1)).
                 body("_embedded.commands[0].name", is("command")).
@@ -133,7 +130,7 @@ public class CommandResourceTest extends IntegrationBase {
                 contentType(ContentType.JSON).
                 content(json.toString()).
         when().
-                post("/api/v1/commands/").
+                post(commandApiPath).
         then().
                 statusCode(SC_CREATED).
         extract().
@@ -170,7 +167,7 @@ public class CommandResourceTest extends IntegrationBase {
             contentType(ContentType.JSON).
             content(commandJson.toString()).
         when().
-            post("/api/v1/commands/").
+            post(commandApiPath).
         then().
             statusCode(SC_BAD_REQUEST).
             body("errors[0].property", is("subCommands[0].arguments")).
@@ -187,7 +184,7 @@ public class CommandResourceTest extends IntegrationBase {
                 contentType(ContentType.JSON).
                 content(badJson).
         when().
-                post("/api/v1/commands/").
+                post(commandApiPath).
         then().log().all().
                 statusCode(SC_BAD_REQUEST).
                 body("error.message", startsWith(badJsonErrorMessage)).
@@ -205,13 +202,13 @@ public class CommandResourceTest extends IntegrationBase {
             contentType(ContentType.JSON).
             content(command.toString()).
         when().
-            post("/api/v1/commands/").
+            post(commandApiPath).
         then().
             statusCode(SC_BAD_REQUEST).
             body("errors[0].property", is("subCommands[0].name")).
             body("errors[0].message", is("Name can't be empty"));
     }
-    
+
     // TODO: Add test for disallowed HTTP Methods
 
     private JSONObject getCommand() {
