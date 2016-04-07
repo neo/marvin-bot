@@ -1,0 +1,14 @@
+---
+resources:
+- name: marvin-source
+  type: git
+  source:
+    uri: https://github.com/pivotal-sg/marvin-bot.git
+
+jobs:
+- name: marvin-unit
+  public: true
+  plan:
+  - get: marvin-source
+  - task: marvin-unit-test
+    file: marvin-source/ci/marvin-unit.yml
