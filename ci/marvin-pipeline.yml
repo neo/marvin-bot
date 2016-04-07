@@ -10,5 +10,6 @@ jobs:
   public: true
   plan:
   - get: marvin-source
+    trigger: true
   - task: marvin-unit-test
     file: marvin-source/ci/tasks/unit.yml
