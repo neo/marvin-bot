@@ -1,4 +1,4 @@
-package io.pivotal.singapore.services.commands;
+package io.pivotal.singapore.marvin.commands;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.netflix.hystrix.HystrixCommand;
