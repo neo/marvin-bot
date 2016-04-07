@@ -211,6 +211,8 @@ public class CommandResourceTest extends IntegrationBase {
             body("errors[0].property", is("subCommands[0].name")).
             body("errors[0].message", is("Name can't be empty"));
     }
+    
+    // TODO: Add test for disallowed HTTP Methods
 
     private JSONObject getCommand() {
         return new JSONObject()
