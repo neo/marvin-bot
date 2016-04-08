@@ -7,12 +7,8 @@ import java.util.Map;
 import java.util.Optional;
 
 public class RemoteApiServiceResponse {
-    @Getter
-    @Setter
-    String defaultResponseSuccess;
-    @Getter
-    @Setter
-    String defaultResponseFailure;
+    @Getter @Setter String defaultResponseSuccess;
+    @Getter @Setter String defaultResponseFailure;
     private Boolean success;
     @Getter private Map<String, String> body;
 
