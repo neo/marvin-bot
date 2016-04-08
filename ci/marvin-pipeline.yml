@@ -24,8 +24,10 @@ jobs:
     file: marvin-source/ci/tasks/unit.yml
   - put: marvin-release
     params:
-      name: marvin-source/build/libs/*.jar
-      tag: marvin-source/build/libs/release-tag
+      name: marvin-release/release-tag
+      tag: marvin-release/release-tag
+      globs:
+        - marvin-release/marvin-0.0.1-SNAPSHOT.jar
 
 - name: integration
   public: true

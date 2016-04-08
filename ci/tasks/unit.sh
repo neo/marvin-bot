@@ -6,6 +6,7 @@ gosu postgres pg_ctl -D $PGDATA start
 
 cd marvin-source
 
-./gradlew test &&
+ ./gradlew test &&
     ./gradlew assemble &&
-    echo ${BUILD_ID}_${BUILD_NAME}_${BUILD_JOB_NAME} > build/libs/release-tag
+    cp -v build/libs/marvin-*.jar ../marvin-release/ &&
+    echo ${BUILD_ID}_${BUILD_NAME}_${BUILD_JOB_NAME} > ../marvin-release/release-tag
