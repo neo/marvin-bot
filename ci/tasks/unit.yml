@@ -9,8 +9,6 @@ image_resource:
 
 inputs:
   - name: marvin-source
-outputs:
-  - name:  marvin-build
 
 run:
   path: marvin-source/ci/tasks/unit.sh

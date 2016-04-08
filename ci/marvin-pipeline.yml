@@ -8,6 +8,11 @@ resources:
   type: git
   source:
     uri: https://github.com/pivotal-sg/milliways.git
+- name: marvin-release
+  type: github-release
+  source:
+    user: alanyjw
+    repository: https://github.com/pivotal-sg/marvin-bot.git
 
 jobs:
 - name: unit
@@ -17,10 +22,19 @@ jobs:
     trigger: true
   - task: marvin-unit-test
     file: marvin-source/ci/tasks/unit.yml
+  - put: marvin-release
+    params:
+      name: marvin-source/build/libs/*.jar
+      tag: marvin-source/build/libs/release-tag
+
 - name: integration
   public: true
   plan:
-  - get: milliways-source
-    trigger: true
-  - task: marvin-integration-test
-    file: milliways-source/ci/tasks/integration.yml
+    - aggregate:
+      - get: milliways-source
+        trigger: true
+      - get: marvin-release
+        trigger: true
+        passed: [unit]
+    - task: marvin-integration-test
+      file: milliways-source/ci/tasks/integration.yml

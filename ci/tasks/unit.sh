@@ -8,4 +8,4 @@ cd marvin-source
 
 ./gradlew test &&
     ./gradlew assemble &&
-    cp -v build/libs/marvin-*.jar ../marvin-build/
+    echo ${BUILD_ID}_${BUILD_NAME}_${BUILD_JOB_NAME} > build/libs/release-tag
