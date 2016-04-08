@@ -44,21 +44,15 @@ import static org.springframework.test.web.servlet.setup.MockMvcBuilders.webAppC
 public class SlackControllerTest {
 
     public static class SlackControllerIntegration extends IntegrationBase {
-        @Before
-        public void setUp() throws Exception {
-            mockMvc = webAppContextSetup(wac).build();
-        }
-
         @Test
-        public void testHelloWorld() throws Exception {
-            mockMvc.perform(get("/")
+        public void wiring() throws Exception {
+            webAppContextSetup(wac)
+                .build()
+                .perform(get("/")
                 .param("token", SLACK_TOKEN)
                 .param("text", "")
-                .param("team_id", "pivotal.io")
-                .param("user_name", "bandersson")
             ).andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
-                .andExpect(content().json("{\"response_type\":\"ephemeral\",\"text\":\"This will all end in tears.\"}"));
+                .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE));
         }
     }
 
