@@ -11,8 +11,9 @@ resources:
 - name: marvin-release
   type: github-release
   source:
-    user: alanyjw
-    repository: https://github.com/pivotal-sg/marvin-bot.git
+    user: pivotal-sg
+    repository: marvin-bot
+    access_token: {{GIT_ACCESS_TOKEN}}
 
 jobs:
 - name: unit
