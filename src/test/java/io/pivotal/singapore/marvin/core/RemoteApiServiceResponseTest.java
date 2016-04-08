@@ -105,7 +105,7 @@ public class RemoteApiServiceResponseTest {
             ObjectMapper mapper = new ObjectMapper();
             HashMap<String, String> responseBody = mapper.readValue(json, HashMap.class);
 
-            subject = new RemoteApiServiceResponse(true, responseBody);
+            subject = new RemoteApiServiceResponse(true, responseBody, null, null);
 
             assertThat(subject.getMessage(), is(equalTo(
                 "{errors=[{entity=CalendarEvent, message=The Event/Date field is not valid, " +

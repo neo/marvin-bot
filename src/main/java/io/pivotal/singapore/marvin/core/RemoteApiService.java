@@ -17,16 +17,12 @@ public class RemoteApiService {
     RestTemplate restTemplate;
 
     public RemoteApiServiceResponse call(ICommand command, Map params) {
-        return call(command.getMethod(), command.getEndpoint(), params);
-    }
-
-    private RemoteApiServiceResponse call(RequestMethod method, String endpoint, Map params) {
-        if(method == null) {
+        if(command.getMethod() == null) {
             throw new IllegalArgumentException("HTTP method was not defined by the command provider");
         }
-        RemoteCommand remoteCommand = new RemoteCommand(restTemplate, method, endpoint, params);
+        RemoteCommand remoteCommand = new RemoteCommand(restTemplate, command.getMethod(), command.getEndpoint(), params);
         Map<String, String> response = remoteCommand.execute();
 
-        return new RemoteApiServiceResponse(remoteCommand.isSuccessfulExecution(), response);
+        return new RemoteApiServiceResponse(remoteCommand.isSuccessfulExecution(), response, command.getDefaultResponseSuccess(), command.getDefaultResponseFailure());
     }
 }

@@ -16,10 +16,6 @@ public class RemoteApiServiceResponse {
     private Boolean success;
     @Getter private Map<String, String> body;
 
-    public RemoteApiServiceResponse(Boolean successful, Map<String, String> body) {
-        this(successful, body, null, null);
-    }
-
     public RemoteApiServiceResponse(Boolean successful, Map<String, String> body, String defaultResponseSuccess, String defaultResponseFailure) {
         this.success = successful;
         this.body = body;
