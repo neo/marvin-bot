@@ -38,9 +38,9 @@ public class RemoteCommand extends HystrixCommand<Map<String, String>> {
     protected Map<String, String> run() {
         switch (method) {
             case POST:
-                return restTemplate.postForObject(endpoint, params, HashMap.class);
+                return restTemplate.postForObject(endpoint, params, HashMap.class, params);
             case GET:
-                return restTemplate.getForObject(buildUri(endpoint, params), HashMap.class);
+                return restTemplate.getForObject(buildUri(endpoint, params), HashMap.class, params);
             case PUT:
                 return exchangeForObject(HttpMethod.PUT, endpoint, params);
             case DELETE:
@@ -76,7 +76,7 @@ public class RemoteCommand extends HystrixCommand<Map<String, String>> {
 
         HttpEntity<Map<String, String>> entity = new HttpEntity<>(params, headers);
 
-        return restTemplate.exchange(endpoint, method, entity, HashMap.class).getBody();
+        return restTemplate.exchange(endpoint, method, entity, HashMap.class, (HashMap<String, String>) params) .getBody();
     }
 
     private String buildUri(String endpoint, Map<String, String> arguments) {
