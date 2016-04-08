@@ -1,9 +1,11 @@
 #!/bin/sh -xe
 
-export TERM=vt100
+export TERM=xterm
 gosu postgres pg_ctl -D $PGDATA start
 
 
 cd marvin-source
 
-./gradlew test
+./gradlew test &&
+    ./gradlew assemble &&
+    cp -v build/libs/marvin-*.jar ../marvin-build/

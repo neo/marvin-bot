@@ -4,6 +4,10 @@ resources:
   type: git
   source:
     uri: https://github.com/pivotal-sg/marvin-bot.git
+- name: milliways-source
+  type: git
+  source:
+    uri: https://github.com/pivotal-sg/milliways.git
 
 jobs:
 - name: unit
@@ -13,3 +17,10 @@ jobs:
     trigger: true
   - task: marvin-unit-test
     file: marvin-source/ci/tasks/unit.yml
+- name: integration
+  public: true
+  plan:
+  - get: milliways-source
+    trigger: true
+  - task: marvin-integration-test
+    file: milliways-source/ci/tasks/integration.yml
