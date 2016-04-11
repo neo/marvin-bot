@@ -34,6 +34,16 @@ resources:
     space: {{CF_SPACE}}
     skip_cert_check: false
 
+- name: milliways-cf-deploy
+  type: cf
+  source:
+    api: https://api.run.pivotal.io
+    username: {{CF_USERNAME}}
+    password: {{CF_PASSWORD}}
+    organization: {{CF_ORG}}
+    space: {{CF_SPACE}}
+    skip_cert_check: false
+
 jobs:
 - name: unit
   public: true
