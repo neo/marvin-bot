@@ -4,7 +4,7 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: marvin-docker-image/repository
+    repository: pivotalsg/marvin
 
 inputs:
   - name: marvin-source
