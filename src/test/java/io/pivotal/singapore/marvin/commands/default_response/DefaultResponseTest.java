@@ -4,6 +4,7 @@ import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.utils.a;
 import org.junit.Test;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -87,6 +88,21 @@ public class DefaultResponseTest {
             DefaultResponse
                 .from(json)
                 .getMessage("success")
+        );
+    }
+
+    @Test
+    public void toMap() {
+        DefaultResponse defaultResponse = a
+            .defaultResponse
+            .w("success", "I'm a success message")
+            .build();
+
+        Map expected = Collections.singletonMap("success", "I'm a success message");
+
+        assertEquals(
+            expected,
+            defaultResponse.toMap()
         );
     }
 }

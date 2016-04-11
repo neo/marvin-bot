@@ -48,6 +48,10 @@ public class DefaultResponse {
         }
     }
 
+    public Map<String, String> toMap() {
+        return responses;
+    }
+
     public DefaultResponse putMessage(String key, String value) {
         this.responses.put(key, value);
 
