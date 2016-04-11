@@ -7,6 +7,7 @@ resources:
     ignore_paths:
     - build.gradle
     - gradle*
+    - ci/Dockerfiles/
 
 - name: marvin-build-gradle-dockerfiles
   type: git
@@ -15,7 +16,7 @@ resources:
     paths:
     - build.gradle
     - gradle*
-    - ci/Dockerfiles/**/*
+    - ci/Dockerfiles/
 
 - name: milliways-source
   type: git
@@ -59,16 +60,21 @@ resources:
 - name: marvin-docker-image
   type: docker-image
   source:
-    repository: pivotalsg/marvin-base
+    repository: pivotalsg/marvin
+    email: {{DOCKER_EMAIL}}
+    username: {{DOCKER_USERNAME}}
+    password: {{DOCKER_PASSWORD}}
 
 jobs:
 - name: marvin-build-docker-image
   public: true
   plan:
   - get: marvin-build-gradle-dockerfiles
+    trigger: true
   - put: marvin-docker-image
     params:
       build: marvin-build-gradle-dockerfiles
+      dockerfile: marvin-build-gradle-dockerfiles/ci/Dockerfiles/Dockerfile
 
 - name: unit
   public: true
