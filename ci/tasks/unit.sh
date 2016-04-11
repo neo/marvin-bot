@@ -9,4 +9,4 @@ cd marvin-source
  ./gradlew test &&
     ./gradlew assemble &&
     cp -v build/libs/marvin-*.jar ../marvin-release/ &&
-    echo ${BUILD_ID}_${BUILD_NAME}_${BUILD_JOB_NAME} > ../marvin-release/release-tag
+    date "+%Y%m%d%H%M%S" > ../marvin-release/release-tag
