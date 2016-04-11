@@ -17,7 +17,7 @@ import static org.junit.Assert.*;
 
 @RunWith(Enclosed.class)
 public class RemoteApiServiceResponseTest {
-    protected final Map<String, String> responseBody = new HashMap<>();
+    protected final Map responseBody = new HashMap<>();
     protected RemoteApiServiceResponse subject;
 
     protected String defaultResponseSuccess;
@@ -88,6 +88,15 @@ public class RemoteApiServiceResponseTest {
             responseBody.put("name", userName);
 
             assertThat(subject.getMessage(), is(equalTo("Marvin says hi to Jarvis.")));
+        }
+
+        @Test
+        public void getInterpolatedMessageWithBoolean() throws Exception {
+            subject.setDefaultResponseSuccess("Can you handle the truth? {truthy}.");
+
+            responseBody.put("truthy", false);
+
+            assertThat(subject.getMessage(), is(equalTo("Can you handle the truth? false.")));
         }
 
         @Test
