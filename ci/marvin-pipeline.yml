@@ -4,16 +4,28 @@ resources:
   type: git
   source:
     uri: https://github.com/pivotal-sg/marvin-bot.git
+
 - name: milliways-source
   type: git
   source:
     uri: https://github.com/pivotal-sg/milliways.git
+
 - name: marvin-release
   type: github-release
   source:
     user: pivotal-sg
     repository: marvin-bot
     access_token: {{GIT_ACCESS_TOKEN}}
+
+- name: marvin-cf-deploy
+  type: cf
+  source:
+    api: https://api.run.pivotal.io
+    username: {{CF_USERNAME}}
+    password: {{CF_PASSWORD}}
+    organization: {{CF_ORG}}
+    space: {{CF_SPACE}}
+    skip_cert_check: false
 
 jobs:
 - name: unit
@@ -28,7 +40,8 @@ jobs:
       name: marvin-release/release-tag
       tag: marvin-release/release-tag
       globs:
-        - marvin-release/marvin-0.0.1-SNAPSHOT.jar
+      - marvin-release/marvin-0.0.1-SNAPSHOT.jar
+      - marvin-release/manifest.yml
 
 - name: integration
   public: true
@@ -41,3 +54,14 @@ jobs:
         passed: [unit]
     - task: marvin-integration-test
       file: milliways-source/ci/tasks/integration.yml
+
+- name: deploy-marvin
+  public: true
+  plan:
+    - get: marvin-release
+      trigger: true
+      passed: [integration]
+    - put: marvin-cf-deploy
+      params:
+        manifest: marvin-release/manifest.yml
+        path: marvin-release/marvin-0.0.1-SNAPSHOT.jar
