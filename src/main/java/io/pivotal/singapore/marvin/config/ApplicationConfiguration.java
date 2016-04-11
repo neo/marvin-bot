@@ -1,4 +1,4 @@
-package io.pivotal.singapore.config;
+package io.pivotal.singapore.marvin.config;
 
 import org.apache.http.client.HttpClient;
 import org.apache.http.impl.client.HttpClients;
