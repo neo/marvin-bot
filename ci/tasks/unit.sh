@@ -4,6 +4,9 @@ export TERM=xterm
 gosu postgres pg_ctl -D $PGDATA start
 
 
+ls -al marvin-docker-image
+ls -al marvin-docker-image/repository
+
 cd marvin-source
 
  ./gradlew test &&
