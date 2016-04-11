@@ -209,6 +209,27 @@ public class CommandResourceTest extends IntegrationBase {
             body("errors[0].message", is("Name can't be empty"));
     }
 
+    @Test
+    public void addMoreDefaultResponses() {
+        JSONObject command = getCommand();
+        JSONObject subCommand = getSubCommand();
+        JSONObject defaultResponse = new JSONObject()
+            .put("success", "Fo sho")
+            .put("successType", "channel");
+        subCommand.put("defaultResponse", defaultResponse);
+        command.put("subCommands", new JSONArray().put(subCommand));
+
+        given().
+            log().all().
+            contentType(ContentType.JSON).
+            content(command.toString()).
+        when().
+            post(commandApiPath).
+        then().
+            statusCode(SC_CREATED).
+            body("subCommands[0].defaultResponse.success", is("Fo sho"));
+    }
+
     // TODO: Add test for disallowed HTTP Methods
 
     private JSONObject getCommand() {

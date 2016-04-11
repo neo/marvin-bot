@@ -1,6 +1,7 @@
 package io.pivotal.singapore.marvin.commands;
 
 import io.pivotal.singapore.marvin.commands.arguments.Arguments;
+import io.pivotal.singapore.marvin.commands.default_response.DefaultResponse;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -51,6 +52,10 @@ public class Command implements ICommand {
 
     public Arguments getArguments(){
         return new Arguments();
+    }
+
+    public DefaultResponse getDefaultResponse() {
+        return null;
     }
 
     @Override
