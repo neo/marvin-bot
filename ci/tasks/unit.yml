@@ -4,11 +4,11 @@ platform: linux
 image_resource:
   type: docker-image
   source:
-    repository: marvin-build-docker-image
+    repository: marvin-docker-image
 
 inputs:
   - name: marvin-source
-  - name: marvin-build-docker-image
+  - name: marvin-docker-image
 
 outputs:
   - name: marvin-release
