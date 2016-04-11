@@ -61,7 +61,9 @@ dependencies {
 
     task resolveAllDependencies {
         doLast {
-            configurations.all { it.resolve() }
+            configurations.all {
+                it.resolve()
+            }
         }
     }
 }
