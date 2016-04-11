@@ -2,8 +2,10 @@ package io.pivotal.singapore.marvin.utils;
 
 import io.pivotal.singapore.marvin.commands.default_response.DefaultResponse;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 public class a {
     public static DefaultResponseBuilder defaultResponse = new DefaultResponseBuilder();
@@ -20,9 +22,11 @@ public class a {
         }
 
         public DefaultResponseBuilder w(String key, String value) {
-            responses.put(key, value);
+            Map<String, String> resp = new HashMap<>();
+            resp.putAll(responses);
+            resp.put(key, value);
 
-            return new DefaultResponseBuilder(responses);
+            return new DefaultResponseBuilder(resp);
         }
 
         public DefaultResponse build() {
