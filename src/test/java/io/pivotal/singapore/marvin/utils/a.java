@@ -1,7 +1,7 @@
 package io.pivotal.singapore.marvin.utils;
 
-import io.pivotal.singapore.marvin.commands.default_response.DefaultResponse;
 import io.pivotal.singapore.marvin.commands.RemoteCommand;
+import io.pivotal.singapore.marvin.commands.default_responses.DefaultResponses;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
@@ -33,8 +33,10 @@ public class a {
             return new DefaultResponseBuilder(resp);
         }
 
-        public DefaultResponse build() {
-            return DefaultResponse.from(responses);
+        public DefaultResponses build() {
+            return DefaultResponses.from(responses);
+        }
+    }
 
     public static class RemoteCommandBuilder {
         private RestTemplate restTemplate = new RestTemplate();

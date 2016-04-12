@@ -1,4 +1,4 @@
-package io.pivotal.singapore.marvin.commands.default_response;
+package io.pivotal.singapore.marvin.commands.default_responses;
 
 import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.utils.a;
@@ -12,7 +12,7 @@ import java.util.Optional;
 import static org.junit.Assert.assertEquals;
 
 
-public class DefaultResponseTest {
+public class DefaultResponsesTest {
 
     @Test
     public void messagePutCanBeReadBack() {
@@ -59,15 +59,15 @@ public class DefaultResponseTest {
         inputMap.put("success", "I'm a success message");
         inputMap.put("successType", MessageType.channel.toString());
 
-        DefaultResponse defaultResponse = DefaultResponse.from(inputMap);
+        DefaultResponses defaultResponses = DefaultResponses.from(inputMap);
 
-        assertEquals(Optional.of("I'm a success message"), defaultResponse.getMessage("success"));
-        assertEquals(Optional.of(MessageType.channel), defaultResponse.getMessageType("success"));
+        assertEquals(Optional.of("I'm a success message"), defaultResponses.getMessage("success"));
+        assertEquals(Optional.of(MessageType.channel), defaultResponses.getMessageType("success"));
     }
 
     @Test
     public void toJson() {
-        DefaultResponse defaultResponse = a
+        DefaultResponses defaultResponses = a
             .defaultResponse
             .w("success", "I'm a success message")
             .w("successType", "channel")
@@ -75,7 +75,7 @@ public class DefaultResponseTest {
 
         assertEquals(
             "{\"success\":\"I'm a success message\",\"successType\":\"channel\"}",
-            defaultResponse.toJson()
+            defaultResponses.toJson()
         );
     }
 
@@ -85,7 +85,7 @@ public class DefaultResponseTest {
 
         assertEquals(
             Optional.of("I'm a success message"),
-            DefaultResponse
+            DefaultResponses
                 .from(json)
                 .getMessage("success")
         );
@@ -93,7 +93,7 @@ public class DefaultResponseTest {
 
     @Test
     public void toMap() {
-        DefaultResponse defaultResponse = a
+        DefaultResponses defaultResponses = a
             .defaultResponse
             .w("success", "I'm a success message")
             .build();
@@ -102,7 +102,7 @@ public class DefaultResponseTest {
 
         assertEquals(
             expected,
-            defaultResponse.toMap()
+            defaultResponses.toMap()
         );
     }
 }

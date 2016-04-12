@@ -213,10 +213,10 @@ public class CommandResourceTest extends IntegrationBase {
     public void addMoreDefaultResponses() {
         JSONObject command = getCommand();
         JSONObject subCommand = getSubCommand();
-        JSONObject defaultResponse = new JSONObject()
+        JSONObject defaultResponses = new JSONObject()
             .put("success", "Fo sho")
             .put("successType", "channel");
-        subCommand.put("defaultResponse", defaultResponse);
+        subCommand.put("defaultResponses", defaultResponses);
         command.put("subCommands", new JSONArray().put(subCommand));
 
         given().
@@ -227,7 +227,7 @@ public class CommandResourceTest extends IntegrationBase {
             post(commandApiPath).
         then().
             statusCode(SC_CREATED).
-            body("subCommands[0].defaultResponse.success", is("Fo sho"));
+            body("subCommands[0].defaultResponses.success", is("Fo sho"));
     }
 
     // TODO: Add test for disallowed HTTP Methods

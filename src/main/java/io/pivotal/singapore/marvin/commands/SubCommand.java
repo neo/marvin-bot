@@ -2,14 +2,14 @@ package io.pivotal.singapore.marvin.commands;
 
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentListConverter;
 import io.pivotal.singapore.marvin.commands.arguments.Arguments;
 import io.pivotal.singapore.marvin.commands.arguments.serializers.ArgumentsDeserializerJson;
 import io.pivotal.singapore.marvin.commands.arguments.serializers.ArgumentsSerializerJson;
-import io.pivotal.singapore.marvin.commands.arguments.ArgumentListConverter;
-import io.pivotal.singapore.marvin.commands.default_response.DefaultResponse;
-import io.pivotal.singapore.marvin.commands.default_response.serializers.DefaultResponseConverter;
-import io.pivotal.singapore.marvin.commands.default_response.serializers.DefaultResponseDeserializerJson;
-import io.pivotal.singapore.marvin.commands.default_response.serializers.DefaultResponseSerializerJson;
+import io.pivotal.singapore.marvin.commands.default_responses.DefaultResponses;
+import io.pivotal.singapore.marvin.commands.default_responses.serializers.DefaultResponsesConverter;
+import io.pivotal.singapore.marvin.commands.default_responses.serializers.DefaultResponsesDeserializerJson;
+import io.pivotal.singapore.marvin.commands.default_responses.serializers.DefaultResponsesSerializerJson;
 import lombok.Data;
 import lombok.Getter;
 import lombok.Setter;
@@ -37,11 +37,10 @@ public class SubCommand implements ICommand {
     @JsonSerialize(converter = ArgumentsSerializerJson.class)
     @Getter @Setter private Arguments arguments = new Arguments();
 
-    @Column(name = "default_responses")
-    @Convert(converter = DefaultResponseConverter.class)
-    @JsonDeserialize(converter = DefaultResponseDeserializerJson.class)
-    @JsonSerialize(converter = DefaultResponseSerializerJson.class)
-    @Getter @Setter private DefaultResponse defaultResponse = new DefaultResponse();
+    @Convert(converter = DefaultResponsesConverter.class)
+    @JsonDeserialize(converter = DefaultResponsesDeserializerJson.class)
+    @JsonSerialize(converter = DefaultResponsesSerializerJson.class)
+    @Getter @Setter private DefaultResponses defaultResponses = new DefaultResponses();
 
     @Override
     public boolean requiresEndpoint() {

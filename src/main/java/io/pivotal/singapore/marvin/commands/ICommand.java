@@ -1,7 +1,7 @@
 package io.pivotal.singapore.marvin.commands;
 
 import io.pivotal.singapore.marvin.commands.arguments.Arguments;
-import io.pivotal.singapore.marvin.commands.default_response.DefaultResponse;
+import io.pivotal.singapore.marvin.commands.default_responses.DefaultResponses;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 public interface ICommand {
@@ -14,7 +14,7 @@ public interface ICommand {
 
     Arguments getArguments();
 
-    DefaultResponse getDefaultResponse();
+    DefaultResponses getDefaultResponses();
 
     boolean requiresEndpoint();
 

@@ -1,4 +1,4 @@
-package io.pivotal.singapore.marvin.commands.default_response;
+package io.pivotal.singapore.marvin.commands.default_responses;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -9,19 +9,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 
-public class DefaultResponse {
+public class DefaultResponses {
     private Map<String, String> responses = new HashMap<>();
 
-    public DefaultResponse() {
+    public DefaultResponses() {
     }
 
-    public static DefaultResponse from(Map<String, String> responses) {
-        return new DefaultResponse()
+    public static DefaultResponses from(Map<String, String> responses) {
+        return new DefaultResponses()
             .putAllResponses(responses);
     }
 
     @SuppressWarnings("unchecked")
-    public static DefaultResponse from(String json) {
+    public static DefaultResponses from(String json) {
         ObjectMapper mapper = new ObjectMapper();
         Map<String, String> hash = new HashMap<>();
 
@@ -32,9 +32,9 @@ public class DefaultResponse {
         }
 
         if (hash != null) {
-            return DefaultResponse.from(hash);
+            return DefaultResponses.from(hash);
         } else {
-            return new DefaultResponse();
+            return new DefaultResponses();
         }
     }
 
@@ -52,7 +52,7 @@ public class DefaultResponse {
         return responses;
     }
 
-    public DefaultResponse putMessage(String key, String value) {
+    public DefaultResponses putMessage(String key, String value) {
         this.responses.put(key, value);
 
         return this;
@@ -62,11 +62,11 @@ public class DefaultResponse {
         return Optional.ofNullable(responses.get(key));
     }
 
-    public DefaultResponse putMessageType(String key, MessageType messageType) {
+    public DefaultResponses putMessageType(String key, MessageType messageType) {
         return this.putMessageType(key, String.valueOf(messageType));
     }
 
-    public DefaultResponse putMessageType(String key, String messageType) {
+    public DefaultResponses putMessageType(String key, String messageType) {
         this.responses.put(String.format("%sType", key), messageType);
 
         return this;
@@ -80,7 +80,7 @@ public class DefaultResponse {
         }
     }
 
-    private DefaultResponse putAllResponses(Map<String, String> responses) {
+    private DefaultResponses putAllResponses(Map<String, String> responses) {
         this.responses.putAll(responses);
 
         return this;
