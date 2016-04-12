@@ -10,6 +10,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static org.mockito.Mockito.mock;
+
 public class a {
     public static DefaultResponseBuilder defaultResponse = new DefaultResponseBuilder();
     public static RemoteCommandBuilder remoteCommand = new RemoteCommandBuilder();
@@ -35,6 +37,25 @@ public class a {
 
         public DefaultResponses build() {
             return DefaultResponses.from(responses);
+        }
+    }
+
+    public static class RemoteApiServiceBuilder {
+        private RestTemplate restTemplate = mock(RestTemplate.class);
+
+        public RemoteApiServiceBuilder() {
+        }
+
+        public RemoteApiServiceBuilder(RestTemplate restTemplate) {
+            this.restTemplate = restTemplate;
+        }
+
+        public RemoteApiServiceBuilder w(RestTemplate restTemplate) {
+            return new RemoteApiServiceBuilder(restTemplate);
+        }
+
+        public RemoteApiService build() {
+            return new RemoteApiService(restTemplate);
         }
     }
 
