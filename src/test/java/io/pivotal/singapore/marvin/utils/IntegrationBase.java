@@ -1,7 +1,6 @@
 package io.pivotal.singapore.marvin.utils;
 
-import io.pivotal.singapore.MarvinApplication;
-import io.pivotal.singapore.marvin.commands.CommandRepository;
+import io.pivotal.singapore.marvin.MarvinApplication;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;

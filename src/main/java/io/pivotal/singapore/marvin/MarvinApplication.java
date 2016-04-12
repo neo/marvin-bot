@@ -1,4 +1,4 @@
-package io.pivotal.singapore;
+package io.pivotal.singapore.marvin;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
