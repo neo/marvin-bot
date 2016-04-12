@@ -8,7 +8,6 @@ image_resource:
 
 inputs:
   - name: marvin-source
-  - name: marvin-docker-image
 
 outputs:
   - name: marvin-release
