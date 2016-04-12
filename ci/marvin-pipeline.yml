@@ -4,10 +4,6 @@ resources:
   type: git
   source:
     uri: https://github.com/pivotal-sg/marvin-bot.git
-    ignore_paths:
-    - build.gradle
-    - gradle*
-    - ci/Dockerfiles/
 
 - name: marvin-build-gradle-dockerfiles
   type: git
