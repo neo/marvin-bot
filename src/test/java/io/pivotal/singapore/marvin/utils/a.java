@@ -4,6 +4,7 @@ import io.pivotal.singapore.marvin.commands.Command;
 import io.pivotal.singapore.marvin.commands.RemoteCommand;
 import io.pivotal.singapore.marvin.commands.default_responses.DefaultResponses;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
+import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,6 +17,7 @@ public class a {
     public static DefaultResponseBuilder defaultResponse = new DefaultResponseBuilder();
     public static CommandBuilder command = new CommandBuilder();
     public static RemoteApiServiceBuilder remoteApiService = new RemoteApiServiceBuilder();
+    public static RemoteApiServiceResponseBuilder remoteApiServiceResponse = new RemoteApiServiceResponseBuilder();
     public static RemoteCommandBuilder remoteCommand = new RemoteCommandBuilder();
 
     public static class DefaultResponseBuilder {
@@ -95,6 +97,45 @@ public class a {
 
         public RemoteApiService build() {
             return new RemoteApiService(restTemplate);
+        }
+    }
+
+    public static class RemoteApiServiceResponseBuilder {
+        private Boolean success = true;
+        private Map<String, String> body = new HashMap<>();
+        private DefaultResponses defaultResponses = new DefaultResponses();
+
+        public RemoteApiServiceResponseBuilder() {
+        }
+
+        public RemoteApiServiceResponseBuilder(Boolean success, Map<String, String> body, DefaultResponses defaultResponses) {
+            this.defaultResponses = defaultResponses;
+            this.body = body;
+            this.success = success;
+        }
+
+        public RemoteApiServiceResponseBuilder w(Boolean success) {
+            return new RemoteApiServiceResponseBuilder(success, body, defaultResponses);
+        }
+
+        public RemoteApiServiceResponseBuilder w(Map<String, String> body) {
+            return new RemoteApiServiceResponseBuilder(success, body, defaultResponses);
+        }
+
+        public RemoteApiServiceResponseBuilder w(String key, String value) {
+            Map<String, String> newBody = new HashMap<>();
+            newBody.putAll(body);
+            newBody.put(key, value);
+
+            return new RemoteApiServiceResponseBuilder(success, newBody, defaultResponses);
+        }
+
+        public RemoteApiServiceResponseBuilder w(DefaultResponses defaultResponses) {
+            return new RemoteApiServiceResponseBuilder(success, body, defaultResponses);
+        }
+
+        public RemoteApiServiceResponse build() {
+            return new RemoteApiServiceResponse(success, body, defaultResponses);
         }
     }
 

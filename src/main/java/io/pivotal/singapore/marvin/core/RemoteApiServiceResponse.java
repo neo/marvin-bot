@@ -1,5 +1,7 @@
 package io.pivotal.singapore.marvin.core;
 
+import io.pivotal.singapore.marvin.commands.ICommand;
+import io.pivotal.singapore.marvin.commands.default_responses.DefaultResponses;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -7,19 +9,42 @@ import java.util.Map;
 import java.util.Optional;
 
 public class RemoteApiServiceResponse {
-    @Getter @Setter String defaultResponseSuccess;
-    @Getter @Setter String defaultResponseFailure;
-    private Boolean success;
+    @Getter @Setter private DefaultResponses defaultResponses;
     @Getter private Map<String, String> body;
+    private Boolean success;
 
+    // To be removed when the defaultResponses are removed from the command/subcommand
+    @Deprecated
     public RemoteApiServiceResponse(Boolean successful, Map<String, String> body, String defaultResponseSuccess, String defaultResponseFailure) {
         this.success = successful;
         this.body = body;
-        this.defaultResponseSuccess = defaultResponseSuccess;
-        this.defaultResponseFailure = defaultResponseFailure;
+        this.defaultResponses = new DefaultResponses();
+        defaultResponses.putMessage("success", defaultResponseSuccess);
+        defaultResponses.putMessage("failure", defaultResponseFailure);
     }
 
-    public Boolean isSuccessful() {
+    // To be removed when the defaultResponses are removed from the command/subcommand
+    @Deprecated
+    RemoteApiServiceResponse(Boolean successful, Map<String, String> body, ICommand command) {
+        this.success = successful;
+        this.body = body;
+        this.defaultResponses = command.getDefaultResponses();
+
+        if (command.getDefaultResponseSuccess() != null) {
+            this.defaultResponses.putMessage("success", command.getDefaultResponseSuccess());
+        }
+        if (command.getDefaultResponseFailure() != null) {
+            this.defaultResponses.putMessage("failure", command.getDefaultResponseFailure());
+        }
+    }
+
+    public RemoteApiServiceResponse(Boolean success, Map<String, String> body, DefaultResponses defaultResponses) {
+        this.body = body;
+        this.success = success;
+        this.defaultResponses = defaultResponses;
+    }
+
+    Boolean isSuccessful() {
         return success;
     }
 
@@ -34,23 +59,37 @@ public class RemoteApiServiceResponse {
     }
 
     public String getMessage() {
-        String message = getBody().getOrDefault("message", getDefaultMessage());
+        if (getBody() == null) {
+            return getDefaultMessage();
+        } else {
+            String message = getBody().getOrDefault("message", getDefaultMessage());
 
-        return interpolate(message);
-    }
-
-    private String getDefaultMessage() {
-        String defaultMessage = getDefaultResponse();
-
-        if (defaultMessage != null) {
-            return defaultMessage;
-        } else { // No default message provided by service, so return the body whatever they sent
-            return getBody().toString();
+            return interpolate(message);
         }
     }
 
-    private String getDefaultResponse() {
+    private String getDefaultMessage() {
+        Optional<String> defaultMessage = getDefaultResponse();
+
+        if (defaultMessage.isPresent()) {
+            return defaultMessage.get();
+        } else { // No default message provided by service, so return the body whatever they sent
+            Map<String, String> body = getBody();
+
+            return body == null ? "" : String.valueOf(body);
+        }
+    }
+
+    private Optional<String> getDefaultResponse() {
         return isSuccessful() ? getDefaultResponseSuccess() : getDefaultResponseFailure();
+    }
+
+    private Optional<String> getDefaultResponseSuccess() {
+        return defaultResponses.getMessage("success");
+    }
+
+    private Optional<String> getDefaultResponseFailure() {
+        return defaultResponses.getMessage("failure");
     }
 
     private String interpolate(String message) {
