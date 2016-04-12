@@ -1,19 +1,21 @@
 package io.pivotal.singapore.marvin.utils;
 
+import io.pivotal.singapore.marvin.commands.Command;
 import io.pivotal.singapore.marvin.commands.RemoteCommand;
 import io.pivotal.singapore.marvin.commands.default_responses.DefaultResponses;
+import io.pivotal.singapore.marvin.core.RemoteApiService;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import static org.mockito.Mockito.mock;
 
 public class a {
     public static DefaultResponseBuilder defaultResponse = new DefaultResponseBuilder();
+    public static CommandBuilder command = new CommandBuilder();
+    public static RemoteApiServiceBuilder remoteApiService = new RemoteApiServiceBuilder();
     public static RemoteCommandBuilder remoteCommand = new RemoteCommandBuilder();
 
     public static class DefaultResponseBuilder {
@@ -37,6 +39,43 @@ public class a {
 
         public DefaultResponses build() {
             return DefaultResponses.from(responses);
+        }
+    }
+
+    public static class CommandBuilder {
+        private String name = "echo";
+        private String endpoint = "http://example.com/api/echo";
+        private DefaultResponses defaultResponses = new DefaultResponses();
+        private RequestMethod method = RequestMethod.POST;
+
+        CommandBuilder() {
+        }
+
+        CommandBuilder(String name, String endpoint, DefaultResponses defaultResponses, RequestMethod method) {
+            this.name = name;
+            this.endpoint = endpoint;
+            this.defaultResponses = defaultResponses;
+            this.method = method;
+        }
+
+        public CommandBuilder w(String name, String endpoint) {
+            return new CommandBuilder(name, endpoint, defaultResponses, method);
+        }
+
+        public CommandBuilder w(DefaultResponses defaultResponses) {
+            return new CommandBuilder(name, endpoint, defaultResponses, method);
+        }
+
+        public CommandBuilder w(RequestMethod method) {
+            return new CommandBuilder(name, endpoint, defaultResponses, method);
+        }
+
+        public Command build() {
+            Command cmd = new Command(name, endpoint);
+            cmd.setDefaultResponses(defaultResponses);
+            cmd.setMethod(method);
+
+            return cmd;
         }
     }
 

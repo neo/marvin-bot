@@ -58,6 +58,8 @@ public class Command implements ICommand {
         return null;
     }
 
+    public void setDefaultResponses(DefaultResponses defaultResponses) { }
+
     @Override
     public boolean requiresEndpoint() {
         return subCommands.isEmpty();
