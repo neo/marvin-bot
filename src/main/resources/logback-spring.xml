@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration debug="false">
+	<springProfile name="development">
+		<include resource="org/springframework/boot/logging/logback/base.xml" />
+		<appender name="JSON" class="ch.qos.logback.core.FileAppender">
+			<filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+				<level>DEBUG</level>
+			</filter>
+			<encoder>
+				<pattern>${FILE_LOG_PATTERN}</pattern>
+			</encoder>
+			<file>${LOG_FILE}.json</file>
+			<encoder class="net.logstash.logback.encoder.LogstashEncoder">
+				<includeCallerInfo>true</includeCallerInfo>
+				<customFields>{"appname":"${pom.artifactId}","version":"${pom.version}"}</customFields>
+			</encoder>
+		</appender>
+		<root level="INFO">
+			<appender-ref ref="CONSOLE" />
+			<!-- Methode 1-->
+			<appender-ref ref="FILE" />
+			<!-- Methode 2 -->
+			<appender-ref ref="JSON" />
+		</root>
+		<logger name="org.springframework.root" level="WARN"/>
+		<logger name="org.springframework.web" level="DEBUG"/>
+		<logger name="org.hibernate" level="ERROR"/>
+		<logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="DEBUG"/>
+	</springProfile>
+</configuration>

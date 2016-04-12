@@ -46,5 +46,5 @@ fabric.properties
 
 build/
 .gradle
-
 config.yml
+logs/*
