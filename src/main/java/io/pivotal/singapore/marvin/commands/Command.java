@@ -1,7 +1,12 @@
 package io.pivotal.singapore.marvin.commands;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import io.pivotal.singapore.marvin.commands.arguments.Arguments;
 import io.pivotal.singapore.marvin.commands.default_responses.DefaultResponses;
+import io.pivotal.singapore.marvin.commands.default_responses.serializers.DefaultResponsesConverter;
+import io.pivotal.singapore.marvin.commands.default_responses.serializers.DefaultResponsesDeserializerJson;
+import io.pivotal.singapore.marvin.commands.default_responses.serializers.DefaultResponsesSerializerJson;
 import lombok.Getter;
 import lombok.Setter;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -54,11 +59,10 @@ public class Command implements ICommand {
         return new Arguments();
     }
 
-    public DefaultResponses getDefaultResponses() {
-        return null;
-    }
-
-    public void setDefaultResponses(DefaultResponses defaultResponses) { }
+    @Convert(converter = DefaultResponsesConverter.class)
+    @JsonDeserialize(converter = DefaultResponsesDeserializerJson.class)
+    @JsonSerialize(converter = DefaultResponsesSerializerJson.class)
+    @Getter @Setter private DefaultResponses defaultResponses = new DefaultResponses();
 
     @Override
     public boolean requiresEndpoint() {
