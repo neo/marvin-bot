@@ -28,5 +28,4 @@
 	<logger name="org.springframework.web" level="DEBUG"/>
 	<logger name="org.hibernate" level="ERROR"/>
 	<logger name="org.springframework.web.filter.CommonsRequestLoggingFilter" level="DEBUG"/>
-	<logger name="org.apache.coyote.http11" level="DEBUG"/>
 </configuration>
