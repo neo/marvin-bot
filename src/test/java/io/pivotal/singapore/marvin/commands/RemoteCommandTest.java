@@ -1,5 +1,6 @@
 package io.pivotal.singapore.marvin.commands;
 
+import io.pivotal.singapore.marvin.utils.a;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.experimental.runners.Enclosed;
@@ -15,23 +16,19 @@ import org.springframework.web.client.RestTemplate;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.core.IsEqual.equalTo;
-import static org.junit.Assert.assertThat;
+import static org.junit.Assert.assertEquals;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withBadRequest;
-import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
+import static org.springframework.test.web.client.response.MockRestResponseCreators.*;
 
 @RunWith(Enclosed.class)
 public class RemoteCommandTest {
 
     abstract static class Base {
         RestTemplate restTemplate;
-        RemoteCommand remoteCommand;
         HashMap<String, String> params;
         MockRestServiceServer mockServer;
-        String endpoint = "http://example.com/";
+        String endpoint = "http://example.com/api/echo";
 
         void setupMockServer(String endpoint, HttpMethod method) {
             mockServer.expect(requestTo(endpoint))
@@ -40,7 +37,7 @@ public class RemoteCommandTest {
         }
 
         void setupMockServerWithPostResponse(DefaultResponseCreator returnResponse) {
-            mockServer.expect(requestTo("http://example.com/"))
+            mockServer.expect(requestTo(endpoint))
                 .andExpect(method(HttpMethod.POST))
                 .andRespond(returnResponse);
         }
@@ -91,13 +88,19 @@ public class RemoteCommandTest {
 
         private void assertSuccessForMethod(HttpMethod method, String endpoint) {
             setupMockServer(endpoint, method);
-
             params.put("id", "42");
-            remoteCommand = new RemoteCommand(restTemplate, RequestMethod.valueOf(method.toString()), "http://example.com/events/{id}/cancel", params);
 
-            Map<String, String> result = remoteCommand.execute();
-
-            assertThat(result.get("status"), is(equalTo("SUCCESS!!!!!!!")));
+            assertEquals(
+                "SUCCESS!!!!!!!",
+                a.remoteCommand
+                    .w(restTemplate)
+                    .w(RequestMethod.valueOf(method.toString()))
+                    .w("http://example.com/events/{id}/cancel")
+                    .w(params)
+                    .build()
+                    .execute()
+                    .get("status")
+            );
         }
     }
 
@@ -106,25 +109,35 @@ public class RemoteCommandTest {
 
         @Test
         public void validJsonResponse() {
-            Map<String, String> result = mockJsonAndDoRequest("{ \"status\" : \"FAILED!!!!!\" }");
-
-            assertThat(result.get("status"), is(equalTo("FAILED!!!!!")));
+            assertEquals(
+                "FAILED!!!!!",
+                mockJsonAndDoRequest("{ \"status\" : \"FAILED!!!!!\" }").get("status")
+            );
         }
 
         @Test
         public void malformedJsonReturnsFullResponse() {
             String jsonBody = "\"status\" : \"FAILED!!!!!\" }";
-            Map<String, String> result = mockJsonAndDoRequest(jsonBody);
 
-            assertThat(result.get("errorBody"), is(equalTo(jsonBody)));
+            assertEquals(
+                jsonBody,
+                mockJsonAndDoRequest(jsonBody)
+                    .get("errorBody")
+            );
         }
 
         @Test
         public void nonJsonResponseReturnsFullResponse() {
             setupMockServerWithPostResponse(withBadRequest().body("FAILED!!!!!"));
 
-            remoteCommand = new RemoteCommand(restTemplate, RequestMethod.POST, endpoint, params);
-            Map<String, String> result = remoteCommand.execute();
+            assertEquals(
+                "FAILED!!!!!",
+                a.remoteCommand.w(restTemplate).w(params).build()
+                    .execute()
+                    .get("errorBody")
+            );
+        }
+
 
             assertThat(result.get("errorBody"), is(equalTo("FAILED!!!!!")));
         }
@@ -135,8 +148,8 @@ public class RemoteCommandTest {
                 .contentType(MediaType.APPLICATION_JSON)
             );
 
-            remoteCommand = new RemoteCommand(restTemplate, RequestMethod.POST, endpoint, params);
-            return remoteCommand.execute();
+            return a.remoteCommand.w(restTemplate).w(params).build()
+                .execute();
         }
     }
 }
