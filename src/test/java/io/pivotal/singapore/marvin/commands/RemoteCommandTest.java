@@ -138,8 +138,19 @@ public class RemoteCommandTest {
             );
         }
 
+        @Test
+        public void remoteGives5xxResponseAndFallbacks() {
+            setupMockServerWithPostResponse(withServerError()
+                .body("<html>whatever</html>")
+                .contentType(MediaType.TEXT_HTML)
+            );
 
-            assertThat(result.get("errorBody"), is(equalTo("FAILED!!!!!")));
+            assertEquals(
+                "The service cannot be reached at this moment. You may wish to try again later.",
+                a.remoteCommand.w(restTemplate).build()
+                    .execute()
+                    .get("message")
+            );
         }
 
         private Map<String, String> mockJsonAndDoRequest(String jsonBody) {

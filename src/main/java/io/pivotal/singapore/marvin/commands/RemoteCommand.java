@@ -64,7 +64,6 @@ public class RemoteCommand extends HystrixCommand<Map<String, String>> {
         } else {
             body = new HashMap<>();
             body.put("message", "The service cannot be reached at this moment. You may wish to try again later.");
-            body.put("message_type", "ephemeral");
         }
 
         return body;
