@@ -12,6 +12,7 @@ public class RegexArgument extends AbstractArgument {
     public RegexArgument() {
     }
 
+    // What is the name argument used for here?
     public RegexArgument(String name, String regex) {
         this.name = name;
         this.pattern = regex;

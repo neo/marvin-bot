@@ -20,6 +20,10 @@ public class DefaultResponses {
             .putAllResponses(responses);
     }
 
+    // This is a double edged sword so use with caution.
+    // You are in essence ignoring the type system.
+    // This is a result of Java's slightly "broken" type system.
+    // It can come back to bite you sometimes.
     @SuppressWarnings("unchecked")
     public static DefaultResponses from(String json) {
         ObjectMapper mapper = new ObjectMapper();

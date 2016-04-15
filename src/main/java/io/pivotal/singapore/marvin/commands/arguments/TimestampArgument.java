@@ -29,6 +29,10 @@ public class TimestampArgument extends AbstractArgument {
         return MACRO_NAME;
     }
 
+    // Because this doesn't have an implementation it makes me think
+    // that the AbstractArgument abstraction is a bit off.
+    // All subclasses should have the same behavior and this would
+    // surprise me.
     @Override
     public void setPattern(String pattern) {
         // do nothing

@@ -1,3 +1,5 @@
+// Packages in Java use camelCase.
+// This would be defaultResponses.
 package io.pivotal.singapore.marvin.commands.default_responses.serializers;
 
 import io.pivotal.singapore.marvin.commands.default_responses.DefaultResponses;

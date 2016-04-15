@@ -1,14 +1,13 @@
 package io.pivotal.singapore.marvin.commands.web;
 
+import io.pivotal.singapore.marvin.commands.Command;
+import io.pivotal.singapore.marvin.commands.CommandRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.rest.core.annotation.HandleBeforeCreate;
 import org.springframework.data.rest.core.annotation.RepositoryEventHandler;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
-
-import io.pivotal.singapore.marvin.commands.Command;
-import io.pivotal.singapore.marvin.commands.CommandRepository;
 
 @Component
 @RepositoryEventHandler

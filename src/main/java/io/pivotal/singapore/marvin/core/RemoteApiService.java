@@ -13,19 +13,22 @@ import java.util.Map;
 @Service
 public class RemoteApiService {
 
-    @Autowired
+//    @Autowired
     RestTemplate restTemplate;
 
-    public RemoteApiService() {
+    @Autowired
+    public RemoteApiService(RestTemplate restTemplate) {
+        this.restTemplate = restTemplate;
     }
-    
+
     public RemoteApiServiceResponse call(ICommand command, Map params) {
         if(command.getMethod() == null) {
             throw new IllegalArgumentException("HTTP method was not defined by the command provider");
         }
-        RemoteCommand remoteCommand = new RemoteCommand(restTemplate, command.getMethod(), command.getEndpoint(), params);
+        RemoteCommand remoteCommand = new RemoteCommand(restTemplate, command, params);
         Map<String, String> response = remoteCommand.execute();
 
+        // Why deprecate this and not just get rid of it?
         return new RemoteApiServiceResponse(
             remoteCommand.isSuccessfulExecution(),
             response,

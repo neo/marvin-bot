@@ -88,6 +88,7 @@ public class Arguments {
         rawCommand = rawCommand.trim();
 
         for (Argument argument : getArguments()) {
+            // Could this return an Argument???
             Pair<Integer, String> match = argument.parse(rawCommand);
             rawCommand = rawCommand.subSequence(match.first, rawCommand.length()).toString().trim();
 

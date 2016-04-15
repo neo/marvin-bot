@@ -3,6 +3,7 @@ package io.pivotal.singapore.marvin.commands.arguments;
 public class ArgumentFactory {
     public static Argument getArgument(String name, String pattern) {
 
+        //
         if (RegexArgument.canParse(pattern)) {
             return new RegexArgument(name, pattern);
         } else if (TimestampArgument.canParse(pattern)) {

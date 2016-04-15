@@ -34,8 +34,19 @@ public class RemoteCommand extends HystrixCommand<Map<String, String>> {
         this.restTemplate = restTemplate;
     }
 
+    public RemoteCommand(RestTemplate restTemplate, ICommand command, Map params) {
+        super(Setter.withGroupKey(groupKey).andCommandKey(HystrixCommandKey.Factory.asKey(command.getEndpoint())));
+        this.params = params;
+        this.endpoint = command.getEndpoint();
+        this.method = command.getMethod();
+        this.restTemplate = restTemplate;
+    }
+
     @Override
     protected Map<String, String> run() {
+        // Can you replace this big switch statement with
+        // polymorphism?
+        // http://refactoring.com/catalog/replaceConditionalWithPolymorphism.html
         switch (method) {
             case POST:
                 return restTemplate.postForObject(endpoint, params, HashMap.class, params);

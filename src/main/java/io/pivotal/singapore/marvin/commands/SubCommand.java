@@ -33,6 +33,10 @@ public class SubCommand implements ICommand {
     private RequestMethod method;
 
     @Convert(converter = ArgumentListConverter.class)
+    // Putting this on an entity violates Single Responsiblity Principle
+    // as well as puts HTTP code in my domain layer.
+    // Gabe is working on a guide that will show a different
+    // way to do this.
     @JsonDeserialize(converter = ArgumentsDeserializerJson.class)
     @JsonSerialize(converter = ArgumentsSerializerJson.class)
     @Getter @Setter private Arguments arguments = new Arguments();
