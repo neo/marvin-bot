@@ -3,7 +3,7 @@ package io.pivotal.singapore.marvin.slack;
 
 import com.jayway.restassured.RestAssured;
 import com.jayway.restassured.http.ContentType;
-
+import io.pivotal.singapore.marvin.utils.IntegrationBase;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -16,12 +16,9 @@ import org.junit.Test;
 import java.io.IOException;
 import java.util.stream.IntStream;
 
-import io.pivotal.singapore.marvin.utils.IntegrationBase;
-
 import static com.jayway.restassured.RestAssured.given;
 import static com.jayway.restassured.RestAssured.when;
 import static org.apache.http.HttpStatus.SC_CREATED;
-import static org.hamcrest.CoreMatchers.containsString;
 import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.lessThan;

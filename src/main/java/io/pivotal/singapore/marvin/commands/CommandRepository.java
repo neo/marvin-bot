@@ -1,6 +1,5 @@
 package io.pivotal.singapore.marvin.commands;
 
-import io.pivotal.singapore.marvin.commands.Command;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

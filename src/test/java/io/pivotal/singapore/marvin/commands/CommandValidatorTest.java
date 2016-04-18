@@ -1,5 +1,7 @@
 package io.pivotal.singapore.marvin.commands;
 
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentFactory;
+import io.pivotal.singapore.marvin.commands.arguments.Arguments;
 import org.junit.Test;
 import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Errors;
@@ -7,13 +9,8 @@ import org.springframework.validation.Errors;
 import java.util.Collections;
 import java.util.List;
 
-import io.pivotal.singapore.marvin.commands.arguments.ArgumentFactory;
-import io.pivotal.singapore.marvin.commands.arguments.Arguments;
-
 import static io.pivotal.singapore.marvin.utils.CommandFactory.createSubCommands;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.equalTo;
-import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertThat;
 
 public class CommandValidatorTest {

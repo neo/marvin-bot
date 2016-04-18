@@ -1,11 +1,10 @@
 package io.pivotal.singapore.marvin.commands;
 
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentsValidator;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.concurrent.atomic.AtomicInteger;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-
-import io.pivotal.singapore.marvin.commands.arguments.ArgumentsValidator;
 
 public class CommandValidator implements Validator {
 

@@ -7,9 +7,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import io.pivotal.singapore.marvin.commands.Command;
-import io.pivotal.singapore.marvin.commands.SubCommand;
-
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.core.Is.is;
 

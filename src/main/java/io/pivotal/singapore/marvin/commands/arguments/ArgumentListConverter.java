@@ -1,7 +1,5 @@
 package io.pivotal.singapore.marvin.commands.arguments;
 
-import io.pivotal.singapore.marvin.commands.arguments.Arguments;
-
 import javax.persistence.AttributeConverter;
 
 public class ArgumentListConverter implements AttributeConverter<Arguments, String> {
