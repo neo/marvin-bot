@@ -22,7 +22,7 @@ public class Arguments {
     public Arguments(List<Map<String, String>> argumentsJson) throws IllegalArgumentException {
         for (Map<String, String> argsMap : argumentsJson) {
             for (Map.Entry<String, String> captureGroup : argsMap.entrySet()) {
-                addArgument(ArgumentFactory.getWithEmptyArgument(captureGroup.getKey(), captureGroup.getValue()));
+                addArgument(ArgumentFactory.getWithInvalidArgument(captureGroup.getKey(), captureGroup.getValue()));
             }
         }
     }

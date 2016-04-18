@@ -12,7 +12,7 @@ public class ArgumentFactory {
         }
     }
 
-    public static Argument getWithEmptyArgument(String name, String pattern) {
+    public static Argument getWithInvalidArgument(String name, String pattern) {
         try {
             return getArgument(name, pattern);
         } catch (IllegalArgumentException e) {

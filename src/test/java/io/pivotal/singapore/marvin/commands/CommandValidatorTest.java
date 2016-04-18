@@ -97,7 +97,7 @@ public class CommandValidatorTest {
 
     private List<SubCommand> getValidSubCommand() {
         Arguments arguments = Arguments.of(Collections.singletonList(
-            ArgumentFactory.getWithEmptyArgument("time", "/hello")
+            ArgumentFactory.getWithInvalidArgument("time", "/hello")
         ));
 
         SubCommand subCommand = new SubCommand();
