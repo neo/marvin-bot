@@ -4,6 +4,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.internal.engine.path.PathImpl;
+import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
@@ -31,7 +32,7 @@ public class SlackRequest {
 
     private String slackToken;
 
-    private Set<ConstraintViolation<SlackRequest>> constraintViolations;
+    private Set<ConstraintViolation<SlackRequest>> constraintViolations = Collections.emptySet();
 
     public SlackRequest(Map<String, String> params, String slackToken) {
         this.token = params.getOrDefault("token", null);
@@ -58,25 +59,36 @@ public class SlackRequest {
         return constraintViolations.size() > 0;
     }
 
+    public boolean hasErrorFor(String field) {
+        return getErrors().containsKey(field);
+    }
+
     public Map<String, Object> getErrors() {
-        List<String> propertyKeys = constraintViolations
+        List<String> fields = getErrorFields();
+        List<Object> values = getErrorValues();
+
+        assert (fields.size() == values.size());
+
+        HashMap<String, Object> errors = new HashMap();
+        for (int i = 0; i < fields.size(); i++) {
+            errors.put(fields.get(i), values.get(i));
+        }
+        return errors;
+    }
+
+    private List<Object> getErrorValues() {
+        return constraintViolations
+            .stream()
+            .map(ConstraintViolation::getInvalidValue)
+            .collect(Collectors.toList());
+    }
+
+    private List<String> getErrorFields() {
+        return constraintViolations
             .stream()
             .map(ConstraintViolation::getPropertyPath)
             .map(pathImpl -> ((PathImpl) pathImpl).getLeafNode().getName())
             .collect(Collectors.toList());
-
-        List<Object> propertyValues = constraintViolations
-            .stream()
-            .map(ConstraintViolation::getInvalidValue)
-            .collect(Collectors.toList());
-
-        assert (propertyKeys.size() == propertyValues.size());
-
-        Map<String, Object> errors = new HashMap();
-        for (int i = 0; i < propertyKeys.size(); i++) {
-            errors.put(propertyKeys.get(i), propertyValues.get(i));
-        }
-        return errors;
     }
 }
 

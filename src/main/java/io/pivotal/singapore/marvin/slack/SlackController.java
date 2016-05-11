@@ -44,7 +44,7 @@ class SlackController {
         SlackRequest slackRequest = new SlackRequest(params, SLACK_TOKEN);
 
         if (slackRequest.isInvalid()) {
-            if (slackRequest.getErrors().containsKey("recognizedToken")) {
+            if (slackRequest.hasErrorFor("recognizedToken")) {
                 throw new UnrecognizedApiToken();
             }
             return defaultResponse();
