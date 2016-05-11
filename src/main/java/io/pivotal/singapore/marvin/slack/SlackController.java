@@ -10,13 +10,17 @@ import io.pivotal.singapore.marvin.core.CommandParserService;
 import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
+import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
-import javax.validation.*;
+import javax.validation.ConstraintViolation;
+import javax.validation.Validation;
+import javax.validation.Validator;
+import javax.validation.ValidatorFactory;
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
@@ -24,6 +28,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 @RestController
 class SlackController {
@@ -50,6 +55,15 @@ class SlackController {
         Set<ConstraintViolation<SlackRequest>> constraintViolations = validator.validate(slackRequest);
 
         if (constraintViolations.size() > 0) {
+            if (constraintViolations
+                .stream()
+                .map(ConstraintViolation::getPropertyPath)
+                .filter(pathImpl -> ((PathImpl) pathImpl).getLeafNode().getName().contains("recognizedToken"))
+                .collect(Collectors.toList())
+                .size() > 0
+                ) {
+                throw new UnrecognizedApiToken();
+            }
             return defaultResponse();
         }
 
