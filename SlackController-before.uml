@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="622.0" y="399.5">io.pivotal.singapore.marvin.core.CommandParserService</node>
+    <node x="0.0" y="399.5">io.pivotal.singapore.marvin.commands.CommandRepository</node>
+    <node x="212.5" y="512.0">io.pivotal.singapore.marvin.slack.SlackController</node>
+    <node x="210.5" y="0.0">io.pivotal.singapore.marvin.core.RemoteApiServiceResponse</node>
+    <node x="359.0" y="388.0">io.pivotal.singapore.marvin.core.RemoteApiService</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="io.pivotal.singapore.marvin.slack.SlackController" target="io.pivotal.singapore.marvin.core.RemoteApiService">
+      <point x="0.0" y="-147.0" />
+      <point x="0.0" y="37.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.core.RemoteApiService" target="io.pivotal.singapore.marvin.core.RemoteApiServiceResponse">
+      <point x="0.0" y="-37.0" />
+      <point x="0.0" y="169.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.SlackController" target="io.pivotal.singapore.marvin.commands.CommandRepository">
+      <point x="-178.66666666666663" y="-147.0" />
+      <point x="301.83333333333337" y="487.0" />
+      <point x="169.5" y="487.0" />
+      <point x="0.0" y="25.5" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.SlackController" target="io.pivotal.singapore.marvin.core.CommandParserService">
+      <point x="178.66666666666663" y="-147.0" />
+      <point x="659.1666666666666" y="487.0" />
+      <point x="769.5" y="487.0" />
+      <point x="0.0" y="25.5" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="263.5" y="488.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Methods</Category>
+    <Category>Fields</Category>
+  </Categories>
+  <SCOPE>Project Files</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+

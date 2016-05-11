@@ -1,6 +1,5 @@
 package io.pivotal.singapore.marvin.commands.arguments;
 
-import io.pivotal.singapore.marvin.utils.Pair;
 import org.ocpsoft.prettytime.nlp.PrettyTimeParser;
 import org.ocpsoft.prettytime.nlp.parse.DateGroup;
 
@@ -20,8 +19,8 @@ public class TimestampArgument extends AbstractArgument {
         setName(name);
     }
 
-    public static Boolean canParse(String capture) {
-        return capture.equals(MACRO_NAME);
+    public static Boolean matches(String pattern) {
+        return pattern.equals(MACRO_NAME);
     }
 
     @Override
@@ -35,7 +34,7 @@ public class TimestampArgument extends AbstractArgument {
     }
 
     @Override
-    public Pair<Integer, String> parse(String rawCommand) throws ArgumentParseException {
+    public ArgumentParsedResult parse(String rawCommand) {
         List<DateGroup> parse = new PrettyTimeParser().parseSyntax(rawCommand);
 
         if (parse != null && !parse.isEmpty()) {
@@ -70,11 +69,19 @@ public class TimestampArgument extends AbstractArgument {
 
             zonedDateTime = zonedDateTime.withNano(0);
 
-            return new Pair<>(charactersToRemove, zonedDateTime.format(ISO_OFFSET_DATE_TIME));
+            return new ArgumentParsedResult.Builder()
+                .argumentName(name)
+                .matchOffset(charactersToRemove)
+                .matchResult(zonedDateTime.format(ISO_OFFSET_DATE_TIME))
+                .pattern(getPattern())
+                .success()
+                .build();
         } else {
-            throw new ArgumentParseException(
-                String.format("Argument '%s' found no match for '%s' in text '%s'", name, MACRO_NAME, rawCommand)
-            );
+            return new ArgumentParsedResult.Builder()
+                .argumentName(name)
+                .pattern(getPattern())
+                .failure()
+                .build();
         }
     }
 

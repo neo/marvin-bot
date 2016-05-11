@@ -2,7 +2,6 @@ package io.pivotal.singapore.marvin.commands.arguments;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.pivotal.singapore.marvin.utils.Pair;
 import lombok.Getter;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
@@ -10,7 +9,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class Arguments {
     @Getter
@@ -83,17 +81,23 @@ public class Arguments {
         return returnValue;
     }
 
-    public Map<String, String> parse(String rawCommand) throws ArgumentParseException {
-        TreeMap<String, String> returnMap = new TreeMap<>();
+    public ArgumentParsedResultList parse(String rawCommand) {
         rawCommand = rawCommand.trim();
 
+        ArgumentParsedResultList parsedResults = new ArgumentParsedResultList();
+        
         for (Argument argument : getArguments()) {
-            Pair<Integer, String> match = argument.parse(rawCommand);
-            rawCommand = rawCommand.subSequence(match.first, rawCommand.length()).toString().trim();
+            ArgumentParsedResult match;
 
-            returnMap.put(argument.getName(), match.last);
+            match = argument.parse(rawCommand);
+            if (match.isFailure()) {
+                parsedResults.add(match);
+                break;
+            }
+            rawCommand = rawCommand.subSequence(match.getMatchOffset(), rawCommand.length()).toString().trim();
+            parsedResults.add(match);
         }
 
-        return returnMap;
+        return parsedResults;
     }
 }

@@ -4,9 +4,11 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.Map;
 
+import static junit.framework.TestCase.assertTrue;
+import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.core.IsEqual.equalTo;
+import static org.hamcrest.text.IsEmptyString.emptyString;
 import static org.junit.Assert.assertThat;
 
 public class ArgumentsTest {
@@ -21,42 +23,48 @@ public class ArgumentsTest {
         ));
     }
 
-    @Test(expected = ArgumentParseException.class)
-    public void nonMatchingCommandTextRaisesException() throws ArgumentParseException {
-        subject.parse("");
+    @Test
+    public void nonMatchingCommandTextReturnsArgumentNameAndMatchedString() {
+        ArgumentParsedResultList results = subject.parse("foo");
+        assertTrue(results.hasErrors());
+        assertThat(results.get(0).getMatchResult(), is(emptyString()));
     }
 
     @Test
-    public void parseArgumentsShouldBeEvaluatedInOrder() throws ArgumentParseException {
+    public void parseArgumentsShouldBeEvaluatedInOrder() {
         String rawCommand = "23rd of March at 7pm \"BBQ At the Pivotal Labs Singapore office\"";
 
-        Map<String, String> result = subject.parse(rawCommand);
+        ArgumentParsedResultList results = subject.parse(rawCommand);
 
-        assertThat(result.get("start_time"), equalTo(expectedDateTimeString));
-        assertThat(result.get("event_name"), equalTo("BBQ At the Pivotal Labs Singapore office"));
-    }
-
-    @Test(expected = ArgumentParseException.class)
-    public void raisesExceptionWhenOnePartIsInvalid() throws ArgumentParseException {
-        String rawCommand = "23rd of March at 7pm 'not a valid event name string'";
-
-        subject.parse(rawCommand);
-    }
-
-    @Test(expected = ArgumentParseException.class)
-    public void raisesExceptionWhenOnePartIsMissing() throws ArgumentParseException {
-        String rawCommand = "23rd of March at 7pm";
-
-        subject.parse(rawCommand);
+        assertThat(results.get(0).getMatchResult(), equalTo(expectedDateTimeString));
+        assertThat(results.get(1).getMatchResult(), equalTo("BBQ At the Pivotal Labs Singapore office"));
     }
 
     @Test
-    public void commandTextIsTrimmedFromLeadingAndTrailingWhitespace() throws ArgumentParseException {
+    public void returnsArgumentNameAndMatchedStringWhenOnePartIsInvalid() {
+        String rawCommand = "23rd of March at 7pm 'not a valid event name string'";
+
+        ArgumentParsedResultList results = subject.parse(rawCommand);
+        assertTrue(results.hasErrors());
+        assertThat(results.get(1).getMatchResult(), is(emptyString()));
+    }
+
+    @Test
+    public void returnsArgumentNameAndMatchedStringWhenOnePartIsMissing() {
+        String rawCommand = "23rd of March at 7pm";
+
+        ArgumentParsedResultList results = subject.parse(rawCommand);
+        assertTrue(results.hasErrors());
+        assertThat(results.get(1).getMatchResult(), equalTo(""));
+    }
+
+    @Test
+    public void commandTextIsTrimmedFromLeadingAndTrailingWhitespace() {
         String rawCommand = "       23rd of March at 7pm        \"BBQ At the Pivotal Labs Singapore office\"        ";
 
-        Map result = subject.parse(rawCommand);
+        ArgumentParsedResultList result = subject.parse(rawCommand);
 
-        assertThat(result.get("start_time"), equalTo(expectedDateTimeString));
-        assertThat(result.get("event_name"), equalTo("BBQ At the Pivotal Labs Singapore office"));
+        assertThat(result.get(0).getMatchResult(), equalTo(expectedDateTimeString));
+        assertThat(result.get(1).getMatchResult(), equalTo("BBQ At the Pivotal Labs Singapore office"));
     }
 }

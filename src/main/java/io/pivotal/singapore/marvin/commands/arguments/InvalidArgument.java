@@ -1,7 +1,5 @@
 package io.pivotal.singapore.marvin.commands.arguments;
 
-import io.pivotal.singapore.marvin.utils.Pair;
-
 public class InvalidArgument extends AbstractArgument {
 
     public InvalidArgument() {
@@ -13,7 +11,10 @@ public class InvalidArgument extends AbstractArgument {
     }
 
     @Override
-    public Pair<Integer, String> parse(String rawCommand) throws ArgumentParseException {
-        throw new ArgumentParseException("InvalidArgument can't parse.");
+    public ArgumentParsedResult parse(String rawCommand) {
+        return new ArgumentParsedResult.Builder()
+            .matchResult(rawCommand)
+            .failure()
+            .build();
     }
 }

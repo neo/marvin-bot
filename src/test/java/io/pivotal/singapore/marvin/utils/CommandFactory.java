@@ -8,9 +8,9 @@ import java.util.List;
 
 public class CommandFactory {
 
-    public static SubCommand createSubCommand() {
+    public static SubCommand createSubCommand(String name) {
         SubCommand subCommand = new SubCommand();
-        subCommand.setName("in");
+        subCommand.setName(name);
         subCommand.setMethod(RequestMethod.POST);
         subCommand.setEndpoint("http://example.com/hello");
         subCommand.setDefaultResponseFailure("Shucks... something went wrong.");
@@ -20,7 +20,7 @@ public class CommandFactory {
 
     public static List<SubCommand> createSubCommands(){
         return new ArrayList<SubCommand>() {{
-            add(createSubCommand());
+            add(createSubCommand("in"));
         }};
     }
 }

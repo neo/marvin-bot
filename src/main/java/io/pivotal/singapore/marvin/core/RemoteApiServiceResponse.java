@@ -44,7 +44,7 @@ public class RemoteApiServiceResponse {
         this.defaultResponses = defaultResponses;
     }
 
-    Boolean isSuccessful() {
+    public Boolean isSuccessful() {
         return success;
     }
 

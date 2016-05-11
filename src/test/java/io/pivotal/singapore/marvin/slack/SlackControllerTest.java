@@ -4,11 +4,13 @@ import com.google.common.collect.Lists;
 import io.pivotal.singapore.marvin.commands.Command;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
 import io.pivotal.singapore.marvin.commands.SubCommand;
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResult;
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResultList;
 import io.pivotal.singapore.marvin.commands.arguments.Arguments;
 import io.pivotal.singapore.marvin.commands.arguments.RegexArgument;
 import io.pivotal.singapore.marvin.core.CommandParserService;
-import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
+import io.pivotal.singapore.marvin.core.RemoteApiServiceRequest;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
 import io.pivotal.singapore.marvin.utils.FrozenTimeMachine;
 import io.pivotal.singapore.marvin.utils.IntegrationBase;
@@ -20,11 +22,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.runners.MockitoJUnitRunner;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static io.pivotal.singapore.marvin.utils.CommandFactory.createSubCommand;
@@ -78,9 +80,6 @@ public class SlackControllerTest {
         private Command command;
         private Optional<Command> optionalCommand;
 
-        private Map<String, String> response;
-        private Map<String, Object> apiServiceParams;
-
         private String MOCK_SLACK_TOKEN = "TEST TOKEN";
 
         @Before
@@ -90,7 +89,7 @@ public class SlackControllerTest {
             command = new Command("time", "http://somesuch.tld/api/time/");
             optionalCommand = Optional.of(command);
 
-            slackInputParams = new HashMap<>();
+            slackInputParams = new HashMap();
             slackInputParams.put("token", MOCK_SLACK_TOKEN);
             slackInputParams.put("team_id", "T0001");
             slackInputParams.put("team_domain", "example");
@@ -101,23 +100,16 @@ public class SlackControllerTest {
             slackInputParams.put("command", "/marvin");
             slackInputParams.put("text", "time");
             slackInputParams.put("response_url", "https://hooks.slack.com/commands/1234/5678");
-
-            apiServiceParams = new HashMap<>();
-            apiServiceParams.put("username", "Steve@pivotal.io");
-            apiServiceParams.put("channel", "test");
-            apiServiceParams.put("received_at", ZonedDateTime.now(clock).format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
-            apiServiceParams.put("command", "time");
-
-            response = new HashMap<>();
-            response.put("response_type", "ephemeral");
-            response.put("text", "This will all end in tears.");
         }
 
         @Test
         public void testReceiveTimeOfDay() throws Exception {
             when(commandRepository.findOneByName("time")).thenReturn(Optional.empty());
 
-            assertThat(controller.index(slackInputParams), is(equalTo(response)));
+            ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
+
+            assertThat(response.getBody().getResponseType(), is(equalTo("ephemeral")));
+            assertThat(response.getBody().getText(), is(equalTo("This will all end in tears.")));
         }
 
         @Test
@@ -127,30 +119,29 @@ public class SlackControllerTest {
             HashMap<String, String> serviceResponse = new HashMap<>();
             String australiaTime = "The time in Australia is Beer o'clock.";
             serviceResponse.put("message", australiaTime);
-            when(remoteApiService.call(command, apiServiceParams))
+            when(remoteApiService.call(eq(command), any(RemoteApiServiceRequest.class)))
                     .thenReturn(new RemoteApiServiceResponse(true, serviceResponse, command.getDefaultResponseSuccess(), command.getDefaultResponseFailure()));
 
-            Map<String, String> response = controller.index(slackInputParams);
-            assertThat(response.get("text"), is(equalTo(australiaTime)));
-            verify(commandRepository, times(1)).findOneByName("time");
-            verify(remoteApiService, times(1)).call(command, apiServiceParams);
+            ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
+            assertThat(response.getBody().getText(), is(equalTo(australiaTime)));
+            verify(commandRepository, atLeastOnce()).findOneByName("time");
+            verify(remoteApiService, times(1)).call(eq(command), any(RemoteApiServiceRequest.class));
         }
 
         @Test
         public void findsCommandWhenItHasArguments() throws Exception {
             slackInputParams.put("text", "time england");
-            apiServiceParams.put("command", "time england");
 
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
             HashMap<String, String> serviceResponse = new HashMap<>();
             String englandTime = "The time in England is Tea o'clock.";
             serviceResponse.put("message", englandTime);
-            when(remoteApiService.call(command, apiServiceParams))
+            when(remoteApiService.call(eq(command), any(RemoteApiServiceRequest.class)))
                     .thenReturn(new RemoteApiServiceResponse(true, serviceResponse, command.getDefaultResponseSuccess(), command.getDefaultResponseFailure()));
 
-            Map<String, String> response = controller.index(slackInputParams);
-            assertThat(response.get("text"), is(equalTo(englandTime)));
+            ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
+            assertThat(response.getBody().getText(), is(equalTo(englandTime)));
         }
 
         @Test
@@ -158,55 +149,42 @@ public class SlackControllerTest {
             slackInputParams.put("text", "time in London");
             Arguments arguments = mock(Arguments.class);
 
-            SubCommand subCommand = createSubCommand();
+            SubCommand subCommand = createSubCommand("in");
             subCommand.setArguments(arguments);
 
             List<SubCommand> subCommands = new ArrayList<>();
             subCommands.add(subCommand);
             command.setSubCommands(subCommands);
 
-            Map<String, String> parsedArguments = new TreeMap<>();
-            parsedArguments.put("location", "London");
+            ArgumentParsedResultList parsedArguments = new ArgumentParsedResultList();
+            parsedArguments.add(
+                new ArgumentParsedResult.Builder()
+                    .argumentName("location")
+                    .matchResult("London")
+                    .success()
+                    .build()
+            );
 
             when(arguments.parse("London")).thenReturn(parsedArguments);
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
-            apiServiceParams.putAll(parsedArguments);
-            apiServiceParams.put("command", "time in London");
             Map<String, String> returnParams = new TreeMap<>();
             String englandTime = "The time in England is Tea o'clock.";
             returnParams.put("message", englandTime);
-            when(remoteApiService.call(subCommand, apiServiceParams)).thenReturn(
+            when(remoteApiService.call(eq(subCommand), any(RemoteApiServiceRequest.class))).thenReturn(
                     new RemoteApiServiceResponse(true, returnParams, subCommand.getDefaultResponseSuccess(), subCommand.getDefaultResponseFailure())
             );
 
-            Map<String, String> response = controller.index(slackInputParams);
-            assertThat(response.get("text"), is(equalTo(englandTime)));
-        }
-
-        @Test
-        public void testResponseMapping() throws Exception {
-            Optional<MessageType> responseType = Optional.of(MessageType.channel);
-            String text = "some example";
-
-            HashMap<String, String> response = controller.textResponse(responseType, text);
-            assertThat(response.get("response_type"), is("in_channel"));
-
-            responseType = Optional.of(MessageType.user);
-            response = controller.textResponse(responseType, text);
-
-            assertThat(response.get("response_type"), is("ephemeral"));
-
-            responseType = Optional.empty();
-            response = controller.textResponse(responseType, text);
-
-            assertThat(response.get("response_type"), is("ephemeral"));
+            ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
+            assertThat(response.getBody().getText(), is(equalTo(englandTime)));
         }
 
         @Test
         public void invalidMessageTypeTurnsIntoEpehemeral() throws Exception {
-            slackInputParams.put("text", "time england");
-            apiServiceParams.put("command", "time england");
+            slackInputParams.put("text", "time in england");
+
+            SubCommand subCommand = createSubCommand("in");
+            command.setSubCommands(Lists.newArrayList(subCommand));
 
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
@@ -214,12 +192,12 @@ public class SlackControllerTest {
             String englandTime = "The time in England is Tea o'clock.";
             serviceResponse.put("message", englandTime);
             serviceResponse.put("message_type", "dingDong");
-            when(remoteApiService.call(command, apiServiceParams))
+            when(remoteApiService.call(eq(subCommand), any(RemoteApiServiceRequest.class)))
                     .thenReturn(new RemoteApiServiceResponse(true, serviceResponse, command.getDefaultResponseSuccess(), command.getDefaultResponseFailure()));
 
-            Map<String, String> response = controller.index(slackInputParams);
-            assertThat(response.get("text"), is(equalTo(englandTime)));
-            assertThat(response.get("response_type"), is(equalTo("ephemeral")));
+            ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
+            assertThat(response.getBody().getText(), is(equalTo(englandTime)));
+            assertThat(response.getBody().getResponseType(), is(equalTo("ephemeral")));
         }
 
         @Test
@@ -227,27 +205,31 @@ public class SlackControllerTest {
             slackInputParams.put("text", "time in London");
             Arguments arguments = mock(Arguments.class);
 
-            SubCommand subCommand = createSubCommand();
+            SubCommand subCommand = createSubCommand("in");
             subCommand.setArguments(arguments);
 
             List<SubCommand> subCommands = new ArrayList<>();
             subCommands.add(subCommand);
             command.setSubCommands(subCommands);
 
-            Map<String, String> parsedArguments = new TreeMap<>();
-            parsedArguments.put("location", "London");
+            ArgumentParsedResultList parsedArguments = new ArgumentParsedResultList();
+            parsedArguments.add(
+                new ArgumentParsedResult.Builder()
+                    .argumentName("location")
+                    .matchResult("London")
+                    .success()
+                    .build()
+            );
 
             when(arguments.parse("London")).thenReturn(parsedArguments);
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
-            apiServiceParams.putAll(parsedArguments);
-            apiServiceParams.put("command", "time in London");
             Map<String, String> returnParams = new TreeMap<>();
-            when(remoteApiService.call(subCommand, apiServiceParams))
+            when(remoteApiService.call(eq(subCommand), any(RemoteApiServiceRequest.class)))
                     .thenReturn(new RemoteApiServiceResponse(false, returnParams, subCommand.getDefaultResponseSuccess(), subCommand.getDefaultResponseFailure()));
 
-            Map<String, String> response = controller.index(slackInputParams);
-            assertThat(response.get("text"), is(equalTo(subCommand.getDefaultResponseFailure())));
+            ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
+            assertThat(response.getBody().getText(), is(equalTo(subCommand.getDefaultResponseFailure())));
         }
 
         @Test
@@ -255,27 +237,31 @@ public class SlackControllerTest {
             slackInputParams.put("text", "time in London");
             Arguments arguments = mock(Arguments.class);
 
-            SubCommand subCommand = createSubCommand();
+            SubCommand subCommand = createSubCommand("in");
             subCommand.setArguments(arguments);
 
             List<SubCommand> subCommands = new ArrayList<>();
             subCommands.add(subCommand);
             command.setSubCommands(subCommands);
 
-            Map<String, String> parsedArguments = new TreeMap<>();
-            parsedArguments.put("location", "London");
+            ArgumentParsedResultList parsedArguments = new ArgumentParsedResultList();
+            parsedArguments.add(
+                new ArgumentParsedResult.Builder()
+                    .argumentName("location")
+                    .matchResult("London")
+                    .success()
+                    .build()
+            );
 
             when(arguments.parse("London")).thenReturn(parsedArguments);
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
-            apiServiceParams.putAll(parsedArguments);
-            apiServiceParams.put("command", "time in London");
             Map<String, String> returnParams = new TreeMap<>();
-            when(remoteApiService.call(subCommand, apiServiceParams))
+            when(remoteApiService.call(eq(subCommand), any(RemoteApiServiceRequest.class)))
                     .thenReturn(new RemoteApiServiceResponse(true, returnParams, subCommand.getDefaultResponseSuccess(), subCommand.getDefaultResponseFailure()));
 
-            Map<String, String> response = controller.index(slackInputParams);
-            assertThat(response.get("text"), is(equalTo(subCommand.getDefaultResponseSuccess())));
+            ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
+            assertThat(response.getBody().getText(), is(equalTo(subCommand.getDefaultResponseSuccess())));
         }
 
         @Test
@@ -283,7 +269,7 @@ public class SlackControllerTest {
             slackInputParams.put("text", "time in London");
             Arguments arguments = mock(Arguments.class);
 
-            SubCommand subCommand = createSubCommand();
+            SubCommand subCommand = createSubCommand("in");
             subCommand.setArguments(arguments);
             subCommand.setDefaultResponseSuccess(null);
 
@@ -291,38 +277,50 @@ public class SlackControllerTest {
             subCommands.add(subCommand);
             command.setSubCommands(subCommands);
 
-            Map<String, String> parsedArguments = new TreeMap<>();
-            parsedArguments.put("location", "London");
+            ArgumentParsedResultList parsedArguments = new ArgumentParsedResultList();
+            parsedArguments.add(
+                new ArgumentParsedResult.Builder()
+                    .argumentName("location")
+                    .matchResult("London")
+                    .success()
+                    .build()
+            );
 
             when(arguments.parse("London")).thenReturn(parsedArguments);
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
-            apiServiceParams.putAll(parsedArguments);
-            apiServiceParams.put("command", "time in London");
             Map<String, String> returnParams = new TreeMap<>();
-            when(remoteApiService.call(subCommand, apiServiceParams)).thenReturn(
+            when(remoteApiService.call(eq(subCommand), any(RemoteApiServiceRequest.class))).thenReturn(
                     new RemoteApiServiceResponse(true, returnParams, subCommand.getDefaultResponseSuccess(), subCommand.getDefaultResponseFailure())
             );
 
-            Map<String, String> response = controller.index(slackInputParams);
-            assertThat(response.get("text"), is(equalTo("{}")));
+            ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
+            assertThat(response.getBody().getText(), is(equalTo("{}")));
         }
 
 
-        @Test(expected = UnrecognizedApiToken.class)
+        @Test
         public void ignoresRequestWhenSlackTokenIsMissing() throws Exception {
             slackInputParams.put("token", null);
             when(commandRepository.findOneByName("time")).thenReturn(Optional.empty());
 
-            controller.index(slackInputParams);
+            ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
+
+            assertThat(response.getStatusCode(), is(equalTo(HttpStatus.OK)));
+            assertThat(response.getBody().getResponseType(), is(equalTo("ephemeral")));
+            assertThat(response.getBody().getText(), is(equalTo("This will all end in tears.")));
         }
 
-        @Test(expected = UnrecognizedApiToken.class)
-        public void ignoresRequestWhenSlackTokenIsIncorrect() throws Exception {
+        @Test
+        public void badRequestWhenSlackTokenIsIncorrect() throws Exception {
             slackInputParams.put("token", "WRONG TOKEN");
             when(commandRepository.findOneByName("time")).thenReturn(Optional.empty());
 
-            controller.index(slackInputParams);
+            ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
+
+            assertThat(response.getStatusCode(), is(equalTo(HttpStatus.BAD_REQUEST)));
+            assertThat(response.getBody().getResponseType(), is(equalTo("ephemeral")));
+            assertThat(response.getBody().getText(), is(equalTo("Unrecognized token")));
         }
 
         @Test
@@ -333,26 +331,28 @@ public class SlackControllerTest {
             HashMap<String, String> remoteServiceResponse = new HashMap<>();
             remoteServiceResponse.put("name", "Wilson");
             remoteServiceResponse.put("meal", "breakfast");
-            when(remoteApiService.call(command, apiServiceParams))
+            when(remoteApiService.call(eq(command), any(RemoteApiServiceRequest.class)))
                     .thenReturn(new RemoteApiServiceResponse(true, remoteServiceResponse, command.getDefaultResponseSuccess(), command.getDefaultResponseFailure()));
 
-            Map<String, String> response = controller.index(slackInputParams);
-            assertThat(response.get("text"), is(equalTo("It is time for breakfast, Wilson! Have a good time, Wilson!")));
+            ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
+            assertThat(response.getBody().getText(), is(equalTo("It is time for breakfast, Wilson! Have a good time, Wilson!")));
         }
 
         @Test
         public void returnsDefaultResponseIfSubCommandsAreParsedButAreNotDefined() throws Exception {
             slackInputParams.put("text", "chocolate pinkberry argsssss");
-            List<SubCommand> subCommands = new ArrayList<>();
+            command.setName("chocolate");
 
-            subCommands.add(createSubCommand());
+            List<SubCommand> subCommands = new ArrayList<>();
+            subCommands.add(createSubCommand("other"));
+
             Optional<Command> command = Optional.of(new Command("chocolate", "http://fake-endpoint.tld") {{
                 setSubCommands(subCommands);
             }});
             when(commandRepository.findOneByName("chocolate")).thenReturn(command);
 
-            Map<String, String> response = controller.index(slackInputParams);
-            assertThat(response.get("text"), is(equalTo("This sub command doesn't exist for chocolate")));
+            ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
+            assertThat(response.getBody().getText(), is(equalTo("This sub command doesn't exist for chocolate")));
         }
 
         @Test
@@ -362,7 +362,7 @@ public class SlackControllerTest {
 
             Arguments arguments = Arguments.of(Lists.newArrayList(new RegexArgument("location", "/.+/")));
 
-            SubCommand subCommand = createSubCommand();
+            SubCommand subCommand = createSubCommand("in");
             subCommand.setArguments(arguments);
             subCommands.add(subCommand);
 
@@ -371,9 +371,9 @@ public class SlackControllerTest {
             }});
             when(commandRepository.findOneByName("time")).thenReturn(command);
 
-            Map<String, String> response = controller.index(slackInputParams);
-            assertThat(response.get("text"), is(equalTo("`location` is not found in your command.")));
-            assertThat(response.get("response_type"), is(equalTo("ephemeral")));
+            ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
+            assertThat(response.getBody().getText(), is(equalTo("`location` is not found in your command.")));
+            assertThat(response.getBody().getResponseType(), is(equalTo("ephemeral")));
         }
 
     }
