@@ -10,6 +10,7 @@ import io.pivotal.singapore.marvin.core.CommandParserService;
 import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
+import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -55,17 +56,27 @@ class SlackController {
 
         // Checks if Command exists
         Optional<Command> commandOptional = getCommand(parsedCommand.get("command"));
-        if (!commandOptional.isPresent()) {
-            return defaultResponse();
+
+        MakeRemoteApiCall makeRemoteApiCall = new MakeRemoteApiCall(incomingSlackRequest, commandRepository);
+        if (makeRemoteApiCall.isInvalid()) {
+            if (makeRemoteApiCall.hasErrorFor("commandPresent")) {
+                return defaultResponse();
+            } else if (makeRemoteApiCall.hasErrorFor("subCommandPresent")) {
+                return defaultResponse(String.format("This sub command doesn't exist for %s", parsedCommand.get("command")));
+            }
         }
+
+//        if (!commandOptional.isPresent()) {
+//            return defaultResponse();
+//        }
 
         // Makes remote API calls
         RemoteApiServiceResponse response;
         Optional<ICommand> subCommandOptional = commandOptional.get().findSubCommand(parsedCommand.get("sub_command"));
 
-        if( !subCommandOptional.isPresent() && !commandOptional.get().getSubCommands().isEmpty()) {
-            return defaultResponse(String.format("This sub command doesn't exist for %s", parsedCommand.get("command")));
-        }
+//        if( !subCommandOptional.isPresent() && !commandOptional.get().getSubCommands().isEmpty()) {
+//            return defaultResponse(String.format("This sub command doesn't exist for %s", parsedCommand.get("command")));
+//        }
 
         Map _params = remoteServiceParams(incomingSlackRequest);
 

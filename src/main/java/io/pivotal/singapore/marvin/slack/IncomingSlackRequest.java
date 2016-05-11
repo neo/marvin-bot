@@ -1,7 +1,6 @@
 package io.pivotal.singapore.marvin.slack;
 
 import lombok.Getter;
-import lombok.Setter;
 import org.hibernate.validator.constraints.NotBlank;
 import org.hibernate.validator.internal.engine.path.PathImpl;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
@@ -19,16 +18,16 @@ import java.util.stream.Collectors;
 public class IncomingSlackRequest {
     private Validator validator;
 
-    @Getter @Setter @NotBlank private String token;
-    @Getter @Setter @NotBlank private String text;
-    @Getter @Setter private String teamId;
-    @Getter @Setter private String teamDomain;
-    @Getter @Setter private String channelId;
-    @Getter @Setter private String channelName;
-    @Getter @Setter private String userId;
-    @Getter @Setter private String userName;
-    @Getter @Setter private String command;
-    @Getter @Setter private String responseUrl;
+    @Getter @NotBlank private String token;
+    @Getter @NotBlank private String text;
+    @Getter @NotBlank private String channelName;
+    @Getter @NotBlank private String userName;
+    private String teamId;
+    private String teamDomain;
+    private String channelId;
+    private String userId;
+    private String command;
+    private String responseUrl;
 
     private String slackToken;
 
