@@ -16,7 +16,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-public class SlackRequest {
+public class IncomingSlackRequest {
     private Validator validator;
 
     @Getter @Setter @NotBlank private String token;
@@ -32,9 +32,9 @@ public class SlackRequest {
 
     private String slackToken;
 
-    private Set<ConstraintViolation<SlackRequest>> constraintViolations = Collections.emptySet();
+    private Set<ConstraintViolation<IncomingSlackRequest>> constraintViolations = Collections.emptySet();
 
-    public SlackRequest(Map<String, String> params, String slackToken) {
+    public IncomingSlackRequest(Map<String, String> params, String slackToken) {
         this.token = params.getOrDefault("token", null);
         this.teamId = params.getOrDefault("team_id", null);
         this.teamDomain = params.getOrDefault("team_domain", null);
@@ -57,6 +57,10 @@ public class SlackRequest {
     public boolean isInvalid() {
         constraintViolations = this.validator.validate(this);
         return constraintViolations.size() > 0;
+    }
+
+    public boolean isValid() {
+        return !isInvalid();
     }
 
     public boolean hasErrorFor(String field) {

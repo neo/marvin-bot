@@ -41,17 +41,17 @@ class SlackController {
 
     @RequestMapping(value="/", method= RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     Map<String, String> index(@RequestParam Map<String, String> params) throws Exception {
-        SlackRequest slackRequest = new SlackRequest(params, SLACK_TOKEN);
+        IncomingSlackRequest incomingSlackRequest = new IncomingSlackRequest(params, SLACK_TOKEN);
 
-        if (slackRequest.isInvalid()) {
-            if (slackRequest.hasErrorFor("recognizedToken")) {
+        if (incomingSlackRequest.isInvalid()) {
+            if (incomingSlackRequest.hasErrorFor("recognizedToken")) {
                 throw new UnrecognizedApiToken();
             }
             return defaultResponse();
         }
 
         // Parses into command, sub-command, args as token strings
-        HashMap<String, String> parsedCommand = commandParserService.parse(slackRequest.getText());
+        HashMap<String, String> parsedCommand = commandParserService.parse(incomingSlackRequest.getText());
 
         // Checks if Command exists
         Optional<Command> commandOptional = getCommand(parsedCommand.get("command"));
@@ -67,7 +67,7 @@ class SlackController {
             return defaultResponse(String.format("This sub command doesn't exist for %s", parsedCommand.get("command")));
         }
 
-        Map _params = remoteServiceParams(slackRequest);
+        Map _params = remoteServiceParams(incomingSlackRequest);
 
         // FIXME: Only fallback to command if there are no subcommands
         ICommand cmd = subCommandOptional.orElse(commandOptional.get());
@@ -88,7 +88,7 @@ class SlackController {
         return textResponse(response.getMessageType(), response.getMessage());
     }
 
-    private HashMap<String, Object> remoteServiceParams(SlackRequest params) {
+    private HashMap<String, Object> remoteServiceParams(IncomingSlackRequest params) {
         HashMap<String, Object> serviceParams = new HashMap<>();
         serviceParams.put("username", String.format("%s@pivotal.io", params.getUserName()));
         serviceParams.put("channel", params.getChannelName());
