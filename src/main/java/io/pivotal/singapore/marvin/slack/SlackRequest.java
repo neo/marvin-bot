@@ -8,7 +8,6 @@ import org.hibernate.validator.internal.engine.path.PathImpl;
 import javax.validation.ConstraintViolation;
 import javax.validation.Validation;
 import javax.validation.Validator;
-import javax.validation.ValidatorFactory;
 import javax.validation.constraints.AssertTrue;
 import java.util.HashMap;
 import java.util.List;
@@ -17,12 +16,10 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 public class SlackRequest {
-    private static ValidatorFactory validatorFactory;
+    private Validator validator;
+
     @Getter @Setter @NotBlank private String token;
-    @Getter
-    @Setter
-    @NotBlank
-    private String text;
+    @Getter @Setter @NotBlank private String text;
     @Getter @Setter private String teamId;
     @Getter @Setter private String teamDomain;
     @Getter @Setter private String channelId;
@@ -31,7 +28,9 @@ public class SlackRequest {
     @Getter @Setter private String userName;
     @Getter @Setter private String command;
     @Getter @Setter private String responseUrl;
+
     private String slackToken;
+
     private Set<ConstraintViolation<SlackRequest>> constraintViolations;
 
     public SlackRequest(Map<String, String> params, String slackToken) {
@@ -46,13 +45,7 @@ public class SlackRequest {
         this.text = params.getOrDefault("text", null);
         this.responseUrl = params.getOrDefault("response_url", null);
         this.slackToken = slackToken;
-    }
-
-    private static Validator getValidator() {
-        if (validatorFactory == null) {
-            validatorFactory = Validation.buildDefaultValidatorFactory();
-        }
-        return validatorFactory.getValidator();
+        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     @AssertTrue
@@ -60,8 +53,8 @@ public class SlackRequest {
         return this.token != null && this.token.equals(this.slackToken);
     }
 
-    public boolean isValid() {
-        constraintViolations = getValidator().validate(this);
+    public boolean isInvalid() {
+        constraintViolations = this.validator.validate(this);
         return constraintViolations.size() > 0;
     }
 

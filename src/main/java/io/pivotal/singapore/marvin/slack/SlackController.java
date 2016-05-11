@@ -43,7 +43,7 @@ class SlackController {
     Map<String, String> index(@RequestParam Map<String, String> params) throws Exception {
         SlackRequest slackRequest = new SlackRequest(params, SLACK_TOKEN);
 
-        if (slackRequest.isValid()) {
+        if (slackRequest.isInvalid()) {
             if (slackRequest.getErrors().containsKey("recognizedToken")) {
                 throw new UnrecognizedApiToken();
             }
