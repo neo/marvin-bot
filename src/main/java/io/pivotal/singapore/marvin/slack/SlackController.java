@@ -12,18 +12,18 @@ import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.composed.web.rest.json.GetJson;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.MediaType;
+import org.springframework.web.bind.annotation.*;
 
+import javax.validation.*;
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
+import java.util.Set;
 
 @RestController
 class SlackController {
@@ -41,23 +41,32 @@ class SlackController {
 
     private Clock clock = Clock.systemUTC();
 
-    @GetJson("/")
-    Map<String, String> index(@RequestParam HashMap<String, String> params) throws Exception {
+    @RequestMapping(value="/", method= RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    Map<String, String> index(@RequestParam Map<String, String> params) throws Exception {
+        SlackRequest slackRequest = new SlackRequest(params, SLACK_TOKEN);
 
-        // Figuring out if request is valid (ie. from Slack)
-        String token = params.get("token");
-        if (token == null || !token.equals(SLACK_TOKEN)) {
-            throw new UnrecognizedApiToken();
-        }
+        ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
+        Validator validator = validatorFactory.getValidator();
+        Set<ConstraintViolation<SlackRequest>> constraintViolations = validator.validate(slackRequest);
 
-        // Validates that 'text' is there
-        String commandText = params.get("text");
-        if (commandText == null || commandText.isEmpty()) {
+        if (constraintViolations.size() > 0) {
             return defaultResponse();
         }
 
+        // Figuring out if request is valid (ie. from Slack)
+//        String token = slackRequest.getToken();
+//        if (token == null || !token.equals(SLACK_TOKEN)) {
+//            throw new UnrecognizedApiToken();
+//        }
+
+        // Validates that 'text' is there
+//        String commandText = slackRequest.getText();
+//        if (commandText == null || commandText.isEmpty()) {
+//            return defaultResponse();
+//        }
+
         // Parses into command, sub-command, args as token strings
-        HashMap<String, String> parsedCommand = commandParserService.parse(commandText);
+        HashMap<String, String> parsedCommand = commandParserService.parse(slackRequest.getText());
 
         // Checks if Command exists
         Optional<Command> commandOptional = getCommand(parsedCommand.get("command"));
@@ -73,7 +82,7 @@ class SlackController {
             return defaultResponse(String.format("This sub command doesn't exist for %s", parsedCommand.get("command")));
         }
 
-        Map _params = remoteServiceParams(params);
+        Map _params = remoteServiceParams(slackRequest);
 
         // FIXME: Only fallback to command if there are no subcommands
         ICommand cmd = subCommandOptional.orElse(commandOptional.get());
@@ -94,12 +103,12 @@ class SlackController {
         return textResponse(response.getMessageType(), response.getMessage());
     }
 
-    private HashMap<String, Object> remoteServiceParams(HashMap<String, String> params) {
+    private HashMap<String, Object> remoteServiceParams(SlackRequest params) {
         HashMap<String, Object> serviceParams = new HashMap<>();
-        serviceParams.put("username", String.format("%s@pivotal.io", params.get("user_name")));
-        serviceParams.put("channel", params.get("channel_name"));
+        serviceParams.put("username", String.format("%s@pivotal.io", params.getUserName()));
+        serviceParams.put("channel", params.getChannelName());
         serviceParams.put("received_at", ZonedDateTime.now(clock).format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
-        serviceParams.put("command", params.get("text"));
+        serviceParams.put("command", params.getText());
 
         return serviceParams;
     }

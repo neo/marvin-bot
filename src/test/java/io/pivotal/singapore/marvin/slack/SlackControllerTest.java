@@ -90,7 +90,7 @@ public class SlackControllerTest {
             command = new Command("time", "http://somesuch.tld/api/time/");
             optionalCommand = Optional.of(command);
 
-            slackInputParams = new HashMap<>();
+            slackInputParams = new HashMap();
             slackInputParams.put("token", MOCK_SLACK_TOKEN);
             slackInputParams.put("team_id", "T0001");
             slackInputParams.put("team_domain", "example");
