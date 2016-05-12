@@ -1,16 +1,12 @@
 package io.pivotal.singapore.marvin.slack;
 
 import com.google.common.collect.ImmutableMap;
-import io.pivotal.singapore.marvin.commands.Command;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
-import io.pivotal.singapore.marvin.commands.ICommand;
-import io.pivotal.singapore.marvin.commands.arguments.Argument;
-import io.pivotal.singapore.marvin.commands.arguments.ArgumentParseException;
 import io.pivotal.singapore.marvin.core.CommandParserService;
 import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
-import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
 import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall;
+import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCallResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -18,8 +14,6 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Clock;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
@@ -55,9 +49,7 @@ class SlackController {
         HashMap<String, String> parsedCommand = commandParserService.parse(incomingSlackRequest.getText());
 
         // Checks if Command exists
-        Optional<Command> commandOptional = getCommand(parsedCommand.get("command"));
-
-        MakeRemoteApiCall makeRemoteApiCall = new MakeRemoteApiCall(incomingSlackRequest, commandRepository);
+        MakeRemoteApiCall makeRemoteApiCall = new MakeRemoteApiCall(incomingSlackRequest, clock, remoteApiService, commandRepository);
         if (makeRemoteApiCall.isInvalid()) {
             if (makeRemoteApiCall.hasErrorFor("commandPresent")) {
                 return defaultResponse();
@@ -66,51 +58,22 @@ class SlackController {
             }
         }
 
-//        if (!commandOptional.isPresent()) {
-//            return defaultResponse();
-//        }
-
-        // Makes remote API calls
-        RemoteApiServiceResponse response;
-        Optional<ICommand> subCommandOptional = commandOptional.get().findSubCommand(parsedCommand.get("sub_command"));
-
-//        if( !subCommandOptional.isPresent() && !commandOptional.get().getSubCommands().isEmpty()) {
-//            return defaultResponse(String.format("This sub command doesn't exist for %s", parsedCommand.get("command")));
-//        }
-
-        Map _params = remoteServiceParams(incomingSlackRequest);
-
-        // FIXME: Only fallback to command if there are no subcommands
-        ICommand cmd = subCommandOptional.orElse(commandOptional.get());
-
-        try {
-            Map args = cmd.getArguments().parse(parsedCommand.get("arguments"));
-            _params.putAll(args);
-        } catch (ArgumentParseException ex) {
-            Argument argument = ((Argument) ex.getThrower());
-            String text = String.format("`%s` is not found in your command.", argument.getName());
-
-            return ImmutableMap.of("text", text, "response_type", getSlackResponseType(MessageType.user));
-        }
-
-        response = remoteApiService.call(cmd, _params);
+        MakeRemoteApiCallResult result = makeRemoteApiCall.run();
 
         // Compiles final response to Slack
-        return textResponse(response.getMessageType(), response.getMessage());
+        if (result.isSuccess()) {
+            return textResponse(result);
+        } else {
+            return ImmutableMap.of("text", result.errors().get("argument"), "response_type", getSlackResponseType(MessageType.user));
+        }
     }
 
-    private HashMap<String, Object> remoteServiceParams(IncomingSlackRequest params) {
-        HashMap<String, Object> serviceParams = new HashMap<>();
-        serviceParams.put("username", String.format("%s@pivotal.io", params.getUserName()));
-        serviceParams.put("channel", params.getChannelName());
-        serviceParams.put("received_at", ZonedDateTime.now(clock).format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
-        serviceParams.put("command", params.getText());
+    HashMap<String, String> textResponse(MakeRemoteApiCallResult result) {
+        HashMap<String, String> response = new HashMap<>();
+        response.put("response_type", result.getMessageType());
+        response.put("text", result.getMessage());
 
-        return serviceParams;
-    }
-
-    private Optional<Command> getCommand(String commandName) {
-        return commandRepository.findOneByName(commandName);
+        return response;
     }
 
     HashMap<String, String> textResponse(Optional<MessageType> messageType, String text) {

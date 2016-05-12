@@ -158,7 +158,7 @@ public class SlackControllerTest {
             slackInputParams.put("text", "time in London");
             Arguments arguments = mock(Arguments.class);
 
-            SubCommand subCommand = createSubCommand();
+            SubCommand subCommand = createSubCommand("in");
             subCommand.setArguments(arguments);
 
             List<SubCommand> subCommands = new ArrayList<>();
@@ -168,6 +168,7 @@ public class SlackControllerTest {
             Map<String, String> parsedArguments = new TreeMap<>();
             parsedArguments.put("location", "London");
 
+            when(arguments.isParsable("London")).thenReturn(true);
             when(arguments.parse("London")).thenReturn(parsedArguments);
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
@@ -205,8 +206,11 @@ public class SlackControllerTest {
 
         @Test
         public void invalidMessageTypeTurnsIntoEpehemeral() throws Exception {
-            slackInputParams.put("text", "time england");
-            apiServiceParams.put("command", "time england");
+            slackInputParams.put("text", "time in england");
+            apiServiceParams.put("command", "time in england");
+
+            SubCommand subCommand = createSubCommand("in");
+            command.setSubCommands(Lists.newArrayList(subCommand));
 
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
@@ -214,7 +218,7 @@ public class SlackControllerTest {
             String englandTime = "The time in England is Tea o'clock.";
             serviceResponse.put("message", englandTime);
             serviceResponse.put("message_type", "dingDong");
-            when(remoteApiService.call(command, apiServiceParams))
+            when(remoteApiService.call(subCommand, apiServiceParams))
                     .thenReturn(new RemoteApiServiceResponse(true, serviceResponse, command.getDefaultResponseSuccess(), command.getDefaultResponseFailure()));
 
             Map<String, String> response = controller.index(slackInputParams);
@@ -227,7 +231,7 @@ public class SlackControllerTest {
             slackInputParams.put("text", "time in London");
             Arguments arguments = mock(Arguments.class);
 
-            SubCommand subCommand = createSubCommand();
+            SubCommand subCommand = createSubCommand("in");
             subCommand.setArguments(arguments);
 
             List<SubCommand> subCommands = new ArrayList<>();
@@ -237,6 +241,7 @@ public class SlackControllerTest {
             Map<String, String> parsedArguments = new TreeMap<>();
             parsedArguments.put("location", "London");
 
+            when(arguments.isParsable("London")).thenReturn(true);
             when(arguments.parse("London")).thenReturn(parsedArguments);
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
@@ -255,7 +260,7 @@ public class SlackControllerTest {
             slackInputParams.put("text", "time in London");
             Arguments arguments = mock(Arguments.class);
 
-            SubCommand subCommand = createSubCommand();
+            SubCommand subCommand = createSubCommand("in");
             subCommand.setArguments(arguments);
 
             List<SubCommand> subCommands = new ArrayList<>();
@@ -265,6 +270,7 @@ public class SlackControllerTest {
             Map<String, String> parsedArguments = new TreeMap<>();
             parsedArguments.put("location", "London");
 
+            when(arguments.isParsable("London")).thenReturn(true);
             when(arguments.parse("London")).thenReturn(parsedArguments);
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
@@ -283,7 +289,7 @@ public class SlackControllerTest {
             slackInputParams.put("text", "time in London");
             Arguments arguments = mock(Arguments.class);
 
-            SubCommand subCommand = createSubCommand();
+            SubCommand subCommand = createSubCommand("in");
             subCommand.setArguments(arguments);
             subCommand.setDefaultResponseSuccess(null);
 
@@ -294,6 +300,7 @@ public class SlackControllerTest {
             Map<String, String> parsedArguments = new TreeMap<>();
             parsedArguments.put("location", "London");
 
+            when(arguments.isParsable("London")).thenReturn(true);
             when(arguments.parse("London")).thenReturn(parsedArguments);
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
@@ -343,9 +350,12 @@ public class SlackControllerTest {
         @Test
         public void returnsDefaultResponseIfSubCommandsAreParsedButAreNotDefined() throws Exception {
             slackInputParams.put("text", "chocolate pinkberry argsssss");
-            List<SubCommand> subCommands = new ArrayList<>();
+            apiServiceParams.put("command", "chocolate pinkberry argsssss");
+            command.setName("chocolate");
 
-            subCommands.add(createSubCommand());
+            List<SubCommand> subCommands = new ArrayList<>();
+            subCommands.add(createSubCommand("other"));
+
             Optional<Command> command = Optional.of(new Command("chocolate", "http://fake-endpoint.tld") {{
                 setSubCommands(subCommands);
             }});
@@ -362,7 +372,7 @@ public class SlackControllerTest {
 
             Arguments arguments = Arguments.of(Lists.newArrayList(new RegexArgument("location", "/.+/")));
 
-            SubCommand subCommand = createSubCommand();
+            SubCommand subCommand = createSubCommand("in");
             subCommand.setArguments(arguments);
             subCommands.add(subCommand);
 

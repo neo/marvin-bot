@@ -16,6 +16,9 @@ public class Arguments {
     @Getter
     private List<Argument> arguments = new ArrayList<>();
 
+    @Getter
+    private Argument unparseableArgument;
+
     public Arguments() {
     }
 
@@ -95,5 +98,15 @@ public class Arguments {
         }
 
         return returnMap;
+    }
+
+    public boolean isParsable(String rawCommand) {
+        try {
+            parse(rawCommand);
+        } catch (ArgumentParseException e) {
+            unparseableArgument = (Argument) e.getThrower();
+            return false;
+        }
+        return true;
     }
 }

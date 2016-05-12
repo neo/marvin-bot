@@ -8,8 +8,8 @@ import javax.validation.Validator;
 import java.util.*;
 
 public class SlackText {
-    private String subCommand;
-    private String arguments;
+    private String subCommand = "";
+    private String arguments = "";
 
     private Validator validator;
     private String[] tokens;
