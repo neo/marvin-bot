@@ -1,5 +1,6 @@
 package io.pivotal.singapore.marvin.slack.interactions;
 
+import com.google.common.base.Preconditions;
 import io.pivotal.singapore.marvin.commands.Command;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
 import io.pivotal.singapore.marvin.commands.ICommand;
@@ -11,38 +12,38 @@ import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
 import io.pivotal.singapore.marvin.slack.IncomingSlackRequest;
 import io.pivotal.singapore.marvin.slack.SlackText;
-import org.hibernate.validator.internal.engine.path.PathImpl;
+import io.pivotal.singapore.marvin.slack.ValidationObject;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
 import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
-import java.util.stream.Collectors;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 
-public class MakeRemoteApiCall {
+public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
     private final CommandRepository commandRepository;
     private final IncomingSlackRequest incomingSlackRequest;
-    private final SlackText slackText;
+    private SlackText slackText;
 
-    private final Validator validator;
-    private Set<ConstraintViolation<MakeRemoteApiCall>> constraintViolations = Collections.emptySet();
     private Clock clock;
     private RemoteApiService remoteApiService;
 
-    public MakeRemoteApiCall(@NotNull IncomingSlackRequest incomingSlackRequest, Clock clock, RemoteApiService remoteApiService, CommandRepository commandRepository) {
-        assert(incomingSlackRequest.isValid());
+    @Override
+    public MakeRemoteApiCall self() {
+        return this;
+    }
+
+    public MakeRemoteApiCall(IncomingSlackRequest incomingSlackRequest, Clock clock, RemoteApiService remoteApiService, CommandRepository commandRepository) {
+        Preconditions.checkNotNull(incomingSlackRequest);
+        Preconditions.checkArgument(incomingSlackRequest.isValid());
         this.incomingSlackRequest = incomingSlackRequest;
 
         SlackText slackText = new SlackText(incomingSlackRequest.getText());
-        assert(slackText.isValid());
+        Preconditions.checkState(slackText.isValid());
         this.slackText = slackText;
 
-        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
         this.commandRepository = commandRepository;
         this.remoteApiService = remoteApiService;
         this.clock = clock;
@@ -55,8 +56,9 @@ public class MakeRemoteApiCall {
         Arguments arguments = cmd.getArguments();
 
         if (arguments.isParsable(slackText.getArguments())) {
-            try { _params.putAll(arguments.parse(slackText.getArguments())); }
-            catch (ArgumentParseException e) { /* already verified to valid */ }
+            try {
+                _params.putAll(arguments.parse(slackText.getArguments()));
+            } catch (ArgumentParseException e) { /* already verified to valid */ }
         } else {
             Argument argument = arguments.getUnparseableArgument();
             String text = String.format("`%s` is not found in your command.", argument.getName());
@@ -119,46 +121,5 @@ public class MakeRemoteApiCall {
 
     private Optional<Command> findCommand() {
         return this.commandRepository.findOneByName(slackText.getCommand());
-    }
-
-    public boolean isInvalid() {
-        constraintViolations = this.validator.validate(this);
-        return constraintViolations.size() > 0;
-    }
-
-    public boolean isValid() {
-        return !isInvalid();
-    }
-
-    public boolean hasErrorFor(String field) {
-        return getErrors().containsKey(field);
-    }
-
-    public Map<String, Object> getErrors() {
-        List<String> fields = getErrorFields();
-        List<Object> values = getErrorValues();
-
-        assert (fields.size() == values.size());
-
-        HashMap<String, Object> errors = new HashMap();
-        for (int i = 0; i < fields.size(); i++) {
-            errors.put(fields.get(i), values.get(i));
-        }
-        return errors;
-    }
-
-    private List<Object> getErrorValues() {
-        return constraintViolations
-            .stream()
-            .map(ConstraintViolation::getInvalidValue)
-            .collect(Collectors.toList());
-    }
-
-    private List<String> getErrorFields() {
-        return constraintViolations
-            .stream()
-            .map(ConstraintViolation::getPropertyPath)
-            .map(pathImpl -> ((PathImpl) pathImpl).getLeafNode().getName())
-            .collect(Collectors.toList());
     }
 }

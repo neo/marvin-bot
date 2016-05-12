@@ -2,19 +2,15 @@ package io.pivotal.singapore.marvin.slack;
 
 import org.hibernate.validator.constraints.NotBlank;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import java.util.*;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.Queue;
 
-public class SlackText {
+public class SlackText extends ValidationObject<SlackText> {
     private String subCommand = "";
     private String arguments = "";
 
-    private Validator validator;
     private String[] tokens;
-
-    private Set<ConstraintViolation<SlackText>> constraintViolations = Collections.emptySet();
 
     public SlackText(@NotBlank String textCommand) {
         tokens = textCommand.trim().split(" ");
@@ -27,20 +23,8 @@ public class SlackText {
             argumentTokens.poll();
             argumentTokens.poll();
 
-            String arguments = String.join(" ", argumentTokens);
-            this.arguments = arguments;
+            this.arguments = String.join(" ", argumentTokens);
         }
-
-        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
-    }
-
-    public boolean isInvalid() {
-        constraintViolations = this.validator.validate(this);
-        return constraintViolations.size() > 0;
-    }
-
-    public boolean isValid() {
-        return !isInvalid();
     }
 
     @NotBlank
@@ -54,5 +38,10 @@ public class SlackText {
 
     public String getArguments() {
         return arguments;
+    }
+
+    @Override
+    public SlackText self() {
+        return this;
     }
 }

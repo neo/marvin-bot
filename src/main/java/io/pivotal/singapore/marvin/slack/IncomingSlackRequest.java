@@ -2,22 +2,11 @@ package io.pivotal.singapore.marvin.slack;
 
 import lombok.Getter;
 import org.hibernate.validator.constraints.NotBlank;
-import org.hibernate.validator.internal.engine.path.PathImpl;
-import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
 import javax.validation.constraints.AssertTrue;
-import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
 
-public class IncomingSlackRequest {
-    private Validator validator;
-
+public class IncomingSlackRequest extends ValidationObject<IncomingSlackRequest> {
     @Getter @NotBlank private String token;
     @Getter @NotBlank private String text;
     @Getter @NotBlank private String channelName;
@@ -31,8 +20,6 @@ public class IncomingSlackRequest {
 
     private String slackToken;
 
-    private Set<ConstraintViolation<IncomingSlackRequest>> constraintViolations = Collections.emptySet();
-
     public IncomingSlackRequest(Map<String, String> params, String slackToken) {
         this.token = params.getOrDefault("token", null);
         this.teamId = params.getOrDefault("team_id", null);
@@ -45,7 +32,6 @@ public class IncomingSlackRequest {
         this.text = params.getOrDefault("text", null);
         this.responseUrl = params.getOrDefault("response_url", null);
         this.slackToken = slackToken;
-        this.validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     @AssertTrue
@@ -53,45 +39,9 @@ public class IncomingSlackRequest {
         return this.token != null && this.token.equals(this.slackToken);
     }
 
-    public boolean isInvalid() {
-        constraintViolations = this.validator.validate(this);
-        return constraintViolations.size() > 0;
-    }
-
-    public boolean isValid() {
-        return !isInvalid();
-    }
-
-    public boolean hasErrorFor(String field) {
-        return getErrors().containsKey(field);
-    }
-
-    public Map<String, Object> getErrors() {
-        List<String> fields = getErrorFields();
-        List<Object> values = getErrorValues();
-
-        assert (fields.size() == values.size());
-
-        HashMap<String, Object> errors = new HashMap();
-        for (int i = 0; i < fields.size(); i++) {
-            errors.put(fields.get(i), values.get(i));
-        }
-        return errors;
-    }
-
-    private List<Object> getErrorValues() {
-        return constraintViolations
-            .stream()
-            .map(ConstraintViolation::getInvalidValue)
-            .collect(Collectors.toList());
-    }
-
-    private List<String> getErrorFields() {
-        return constraintViolations
-            .stream()
-            .map(ConstraintViolation::getPropertyPath)
-            .map(pathImpl -> ((PathImpl) pathImpl).getLeafNode().getName())
-            .collect(Collectors.toList());
+    @Override
+    public IncomingSlackRequest self() {
+        return this;
     }
 }
 
