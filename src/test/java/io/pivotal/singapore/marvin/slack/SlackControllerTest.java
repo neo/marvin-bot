@@ -132,7 +132,7 @@ public class SlackControllerTest {
 
             Map<String, String> response = controller.index(slackInputParams);
             assertThat(response.get("text"), is(equalTo(australiaTime)));
-            verify(commandRepository, times(1)).findOneByName("time");
+            verify(commandRepository, atLeastOnce()).findOneByName("time");
             verify(remoteApiService, times(1)).call(command, apiServiceParams);
         }
 

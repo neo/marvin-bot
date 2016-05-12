@@ -42,7 +42,7 @@ public class MakeRemoteApiCall {
 
     @AssertTrue
     private boolean isSubCommandPresent() {
-        return isCommandPresent() && findSubCommand().isPresent();
+        return isCommandPresent() && (findSubCommand().isPresent() || getCommand().getSubCommands().isEmpty());
     }
 
     private Optional<ICommand> findSubCommand() {
