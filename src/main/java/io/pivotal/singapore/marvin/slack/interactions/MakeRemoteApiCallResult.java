@@ -1,7 +1,5 @@
 package io.pivotal.singapore.marvin.slack.interactions;
 
-import java.util.Map;
-
 public class MakeRemoteApiCallResult {
     private InteractionResult result;
 
@@ -19,9 +17,5 @@ public class MakeRemoteApiCallResult {
 
     public boolean isSuccess() {
         return result.isSuccess();
-    }
-
-    public Map<String, String> errors() {
-        return result.errors;
     }
 }

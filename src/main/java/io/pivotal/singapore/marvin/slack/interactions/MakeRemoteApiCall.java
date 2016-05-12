@@ -63,7 +63,8 @@ public class MakeRemoteApiCall {
 
             return new MakeRemoteApiCallResult(new InteractionResult.Builder()
                 .isSuccess(false)
-                .error("argument", text)
+                .body("messageType", getSlackResponseType(MessageType.user))
+                .body("message", text)
                 .build());
         }
         RemoteApiServiceResponse response = remoteApiService.call(cmd, _params);

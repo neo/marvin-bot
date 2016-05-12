@@ -1,6 +1,5 @@
 package io.pivotal.singapore.marvin.slack;
 
-import com.google.common.collect.ImmutableMap;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
 import io.pivotal.singapore.marvin.core.CommandParserService;
 import io.pivotal.singapore.marvin.core.MessageType;
@@ -42,7 +41,7 @@ class SlackController {
             if (incomingSlackRequest.hasErrorFor("recognizedToken")) {
                 throw new UnrecognizedApiToken();
             }
-            return defaultResponse();
+            return errorResponse("This will all end in tears.");
         }
 
         // Parses into command, sub-command, args as token strings
@@ -52,9 +51,9 @@ class SlackController {
         MakeRemoteApiCall makeRemoteApiCall = new MakeRemoteApiCall(incomingSlackRequest, clock, remoteApiService, commandRepository);
         if (makeRemoteApiCall.isInvalid()) {
             if (makeRemoteApiCall.hasErrorFor("commandPresent")) {
-                return defaultResponse();
+                return errorResponse("This will all end in tears.");
             } else if (makeRemoteApiCall.hasErrorFor("subCommandPresent")) {
-                return defaultResponse(String.format("This sub command doesn't exist for %s", parsedCommand.get("command")));
+                return errorResponse(String.format("This sub command doesn't exist for %s", parsedCommand.get("command")));
             }
         }
 
@@ -62,13 +61,13 @@ class SlackController {
 
         // Compiles final response to Slack
         if (result.isSuccess()) {
-            return textResponse(result);
+            return successResponse(result);
         } else {
-            return ImmutableMap.of("text", result.errors().get("argument"), "response_type", getSlackResponseType(MessageType.user));
+            return errorResponse(result.getMessage());
         }
     }
 
-    HashMap<String, String> textResponse(MakeRemoteApiCallResult result) {
+    HashMap<String, String> successResponse(MakeRemoteApiCallResult result) {
         HashMap<String, String> response = new HashMap<>();
         response.put("response_type", result.getMessageType());
         response.put("text", result.getMessage());
@@ -76,12 +75,12 @@ class SlackController {
         return response;
     }
 
-    HashMap<String, String> textResponse(Optional<MessageType> messageType, String text) {
-        String responseType = getSlackResponseType(messageType.orElse(MessageType.user));
+    private HashMap<String, String> errorResponse(String message) {
+        String responseType = getSlackResponseType(Optional.of(MessageType.user).orElse(MessageType.user));
 
         HashMap<String, String> response = new HashMap<>();
         response.put("response_type", responseType);
-        response.put("text", text);
+        response.put("text", message);
 
         return response;
     }
@@ -97,14 +96,6 @@ class SlackController {
                     String.format("MessageType '%s' is not configured for Slack", messageType.toString())
                 );
         }
-    }
-
-    private HashMap<String, String> defaultResponse() {
-        return defaultResponse("This will all end in tears.");
-    }
-
-    private HashMap<String, String> defaultResponse(String message) {
-        return textResponse(Optional.of(MessageType.user), message);
     }
 }
 
