@@ -35,6 +35,10 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
         return this;
     }
 
+    // TODO: 12/5/16
+    //      - create facade object (rename SlackText to be that) to hide irrelevant fields in IncomingSlackRequest
+    //      - pass this object to run() method
+    //      - MakeRemoteApiCallResult should not return messageType
     public MakeRemoteApiCall(IncomingSlackRequest incomingSlackRequest, Clock clock, RemoteApiService remoteApiService, CommandRepository commandRepository) {
         Preconditions.checkNotNull(incomingSlackRequest);
         Preconditions.checkArgument(incomingSlackRequest.isValid());
