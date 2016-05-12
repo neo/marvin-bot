@@ -20,8 +20,8 @@ public class TimestampArgument extends AbstractArgument {
         setName(name);
     }
 
-    public static Boolean canParse(String capture) {
-        return capture.equals(MACRO_NAME);
+    public static Boolean matches(String pattern) {
+        return pattern.equals(MACRO_NAME);
     }
 
     @Override

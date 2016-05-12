@@ -18,8 +18,8 @@ public class RegexArgument extends AbstractArgument {
         setRegex(regex);
     }
 
-    public static Boolean canParse(String capture) {
-        return capture.startsWith("/") && capture.endsWith("/");
+    public static Boolean matches(String pattern) {
+        return pattern.startsWith("/") && pattern.endsWith("/");
     }
 
     public Pattern getRegex() {
