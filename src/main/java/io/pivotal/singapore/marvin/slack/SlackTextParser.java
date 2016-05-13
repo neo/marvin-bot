@@ -1,18 +1,16 @@
 package io.pivotal.singapore.marvin.slack;
 
-import org.hibernate.validator.constraints.NotBlank;
-
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class SlackText extends ValidationObject<SlackText> {
+public class SlackTextParser extends ValidationObject<SlackTextParser> {
     private String subCommand = "";
     private String arguments = "";
 
     private String[] tokens;
 
-    public SlackText(@NotBlank String textCommand) {
+    public SlackTextParser(String textCommand) {
         tokens = textCommand.trim().split(" ");
 
         if (tokens.length > 1) {
@@ -27,7 +25,6 @@ public class SlackText extends ValidationObject<SlackText> {
         }
     }
 
-    @NotBlank
     public String getCommand() {
         return tokens[0];
     }
@@ -41,7 +38,7 @@ public class SlackText extends ValidationObject<SlackText> {
     }
 
     @Override
-    public SlackText self() {
+    public SlackTextParser self() {
         return this;
     }
 }

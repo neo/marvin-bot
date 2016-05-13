@@ -5,6 +5,7 @@ import io.pivotal.singapore.marvin.core.CommandParserService;
 import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall;
+import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCallControllerAdapter;
 import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCallResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -47,8 +48,9 @@ class SlackController {
         // Parses into command, sub-command, args as token strings
         HashMap<String, String> parsedCommand = commandParserService.parse(incomingSlackRequest.getText());
 
-        // Checks if Command exists
-        MakeRemoteApiCall makeRemoteApiCall = new MakeRemoteApiCall(incomingSlackRequest, clock, remoteApiService, commandRepository);
+        MakeRemoteApiCallControllerAdapter adapter = new MakeRemoteApiCallControllerAdapter(incomingSlackRequest);
+
+        MakeRemoteApiCall makeRemoteApiCall = new MakeRemoteApiCall(adapter, clock, remoteApiService, commandRepository);
         if (makeRemoteApiCall.isInvalid()) {
             if (makeRemoteApiCall.hasErrorFor("commandPresent")) {
                 return errorResponse("This will all end in tears.");

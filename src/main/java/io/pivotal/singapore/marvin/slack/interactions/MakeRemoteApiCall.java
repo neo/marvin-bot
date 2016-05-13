@@ -1,6 +1,5 @@
 package io.pivotal.singapore.marvin.slack.interactions;
 
-import com.google.common.base.Preconditions;
 import io.pivotal.singapore.marvin.commands.Command;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
 import io.pivotal.singapore.marvin.commands.ICommand;
@@ -10,8 +9,6 @@ import io.pivotal.singapore.marvin.commands.arguments.Arguments;
 import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
-import io.pivotal.singapore.marvin.slack.IncomingSlackRequest;
-import io.pivotal.singapore.marvin.slack.SlackText;
 import io.pivotal.singapore.marvin.slack.ValidationObject;
 
 import javax.validation.constraints.AssertTrue;
@@ -24,11 +21,10 @@ import java.util.Optional;
 
 public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
     private final CommandRepository commandRepository;
-    private final IncomingSlackRequest incomingSlackRequest;
-    private SlackText slackText;
-
     private Clock clock;
     private RemoteApiService remoteApiService;
+
+    private MakeRemoteApiCallParams params;
 
     @Override
     public MakeRemoteApiCall self() {
@@ -36,32 +32,25 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
     }
 
     // TODO: 12/5/16
-    //      - create facade object (rename SlackText to be that) to hide irrelevant fields in IncomingSlackRequest
+    //      x create adapter (rename SlackTextParser to be that) to hide irrelevant fields in IncomingSlackRequest
     //      - pass this object to run() method
     //      - MakeRemoteApiCallResult should not return messageType
-    public MakeRemoteApiCall(IncomingSlackRequest incomingSlackRequest, Clock clock, RemoteApiService remoteApiService, CommandRepository commandRepository) {
-        Preconditions.checkNotNull(incomingSlackRequest);
-        Preconditions.checkArgument(incomingSlackRequest.isValid());
-        this.incomingSlackRequest = incomingSlackRequest;
-
-        SlackText slackText = new SlackText(incomingSlackRequest.getText());
-        Preconditions.checkState(slackText.isValid());
-        this.slackText = slackText;
-
+    public MakeRemoteApiCall(MakeRemoteApiCallParams makeRemoteApiCallParams, Clock clock, RemoteApiService remoteApiService, CommandRepository commandRepository) {
+        this.params = makeRemoteApiCallParams;
         this.commandRepository = commandRepository;
         this.remoteApiService = remoteApiService;
         this.clock = clock;
     }
 
     public MakeRemoteApiCallResult run() {
-        Map _params = remoteServiceParams(incomingSlackRequest);
-        ICommand cmd = findSubCommand().orElse(getCommand());
+        Map remoteServiceParams = remoteServiceParams();
+        ICommand command = findSubCommand().orElse(getCommand());
 
-        Arguments arguments = cmd.getArguments();
+        Arguments arguments = command.getArguments();
 
-        if (arguments.isParsable(slackText.getArguments())) {
+        if (arguments.isParsable(params.getArguments())) {
             try {
-                _params.putAll(arguments.parse(slackText.getArguments()));
+                remoteServiceParams.putAll(arguments.parse(params.getArguments()));
             } catch (ArgumentParseException e) { /* already verified to valid */ }
         } else {
             Argument argument = arguments.getUnparseableArgument();
@@ -73,7 +62,7 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
                 .body("message", text)
                 .build());
         }
-        RemoteApiServiceResponse response = remoteApiService.call(cmd, _params);
+        RemoteApiServiceResponse response = remoteApiService.call(command, remoteServiceParams);
 
         return new MakeRemoteApiCallResult(new InteractionResult.Builder()
             .isSuccess(true)
@@ -95,7 +84,7 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
         }
     }
 
-    private HashMap<String, Object> remoteServiceParams(IncomingSlackRequest params) {
+    private HashMap<String, Object> remoteServiceParams() {
         HashMap<String, Object> serviceParams = new HashMap<>();
         serviceParams.put("username", String.format("%s@pivotal.io", params.getUserName()));
         serviceParams.put("channel", params.getChannelName());
@@ -116,7 +105,7 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
     }
 
     private Optional<ICommand> findSubCommand() {
-        return getCommand().findSubCommand(slackText.getSubCommand());
+        return getCommand().findSubCommand(params.getSubCommand());
     }
 
     private Command getCommand() {
@@ -124,6 +113,6 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
     }
 
     private Optional<Command> findCommand() {
-        return this.commandRepository.findOneByName(slackText.getCommand());
+        return this.commandRepository.findOneByName(params.getCommand());
     }
 }
