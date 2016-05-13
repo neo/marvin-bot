@@ -1,24 +1,40 @@
 package io.pivotal.singapore.marvin.slack.interactions;
 
-import java.util.HashMap;
-import java.util.Map;
+import io.pivotal.singapore.marvin.core.MessageType;
+import lombok.Getter;
+
+enum InteractionResultType {
+    SUCCESS,
+    ERROR,
+    VALIDATION,
+}
 
 final public class InteractionResult {
-    boolean isSuccess;
-    Map<String, String> body;
+    @Getter private final String message;
+    @Getter private final MessageType messageType;
+    @Getter private final InteractionResultType type;
+
+    public boolean isSuccess() {
+        return type == InteractionResultType.SUCCESS;
+    }
 
     public static class Builder {
-        boolean isSuccess;
-        Map<String, String> body = new HashMap();
+        String message;
+        MessageType messageType;
+        InteractionResultType type;
 
-
-        public Builder isSuccess(boolean val) {
-            isSuccess = val;
+        public Builder message(String val) {
+            message = val;
             return this;
         }
 
-        public Builder body(String key, String value) {
-            body.put(key, value);
+        public Builder messageType(MessageType val) {
+            messageType = val;
+            return this;
+        }
+
+        public Builder type(InteractionResultType val) {
+            type = val;
             return this;
         }
 
@@ -27,12 +43,9 @@ final public class InteractionResult {
         }
     }
 
-    public boolean isSuccess() {
-        return isSuccess;
-    }
-
     private InteractionResult(Builder builder) {
-        isSuccess = builder.isSuccess;
-        body = builder.body;
+        message = builder.message;
+        messageType = builder.messageType;
+        type = builder.type;
     }
 }

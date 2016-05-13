@@ -4,9 +4,9 @@ import io.pivotal.singapore.marvin.commands.CommandRepository;
 import io.pivotal.singapore.marvin.core.CommandParserService;
 import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
+import io.pivotal.singapore.marvin.slack.interactions.InteractionResult;
 import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall;
 import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCallControllerAdapter;
-import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCallResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -59,7 +59,7 @@ class SlackController {
             }
         }
 
-        MakeRemoteApiCallResult result = makeRemoteApiCall.run();
+        InteractionResult result = makeRemoteApiCall.run();
 
         // Compiles final response to Slack
         if (result.isSuccess()) {
@@ -69,9 +69,9 @@ class SlackController {
         }
     }
 
-    HashMap<String, String> successResponse(MakeRemoteApiCallResult result) {
+    HashMap<String, String> successResponse(InteractionResult result) {
         HashMap<String, String> response = new HashMap<>();
-        response.put("response_type", result.getMessageType());
+        response.put("response_type", getSlackResponseType(result.getMessageType()));
         response.put("text", result.getMessage());
 
         return response;

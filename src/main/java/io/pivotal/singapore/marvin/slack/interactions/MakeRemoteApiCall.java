@@ -34,7 +34,7 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
     // TODO: 12/5/16
     //      x create adapter (rename SlackTextParser to be that) to hide irrelevant fields in IncomingSlackRequest
     //      - pass this object to run() method
-    //      - MakeRemoteApiCallResult should not return messageType
+    //      x MakeRemoteApiCallResult should not return messageType
     public MakeRemoteApiCall(MakeRemoteApiCallParams makeRemoteApiCallParams, Clock clock, RemoteApiService remoteApiService, CommandRepository commandRepository) {
         this.params = makeRemoteApiCallParams;
         this.commandRepository = commandRepository;
@@ -42,7 +42,7 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
         this.clock = clock;
     }
 
-    public MakeRemoteApiCallResult run() {
+    public InteractionResult run() {
         Map remoteServiceParams = remoteServiceParams();
         ICommand command = findSubCommand().orElse(getCommand());
 
@@ -56,32 +56,19 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
             Argument argument = arguments.getUnparseableArgument();
             String text = String.format("`%s` is not found in your command.", argument.getName());
 
-            return new MakeRemoteApiCallResult(new InteractionResult.Builder()
-                .isSuccess(false)
-                .body("messageType", getSlackResponseType(MessageType.user))
-                .body("message", text)
-                .build());
+            return new InteractionResult.Builder()
+                .messageType(MessageType.user)
+                .message(text)
+                .type(InteractionResultType.VALIDATION)
+                .build();
         }
         RemoteApiServiceResponse response = remoteApiService.call(command, remoteServiceParams);
 
-        return new MakeRemoteApiCallResult(new InteractionResult.Builder()
-            .isSuccess(true)
-            .body("messageType", getSlackResponseType(response.getMessageType().orElse(MessageType.user)))
-            .body("message", response.getMessage())
-            .build());
-    }
-
-    private String getSlackResponseType(MessageType messageType) {
-        switch (messageType) {
-            case user:
-                return "ephemeral";
-            case channel:
-                return "in_channel";
-            default:
-                throw new IllegalArgumentException(
-                    String.format("MessageType '%s' is not configured for Slack", messageType.toString())
-                );
-        }
+        return new InteractionResult.Builder()
+            .messageType(response.getMessageType().orElse(MessageType.user))
+            .message(response.getMessage())
+            .type(response.isSuccessful() ? InteractionResultType.SUCCESS : InteractionResultType.ERROR)
+            .build();
     }
 
     private HashMap<String, Object> remoteServiceParams() {
