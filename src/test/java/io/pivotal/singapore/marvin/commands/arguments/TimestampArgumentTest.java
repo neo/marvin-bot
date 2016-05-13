@@ -1,6 +1,5 @@
 package io.pivotal.singapore.marvin.commands.arguments;
 
-import io.pivotal.singapore.marvin.utils.Pair;
 import io.pivotal.singapore.marvin.utils.ThrowableCatcher;
 import org.junit.Test;
 
@@ -18,22 +17,39 @@ public class TimestampArgumentTest {
     private String expectedDateTimeString = "2016-03-23T19:00:00+08:00";
 
     @Test
-    public void parseTimestringOnItsOwn() throws ArgumentParseException {
-        Pair<Integer, String> result = subject.parse("23rd of March at 7pm");
+    public void parseTimestringOnItsOwn() {
+        String rawCommand = "23rd of March at 7pm";
+        ArgumentParsedResult result = subject.parse(rawCommand);
 
-        assertThat(result.last, equalTo(expectedDateTimeString));
-    }
-
-    @Test(expected = ArgumentParseException.class)
-    public void noValidTimeString() throws ArgumentParseException {
-        subject.parse("I'm a fluffy ballonicorn!");
+        assertThat(result.getArgumentName(), equalTo(defaultName));
+        assertThat(result.getMatchOffset(), equalTo(rawCommand.length()));
+        assertThat(result.getMatchResult(), equalTo(expectedDateTimeString));
+        assertThat(result.getPattern(), equalTo("TIMESTAMP"));
+        assertThat(result.getType(), equalTo(ArgumentParsedResultType.SUCCESS));
     }
 
     @Test
-    public void parseValidTimeStringWithOtherStuff() throws ArgumentParseException {
-        Pair<Integer, String> result = subject.parse("BBQ At the Pivotal Labs Singapore office on the 23rd of March at 7pm");
+    public void noValidTimeString() {
+        String rawCommand = "I'm a fluffy ballonicorn!";
+        ArgumentParsedResult result = subject.parse(rawCommand);
 
-        assertThat(result.last, equalTo(expectedDateTimeString));
+        assertThat(result.getArgumentName(), equalTo(defaultName));
+        assertThat(result.getMatchOffset(), equalTo(0));
+        assertThat(result.getMatchResult(), is(emptyString()));
+        assertThat(result.getPattern(), equalTo("TIMESTAMP"));
+        assertThat(result.getType(), equalTo(ArgumentParsedResultType.FAILURE));
+    }
+
+    @Test
+    public void parseValidTimeStringWithOtherStuff() {
+        String rawCommand = "BBQ At the Pivotal Labs Singapore office on the 23rd of March at 7pm";
+        ArgumentParsedResult result = subject.parse(rawCommand);
+
+        assertThat(result.getArgumentName(), equalTo(defaultName));
+        assertThat(result.getMatchOffset(), equalTo(rawCommand.length()));
+        assertThat(result.getMatchResult(), equalTo(expectedDateTimeString));
+        assertThat(result.getPattern(), equalTo("TIMESTAMP"));
+        assertThat(result.getType(), equalTo(ArgumentParsedResultType.SUCCESS));
     }
 
     @Test
@@ -54,12 +70,12 @@ public class TimestampArgumentTest {
     }
 
     @Test
-    public void noNanosecondsInOutput() throws ArgumentParseException {
+    public void noNanosecondsInOutput() {
         String s = "tomorrow";
 
-        Pair<Integer, String> result  = subject.parse(s);
+        ArgumentParsedResult result  = subject.parse(s);
 
-        String timestamp = result.last;
+        String timestamp = result.getMatchResult();
         String timePart = timestamp.split("T")[1].split("\\+")[0];
         String seconds = timePart.split(":")[2];
 

@@ -2,7 +2,6 @@ package io.pivotal.singapore.marvin.commands.arguments;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.pivotal.singapore.marvin.utils.Pair;
 import lombok.Getter;
 import org.ocpsoft.prettytime.shade.edu.emory.mathcs.backport.java.util.Collections;
 
@@ -10,14 +9,12 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import java.util.TreeMap;
 
 public class Arguments {
     @Getter
     private List<Argument> arguments = new ArrayList<>();
 
-    @Getter
-    private Argument unparseableArgument;
+    private List<ArgumentParsedResult> parsedResults = new ArrayList<>();
 
     public Arguments() {
     }
@@ -86,27 +83,25 @@ public class Arguments {
         return returnValue;
     }
 
-    public Map<String, String> parse(String rawCommand) throws ArgumentParseException {
-        TreeMap<String, String> returnMap = new TreeMap<>();
+    public List<ArgumentParsedResult> parse(String rawCommand) {
         rawCommand = rawCommand.trim();
 
         for (Argument argument : getArguments()) {
-            Pair<Integer, String> match = argument.parse(rawCommand);
-            rawCommand = rawCommand.subSequence(match.first, rawCommand.length()).toString().trim();
+            ArgumentParsedResult match;
 
-            returnMap.put(argument.getName(), match.last);
+            match = argument.parse(rawCommand);
+            if (match.isFailure()) {
+                parsedResults.add(match);
+                break;
+            }
+            rawCommand = rawCommand.subSequence(match.getMatchOffset(), rawCommand.length()).toString().trim();
+            parsedResults.add(match);
         }
 
-        return returnMap;
+        return parsedResults;
     }
 
-    public boolean isParsable(String rawCommand) {
-        try {
-            parse(rawCommand);
-        } catch (ArgumentParseException e) {
-            unparseableArgument = (Argument) e.getThrower();
-            return false;
-        }
-        return true;
+    public boolean hasParseError() {
+        return parsedResults.stream().anyMatch(ArgumentParsedResult::isFailure);
     }
 }

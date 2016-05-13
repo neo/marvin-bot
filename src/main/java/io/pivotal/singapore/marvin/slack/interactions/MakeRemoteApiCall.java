@@ -1,10 +1,10 @@
 package io.pivotal.singapore.marvin.slack.interactions;
 
+import com.google.common.collect.ImmutableMap;
 import io.pivotal.singapore.marvin.commands.Command;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
 import io.pivotal.singapore.marvin.commands.ICommand;
-import io.pivotal.singapore.marvin.commands.arguments.Argument;
-import io.pivotal.singapore.marvin.commands.arguments.ArgumentParseException;
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResult;
 import io.pivotal.singapore.marvin.commands.arguments.Arguments;
 import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
@@ -15,9 +15,10 @@ import javax.validation.constraints.AssertTrue;
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
     private final CommandRepository commandRepository;
@@ -25,6 +26,7 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
     private RemoteApiService remoteApiService;
 
     private MakeRemoteApiCallParams params;
+
 
     @Override
     public MakeRemoteApiCall self() {
@@ -46,26 +48,21 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
     }
 
     public InteractionResult run() {
-        Map remoteServiceParams = remoteServiceParams();
         ICommand command = findSubCommand().orElse(getCommand());
 
         Arguments arguments = command.getArguments();
 
-        if (arguments.isParsable(params.getArguments())) {
-            try {
-                remoteServiceParams.putAll(arguments.parse(params.getArguments()));
-            } catch (ArgumentParseException e) { /* already verified to valid */ }
-        } else {
-            Argument argument = arguments.getUnparseableArgument();
-            String text = String.format("`%s` is not found in your command.", argument.getName());
+        final List<ArgumentParsedResult> argumentParsedResults = arguments.parse(params.getArguments());
 
+        if (arguments.hasParseError()) {
+            ArgumentParsedResult failedParsedArgument = argumentParsedResults.get(0);
             return new InteractionResult.Builder()
                 .messageType(MessageType.user)
-                .message(text)
+                .message(String.format("`%s` is not found in your command.", failedParsedArgument.getArgumentName()))
                 .type(InteractionResultType.VALIDATION)
                 .build();
         }
-        RemoteApiServiceResponse response = remoteApiService.call(command, remoteServiceParams);
+        RemoteApiServiceResponse response = remoteApiService.call(command, remoteServiceParams(argumentParsedResults));
 
         return new InteractionResult.Builder()
             .messageType(response.getMessageType().orElse(MessageType.user))
@@ -74,14 +71,17 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
             .build();
     }
 
-    private HashMap<String, Object> remoteServiceParams() {
-        HashMap<String, Object> serviceParams = new HashMap<>();
-        serviceParams.put("username", String.format("%s@pivotal.io", params.getUserName()));
-        serviceParams.put("channel", params.getChannelName());
-        serviceParams.put("received_at", ZonedDateTime.now(clock).format(DateTimeFormatter.ISO_ZONED_DATE_TIME));
-        serviceParams.put("command", params.getText());
-
-        return serviceParams;
+    private Map<String, String> remoteServiceParams(List<ArgumentParsedResult> results) {
+        Map<String, String> parsedArguments = results.stream()
+                .collect(Collectors.toMap(ArgumentParsedResult::getArgumentName,
+                                          ArgumentParsedResult::getMatchResult));
+        return new ImmutableMap.Builder<String, String>()
+            .put("username", String.format("%s@pivotal.io", params.getUserName()))
+            .put("channel", params.getChannelName())
+            .put("received_at", ZonedDateTime.now(clock).format(DateTimeFormatter.ISO_ZONED_DATE_TIME))
+            .put("command", params.getText())
+            .putAll(parsedArguments)
+            .build();
     }
 
     @AssertTrue

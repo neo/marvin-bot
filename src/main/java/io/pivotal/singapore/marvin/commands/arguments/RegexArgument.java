@@ -1,7 +1,5 @@
 package io.pivotal.singapore.marvin.commands.arguments;
 
-import io.pivotal.singapore.marvin.utils.Pair;
-
 import java.util.regex.MatchResult;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -37,20 +35,27 @@ public class RegexArgument extends AbstractArgument {
     }
 
     @Override
-    public Pair<Integer, String> parse(String rawCommand) throws ArgumentParseException {
+    public ArgumentParsedResult parse(String rawCommand) {
         Matcher m = getRegex().matcher(rawCommand);
 
         try {
             m.find();
             MatchResult results = m.toMatchResult();
 
-            return new Pair<>(m.end(0), results.group(1));
+            return new ArgumentParsedResult.Builder()
+                .argumentName(name)
+                .matchOffset(m.end(0))
+                .matchResult(results.group(1))
+                .pattern(pattern)
+                .success()
+                .build();
         } catch (IndexOutOfBoundsException | IllegalStateException ex) {
-            throw new ArgumentParseException(
-                    String.format("Argument '%s' found no match with regex '%s' in '%s'", name, regex, rawCommand),
-                    ex,
-                    this
-            );
+            return new ArgumentParsedResult.Builder()
+                .argumentName(name)
+                .matchResult(rawCommand)
+                .pattern(pattern)
+                .failure()
+                .build();
         }
     }
 }

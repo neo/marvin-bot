@@ -4,6 +4,7 @@ import com.google.common.collect.Lists;
 import io.pivotal.singapore.marvin.commands.Command;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
 import io.pivotal.singapore.marvin.commands.SubCommand;
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResult;
 import io.pivotal.singapore.marvin.commands.arguments.Arguments;
 import io.pivotal.singapore.marvin.commands.arguments.RegexArgument;
 import io.pivotal.singapore.marvin.core.CommandParserService;
@@ -25,6 +26,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import static io.pivotal.singapore.marvin.utils.CommandFactory.createSubCommand;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -164,14 +166,19 @@ public class SlackControllerTest {
             subCommands.add(subCommand);
             command.setSubCommands(subCommands);
 
-            Map<String, String> parsedArguments = new TreeMap<>();
-            parsedArguments.put("location", "London");
+            List<ArgumentParsedResult> parsedArguments = new ArrayList<>();
+            parsedArguments.add(
+                new ArgumentParsedResult.Builder()
+                    .argumentName("location")
+                    .matchResult("London")
+                    .success()
+                    .build()
+            );
 
-            when(arguments.isParsable("London")).thenReturn(true);
             when(arguments.parse("London")).thenReturn(parsedArguments);
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
-            apiServiceParams.putAll(parsedArguments);
+            apiServiceParams.putAll(parsedArguments.stream().collect(Collectors.toMap(ArgumentParsedResult::getArgumentName, ArgumentParsedResult::getMatchResult)));
             apiServiceParams.put("command", "time in London");
             Map<String, String> returnParams = new TreeMap<>();
             String englandTime = "The time in England is Tea o'clock.";
@@ -237,14 +244,19 @@ public class SlackControllerTest {
             subCommands.add(subCommand);
             command.setSubCommands(subCommands);
 
-            Map<String, String> parsedArguments = new TreeMap<>();
-            parsedArguments.put("location", "London");
+            List<ArgumentParsedResult> parsedArguments = new ArrayList<>();
+            parsedArguments.add(
+                new ArgumentParsedResult.Builder()
+                    .argumentName("location")
+                    .matchResult("London")
+                    .success()
+                    .build()
+            );
 
-            when(arguments.isParsable("London")).thenReturn(true);
             when(arguments.parse("London")).thenReturn(parsedArguments);
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
-            apiServiceParams.putAll(parsedArguments);
+            apiServiceParams.putAll(parsedArguments.stream().collect(Collectors.toMap(ArgumentParsedResult::getArgumentName, ArgumentParsedResult::getMatchResult)));
             apiServiceParams.put("command", "time in London");
             Map<String, String> returnParams = new TreeMap<>();
             when(remoteApiService.call(subCommand, apiServiceParams))
@@ -266,14 +278,19 @@ public class SlackControllerTest {
             subCommands.add(subCommand);
             command.setSubCommands(subCommands);
 
-            Map<String, String> parsedArguments = new TreeMap<>();
-            parsedArguments.put("location", "London");
+            List<ArgumentParsedResult> parsedArguments = new ArrayList<>();
+            parsedArguments.add(
+                new ArgumentParsedResult.Builder()
+                    .argumentName("location")
+                    .matchResult("London")
+                    .success()
+                    .build()
+            );
 
-            when(arguments.isParsable("London")).thenReturn(true);
             when(arguments.parse("London")).thenReturn(parsedArguments);
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
-            apiServiceParams.putAll(parsedArguments);
+            apiServiceParams.putAll(parsedArguments.stream().collect(Collectors.toMap(ArgumentParsedResult::getArgumentName, ArgumentParsedResult::getMatchResult)));
             apiServiceParams.put("command", "time in London");
             Map<String, String> returnParams = new TreeMap<>();
             when(remoteApiService.call(subCommand, apiServiceParams))
@@ -296,14 +313,19 @@ public class SlackControllerTest {
             subCommands.add(subCommand);
             command.setSubCommands(subCommands);
 
-            Map<String, String> parsedArguments = new TreeMap<>();
-            parsedArguments.put("location", "London");
+            List<ArgumentParsedResult> parsedArguments = new ArrayList<>();
+            parsedArguments.add(
+                new ArgumentParsedResult.Builder()
+                    .argumentName("location")
+                    .matchResult("London")
+                    .success()
+                    .build()
+            );
 
-            when(arguments.isParsable("London")).thenReturn(true);
             when(arguments.parse("London")).thenReturn(parsedArguments);
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
-            apiServiceParams.putAll(parsedArguments);
+            apiServiceParams.putAll(parsedArguments.stream().collect(Collectors.toMap(ArgumentParsedResult::getArgumentName, ArgumentParsedResult::getMatchResult)));
             apiServiceParams.put("command", "time in London");
             Map<String, String> returnParams = new TreeMap<>();
             when(remoteApiService.call(subCommand, apiServiceParams)).thenReturn(
