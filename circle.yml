@@ -8,6 +8,10 @@ machine:
     SPRING_DATASOURCE_USERNAME: ubuntu
     SPRING_DATASOURCE_PASSWORD:
 
+general:
+  branches:
+    only:
+      - master
 
 dependencies:
   pre:
