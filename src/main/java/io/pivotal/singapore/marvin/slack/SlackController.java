@@ -6,6 +6,7 @@ import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.slack.interactions.InteractionResult;
 import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall;
 import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCallSlackRequest;
+import io.pivotal.singapore.marvin.slack.interactions.VerifyApiToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.MediaType;
@@ -43,7 +44,8 @@ class SlackController {
         }
 
         MakeRemoteApiCall makeRemoteApiCall = new MakeRemoteApiCall(remoteApiService, commandRepository);
-        InteractionResult result = makeRemoteApiCall.run(new MakeRemoteApiCallSlackRequest(incomingSlackRequest));
+        VerifyApiToken verifyApiToken = new VerifyApiToken(makeRemoteApiCall);
+        InteractionResult result = verifyApiToken.run(new MakeRemoteApiCallSlackRequest(incomingSlackRequest));
 
         return ResponseEntity.ok(new OutgoingSlackResponse(result));
     }
