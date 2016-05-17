@@ -19,6 +19,11 @@ public class RemoteApiServiceRequest {
     private Clock clock;
 
     // made package local since only usage is test
+    RemoteApiServiceRequest() {
+        this(null, null);
+    }
+
+    // made package local since only usage is test
     RemoteApiServiceRequest(MakeRemoteApiCallRequest makeRemoteApiCallRequest, ArgumentParsedResultList parsedResultSet, Clock clock) {
         this.makeRemoteApiCallRequest = makeRemoteApiCallRequest;
         this.parsedResultSet = parsedResultSet;

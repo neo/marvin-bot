@@ -9,9 +9,9 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.HashMap;
-
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.method;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.requestTo;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
@@ -26,6 +26,9 @@ public class RemoteApiServiceTest {
             .andExpect(method(HttpMethod.POST))
             .andRespond(withSuccess("{ \"status\" : \"SUCCESS\" }", MediaType.APPLICATION_JSON));
 
+        RemoteApiServiceRequest mockedRequest = mock(RemoteApiServiceRequest.class);
+        when(mockedRequest.getChannel()).thenReturn("some channel");
+
         assertEquals(
             "Current status is: SUCCESS",
             a.remoteApiService.w(restTemplate).build()
@@ -35,7 +38,7 @@ public class RemoteApiServiceTest {
                             .w("success", "Current status is: {status}")
                             .build())
                         .build(),
-                    new HashMap<String, String>()
+                    mockedRequest
                 ).getMessage()
         );
     }

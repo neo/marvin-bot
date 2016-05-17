@@ -13,7 +13,6 @@ import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
 import io.pivotal.singapore.marvin.slack.ValidationObject;
 
 import javax.validation.constraints.AssertTrue;
-import java.util.Map;
 import java.util.Optional;
 
 public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
@@ -45,10 +44,10 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
 
         if (isInvalid()) {
             if (hasErrorFor("commandPresent")) {
-                return getValidatonErrorResult("This will all end in tears.");
+                return getValidationErrorResult("This will all end in tears.");
             } else if (hasErrorFor("subCommandPresent")) {
                 String message = String.format("This sub command doesn't exist for %s", params.getCommand());
-                return getValidatonErrorResult(message);
+                return getValidationErrorResult(message);
             }
         }
 
@@ -56,14 +55,14 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
         Arguments arguments = command.getArguments();
 
         final ArgumentParsedResultList argumentParsedResults = arguments.parse(params.getArguments());
-
         if (argumentParsedResults.hasErrors()) {
             ArgumentParsedResult failedParsedArgument = argumentParsedResults.getFirst();
             String message = String.format("`%s` is not found in your command.", failedParsedArgument.getArgumentName());
-            return getValidatonErrorResult(message);
+            return getValidationErrorResult(message);
         }
-        Map<String, String> requestParams = new RemoteApiServiceRequest(makeRemoteApiCallRequest, argumentParsedResults).toMap();
-        RemoteApiServiceResponse response = remoteApiService.call(command, requestParams);
+
+        RemoteApiServiceRequest request = new RemoteApiServiceRequest(makeRemoteApiCallRequest, argumentParsedResults);
+        RemoteApiServiceResponse response = remoteApiService.call(command, request);
 
         return new InteractionResult.Builder()
             .messageType(response.getMessageType().orElse(MessageType.user))
@@ -72,7 +71,7 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
             .build();
     }
 
-    private InteractionResult getValidatonErrorResult(String message) {
+    private InteractionResult getValidationErrorResult(String message) {
         return new InteractionResult.Builder()
             .messageType(MessageType.user)
             .message(message)

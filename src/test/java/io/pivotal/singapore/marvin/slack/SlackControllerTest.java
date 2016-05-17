@@ -10,6 +10,7 @@ import io.pivotal.singapore.marvin.commands.arguments.Arguments;
 import io.pivotal.singapore.marvin.commands.arguments.RegexArgument;
 import io.pivotal.singapore.marvin.core.CommandParserService;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
+import io.pivotal.singapore.marvin.core.RemoteApiServiceRequest;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
 import io.pivotal.singapore.marvin.utils.FrozenTimeMachine;
 import io.pivotal.singapore.marvin.utils.IntegrationBase;
@@ -118,13 +119,13 @@ public class SlackControllerTest {
             HashMap<String, String> serviceResponse = new HashMap<>();
             String australiaTime = "The time in Australia is Beer o'clock.";
             serviceResponse.put("message", australiaTime);
-            when(remoteApiService.call(eq(command), anyMapOf(String.class, String.class)))
+            when(remoteApiService.call(eq(command), any(RemoteApiServiceRequest.class)))
                     .thenReturn(new RemoteApiServiceResponse(true, serviceResponse, command.getDefaultResponseSuccess(), command.getDefaultResponseFailure()));
 
             ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
             assertThat(response.getBody().getText(), is(equalTo(australiaTime)));
             verify(commandRepository, atLeastOnce()).findOneByName("time");
-            verify(remoteApiService, times(1)).call(eq(command), anyMapOf(String.class, String.class));
+            verify(remoteApiService, times(1)).call(eq(command), any(RemoteApiServiceRequest.class));
         }
 
         @Test
@@ -136,7 +137,7 @@ public class SlackControllerTest {
             HashMap<String, String> serviceResponse = new HashMap<>();
             String englandTime = "The time in England is Tea o'clock.";
             serviceResponse.put("message", englandTime);
-            when(remoteApiService.call(eq(command), anyMapOf(String.class, String.class)))
+            when(remoteApiService.call(eq(command), any(RemoteApiServiceRequest.class)))
                     .thenReturn(new RemoteApiServiceResponse(true, serviceResponse, command.getDefaultResponseSuccess(), command.getDefaultResponseFailure()));
 
             ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
@@ -170,7 +171,7 @@ public class SlackControllerTest {
             Map<String, String> returnParams = new TreeMap<>();
             String englandTime = "The time in England is Tea o'clock.";
             returnParams.put("message", englandTime);
-            when(remoteApiService.call(eq(subCommand), anyMapOf(String.class, String.class))).thenReturn(
+            when(remoteApiService.call(eq(subCommand), any(RemoteApiServiceRequest.class))).thenReturn(
                     new RemoteApiServiceResponse(true, returnParams, subCommand.getDefaultResponseSuccess(), subCommand.getDefaultResponseFailure())
             );
 
@@ -191,7 +192,7 @@ public class SlackControllerTest {
             String englandTime = "The time in England is Tea o'clock.";
             serviceResponse.put("message", englandTime);
             serviceResponse.put("message_type", "dingDong");
-            when(remoteApiService.call(eq(subCommand), anyMapOf(String.class, String.class)))
+            when(remoteApiService.call(eq(subCommand), any(RemoteApiServiceRequest.class)))
                     .thenReturn(new RemoteApiServiceResponse(true, serviceResponse, command.getDefaultResponseSuccess(), command.getDefaultResponseFailure()));
 
             ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
@@ -224,7 +225,7 @@ public class SlackControllerTest {
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
             Map<String, String> returnParams = new TreeMap<>();
-            when(remoteApiService.call(eq(subCommand), anyMapOf(String.class, String.class)))
+            when(remoteApiService.call(eq(subCommand), any(RemoteApiServiceRequest.class)))
                     .thenReturn(new RemoteApiServiceResponse(false, returnParams, subCommand.getDefaultResponseSuccess(), subCommand.getDefaultResponseFailure()));
 
             ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
@@ -256,7 +257,7 @@ public class SlackControllerTest {
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
             Map<String, String> returnParams = new TreeMap<>();
-            when(remoteApiService.call(eq(subCommand), anyMapOf(String.class, String.class)))
+            when(remoteApiService.call(eq(subCommand), any(RemoteApiServiceRequest.class)))
                     .thenReturn(new RemoteApiServiceResponse(true, returnParams, subCommand.getDefaultResponseSuccess(), subCommand.getDefaultResponseFailure()));
 
             ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
@@ -289,7 +290,7 @@ public class SlackControllerTest {
             when(commandRepository.findOneByName("time")).thenReturn(optionalCommand);
 
             Map<String, String> returnParams = new TreeMap<>();
-            when(remoteApiService.call(eq(subCommand), anyMapOf(String.class, String.class))).thenReturn(
+            when(remoteApiService.call(eq(subCommand), any(RemoteApiServiceRequest.class))).thenReturn(
                     new RemoteApiServiceResponse(true, returnParams, subCommand.getDefaultResponseSuccess(), subCommand.getDefaultResponseFailure())
             );
 
@@ -330,7 +331,7 @@ public class SlackControllerTest {
             HashMap<String, String> remoteServiceResponse = new HashMap<>();
             remoteServiceResponse.put("name", "Wilson");
             remoteServiceResponse.put("meal", "breakfast");
-            when(remoteApiService.call(eq(command), anyMapOf(String.class, String.class)))
+            when(remoteApiService.call(eq(command), any(RemoteApiServiceRequest.class)))
                     .thenReturn(new RemoteApiServiceResponse(true, remoteServiceResponse, command.getDefaultResponseSuccess(), command.getDefaultResponseFailure()));
 
             ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);

@@ -19,11 +19,11 @@ public class RemoteApiService {
     public RemoteApiService() {
     }
     
-    public RemoteApiServiceResponse call(ICommand command, Map params) {
+    public RemoteApiServiceResponse call(ICommand command, RemoteApiServiceRequest request) {
         if(command.getMethod() == null) {
             throw new IllegalArgumentException("HTTP method was not defined by the command provider");
         }
-        RemoteCommand remoteCommand = new RemoteCommand(restTemplate, command.getMethod(), command.getEndpoint(), params);
+        RemoteCommand remoteCommand = new RemoteCommand(restTemplate, command.getMethod(), command.getEndpoint(), request.toMap());
         Map<String, String> response = remoteCommand.execute();
 
         return new RemoteApiServiceResponse(
