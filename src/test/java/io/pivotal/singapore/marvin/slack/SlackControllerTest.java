@@ -5,6 +5,7 @@ import io.pivotal.singapore.marvin.commands.Command;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
 import io.pivotal.singapore.marvin.commands.SubCommand;
 import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResult;
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResultList;
 import io.pivotal.singapore.marvin.commands.arguments.Arguments;
 import io.pivotal.singapore.marvin.commands.arguments.RegexArgument;
 import io.pivotal.singapore.marvin.core.CommandParserService;
@@ -154,7 +155,7 @@ public class SlackControllerTest {
             subCommands.add(subCommand);
             command.setSubCommands(subCommands);
 
-            List<ArgumentParsedResult> parsedArguments = new ArrayList<>();
+            ArgumentParsedResultList parsedArguments = new ArgumentParsedResultList();
             parsedArguments.add(
                 new ArgumentParsedResult.Builder()
                     .argumentName("location")
@@ -210,7 +211,7 @@ public class SlackControllerTest {
             subCommands.add(subCommand);
             command.setSubCommands(subCommands);
 
-            List<ArgumentParsedResult> parsedArguments = new ArrayList<>();
+            ArgumentParsedResultList parsedArguments = new ArgumentParsedResultList();
             parsedArguments.add(
                 new ArgumentParsedResult.Builder()
                     .argumentName("location")
@@ -242,7 +243,7 @@ public class SlackControllerTest {
             subCommands.add(subCommand);
             command.setSubCommands(subCommands);
 
-            List<ArgumentParsedResult> parsedArguments = new ArrayList<>();
+            ArgumentParsedResultList parsedArguments = new ArgumentParsedResultList();
             parsedArguments.add(
                 new ArgumentParsedResult.Builder()
                     .argumentName("location")
@@ -275,7 +276,7 @@ public class SlackControllerTest {
             subCommands.add(subCommand);
             command.setSubCommands(subCommands);
 
-            List<ArgumentParsedResult> parsedArguments = new ArrayList<>();
+            ArgumentParsedResultList parsedArguments = new ArgumentParsedResultList();
             parsedArguments.add(
                 new ArgumentParsedResult.Builder()
                     .argumentName("location")

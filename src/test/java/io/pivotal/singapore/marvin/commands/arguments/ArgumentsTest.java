@@ -4,7 +4,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import java.util.Arrays;
-import java.util.List;
 
 import static junit.framework.TestCase.assertTrue;
 import static org.hamcrest.CoreMatchers.is;
@@ -26,8 +25,8 @@ public class ArgumentsTest {
 
     @Test
     public void nonMatchingCommandTextReturnsArgumentNameAndMatchedString() {
-        List<ArgumentParsedResult> results = subject.parse("foo");
-        assertTrue(subject.hasParseError());
+        ArgumentParsedResultList results = subject.parse("foo");
+        assertTrue(results.hasErrors());
         assertThat(results.get(0).getMatchResult(), is(emptyString()));
     }
 
@@ -35,35 +34,35 @@ public class ArgumentsTest {
     public void parseArgumentsShouldBeEvaluatedInOrder() {
         String rawCommand = "23rd of March at 7pm \"BBQ At the Pivotal Labs Singapore office\"";
 
-        List<ArgumentParsedResult> result = subject.parse(rawCommand);
+        ArgumentParsedResultList results = subject.parse(rawCommand);
 
-        assertThat(result.get(0).getMatchResult(), equalTo(expectedDateTimeString));
-        assertThat(result.get(1).getMatchResult(), equalTo("BBQ At the Pivotal Labs Singapore office"));
+        assertThat(results.get(0).getMatchResult(), equalTo(expectedDateTimeString));
+        assertThat(results.get(1).getMatchResult(), equalTo("BBQ At the Pivotal Labs Singapore office"));
     }
 
     @Test
     public void returnsArgumentNameAndMatchedStringWhenOnePartIsInvalid() {
         String rawCommand = "23rd of March at 7pm 'not a valid event name string'";
 
-        List<ArgumentParsedResult> result = subject.parse(rawCommand);
-        assertTrue(subject.hasParseError());
-        assertThat(result.get(1).getMatchResult(), is(emptyString()));
+        ArgumentParsedResultList results = subject.parse(rawCommand);
+        assertTrue(results.hasErrors());
+        assertThat(results.get(1).getMatchResult(), is(emptyString()));
     }
 
     @Test
     public void returnsArgumentNameAndMatchedStringWhenOnePartIsMissing() {
         String rawCommand = "23rd of March at 7pm";
 
-        List<ArgumentParsedResult> result = subject.parse(rawCommand);
-        assertTrue(subject.hasParseError());
-        assertThat(result.get(1).getMatchResult(), equalTo(""));
+        ArgumentParsedResultList results = subject.parse(rawCommand);
+        assertTrue(results.hasErrors());
+        assertThat(results.get(1).getMatchResult(), equalTo(""));
     }
 
     @Test
     public void commandTextIsTrimmedFromLeadingAndTrailingWhitespace() {
         String rawCommand = "       23rd of March at 7pm        \"BBQ At the Pivotal Labs Singapore office\"        ";
 
-        List<ArgumentParsedResult> result = subject.parse(rawCommand);
+        ArgumentParsedResultList result = subject.parse(rawCommand);
 
         assertThat(result.get(0).getMatchResult(), equalTo(expectedDateTimeString));
         assertThat(result.get(1).getMatchResult(), equalTo("BBQ At the Pivotal Labs Singapore office"));

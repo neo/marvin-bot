@@ -3,33 +3,31 @@ package io.pivotal.singapore.marvin.core;
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResult;
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResultList;
 import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCallRequest;
 
 import java.time.Clock;
 import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class RemoteApiServiceRequest {
-    private final List<ArgumentParsedResult> parsedResultList;
+    private final ArgumentParsedResultList parsedResultSet;
     private final MakeRemoteApiCallRequest makeRemoteApiCallRequest;
 
     private Clock clock;
 
     // made package local since only usage is test
-    RemoteApiServiceRequest(MakeRemoteApiCallRequest makeRemoteApiCallRequest, List<ArgumentParsedResult> parsedResultList, Clock clock) {
+    RemoteApiServiceRequest(MakeRemoteApiCallRequest makeRemoteApiCallRequest, ArgumentParsedResultList parsedResultSet, Clock clock) {
         this.makeRemoteApiCallRequest = makeRemoteApiCallRequest;
-        this.parsedResultList = parsedResultList;
+        this.parsedResultSet = parsedResultSet;
         this.clock = clock;
     }
 
-    public RemoteApiServiceRequest(MakeRemoteApiCallRequest makeRemoteApiCallRequest, List<ArgumentParsedResult> parsedResultList) {
+    public RemoteApiServiceRequest(MakeRemoteApiCallRequest makeRemoteApiCallRequest, ArgumentParsedResultList parsedResultSet) {
         this.makeRemoteApiCallRequest = makeRemoteApiCallRequest;
-        this.parsedResultList = parsedResultList;
+        this.parsedResultSet = parsedResultSet;
         this.clock = Clock.systemUTC();
     }
 
@@ -59,7 +57,6 @@ public class RemoteApiServiceRequest {
 
     @JsonAnyGetter
     private Map<String, String> getParsedArguments() {
-        return parsedResultList.stream()
-            .collect(Collectors.toMap(ArgumentParsedResult::getArgumentName, ArgumentParsedResult::getMatchResult));
+        return parsedResultSet.getArgumentAndMatchResultMap();
     }
 }

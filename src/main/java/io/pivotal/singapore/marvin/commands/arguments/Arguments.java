@@ -14,8 +14,6 @@ public class Arguments {
     @Getter
     private List<Argument> arguments = new ArrayList<>();
 
-    private List<ArgumentParsedResult> parsedResults = new ArrayList<>();
-
     public Arguments() {
     }
 
@@ -83,9 +81,11 @@ public class Arguments {
         return returnValue;
     }
 
-    public List<ArgumentParsedResult> parse(String rawCommand) {
+    public ArgumentParsedResultList parse(String rawCommand) {
         rawCommand = rawCommand.trim();
 
+        ArgumentParsedResultList parsedResults = new ArgumentParsedResultList();
+        
         for (Argument argument : getArguments()) {
             ArgumentParsedResult match;
 
@@ -99,9 +99,5 @@ public class Arguments {
         }
 
         return parsedResults;
-    }
-
-    public boolean hasParseError() {
-        return parsedResults.stream().anyMatch(ArgumentParsedResult::isFailure);
     }
 }

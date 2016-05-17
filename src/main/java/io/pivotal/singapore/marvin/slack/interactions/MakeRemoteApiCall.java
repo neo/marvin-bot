@@ -4,6 +4,7 @@ import io.pivotal.singapore.marvin.commands.Command;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
 import io.pivotal.singapore.marvin.commands.ICommand;
 import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResult;
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResultList;
 import io.pivotal.singapore.marvin.commands.arguments.Arguments;
 import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
@@ -12,7 +13,6 @@ import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
 import io.pivotal.singapore.marvin.slack.ValidationObject;
 
 import javax.validation.constraints.AssertTrue;
-import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
@@ -55,10 +55,10 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
         ICommand command = findSubCommand().orElse(getCommand());
         Arguments arguments = command.getArguments();
 
-        final List<ArgumentParsedResult> argumentParsedResults = arguments.parse(params.getArguments());
+        final ArgumentParsedResultList argumentParsedResults = arguments.parse(params.getArguments());
 
-        if (arguments.hasParseError()) {
-            ArgumentParsedResult failedParsedArgument = argumentParsedResults.get(0);
+        if (argumentParsedResults.hasErrors()) {
+            ArgumentParsedResult failedParsedArgument = argumentParsedResults.getFirst();
             String message = String.format("`%s` is not found in your command.", failedParsedArgument.getArgumentName());
             return getValidatonErrorResult(message);
         }

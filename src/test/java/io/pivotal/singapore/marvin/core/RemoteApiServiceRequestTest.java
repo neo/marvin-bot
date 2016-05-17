@@ -1,8 +1,7 @@
 package io.pivotal.singapore.marvin.core;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResult;
+import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResultList;
 import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCallRequest;
 import io.pivotal.singapore.marvin.utils.FrozenTimeMachine;
 import org.junit.Test;
@@ -26,20 +25,16 @@ public class RemoteApiServiceRequestTest {
         when(mockedRequest.getCommand()).thenReturn("some command");
         when(mockedRequest.getUserName()).thenReturn("some user name");
 
-        ArgumentParsedResult mockedArgumentParsedResult = mock(ArgumentParsedResult.class);
-        when(mockedArgumentParsedResult.getArgumentName()).thenReturn("some argument name");
-        when(mockedArgumentParsedResult.getMatchResult()).thenReturn("some matched result");
+        ArgumentParsedResultList mockedArgumentParsedResultList = mock(ArgumentParsedResultList.class);
+        when(mockedArgumentParsedResultList.getArgumentAndMatchResultMap())
+            .thenReturn(ImmutableMap.of("some argument name", "some matched result"));
 
         FrozenTimeMachine mockedClock = mock(FrozenTimeMachine.class);
         when(mockedClock.instant()).thenReturn(Instant.now());
         when(mockedClock.getZone()).thenCallRealMethod();
 
         // act
-        RemoteApiServiceRequest request = new RemoteApiServiceRequest(
-            mockedRequest,
-            ImmutableList.of(mockedArgumentParsedResult),
-            mockedClock
-        );
+        RemoteApiServiceRequest request = new RemoteApiServiceRequest(mockedRequest, mockedArgumentParsedResultList, mockedClock);
         Map<String, String> actualResult = request.toMap();
 
         // assert
