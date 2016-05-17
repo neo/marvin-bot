@@ -23,6 +23,11 @@ final public class InteractionResult {
         MessageType messageType;
         InteractionResultType type;
 
+        public Builder error() {
+            type = InteractionResultType.ERROR;
+            return this;
+        }
+
         public Builder message(String val) {
             message = val;
             return this;
@@ -33,8 +38,18 @@ final public class InteractionResult {
             return this;
         }
 
+        public Builder success() {
+            type = InteractionResultType.SUCCESS;
+            return this;
+        }
+
         public Builder type(InteractionResultType val) {
             type = val;
+            return this;
+        }
+
+        public Builder validationError() {
+            type = InteractionResultType.VALIDATION;
             return this;
         }
 

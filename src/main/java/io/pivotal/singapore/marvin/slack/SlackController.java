@@ -45,21 +45,8 @@ class SlackController {
             return errorResponse("This will all end in tears.");
         }
 
-        // Parses into command, sub-command, args as token strings
-        HashMap<String, String> parsedCommand = commandParserService.parse(incomingSlackRequest.getText());
-
-        MakeRemoteApiCallControllerAdapter adapter = new MakeRemoteApiCallControllerAdapter(incomingSlackRequest);
-
-        MakeRemoteApiCall makeRemoteApiCall = new MakeRemoteApiCall(adapter, clock, remoteApiService, commandRepository);
-        if (makeRemoteApiCall.isInvalid()) {
-            if (makeRemoteApiCall.hasErrorFor("commandPresent")) {
-                return errorResponse("This will all end in tears.");
-            } else if (makeRemoteApiCall.hasErrorFor("subCommandPresent")) {
-                return errorResponse(String.format("This sub command doesn't exist for %s", parsedCommand.get("command")));
-            }
-        }
-
-        InteractionResult result = makeRemoteApiCall.run();
+        MakeRemoteApiCall makeRemoteApiCall = new MakeRemoteApiCall(clock, remoteApiService, commandRepository);
+        InteractionResult result = makeRemoteApiCall.run(new MakeRemoteApiCallControllerAdapter(incomingSlackRequest));
 
         // Compiles final response to Slack
         if (result.isSuccess()) {

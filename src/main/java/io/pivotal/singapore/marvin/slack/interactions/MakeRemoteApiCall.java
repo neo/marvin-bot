@@ -35,32 +35,38 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
 
     // TODO: 12/5/16
     //      x create adapter (rename SlackTextParser to be that) to hide irrelevant fields in IncomingSlackRequest
-    //      - pass this object to run() method
+    //      x pass this object to run() method
     //      x MakeRemoteApiCallResult should not return messageType
     //      x arguments.parse() should not throw an exception (handle it on the lower level)
     //      - perform precondition check for ensuring that commands exist and arguments can be parsed
     //      - create a data object for remote service params
-    public MakeRemoteApiCall(MakeRemoteApiCallParams makeRemoteApiCallParams, Clock clock, RemoteApiService remoteApiService, CommandRepository commandRepository) {
-        this.params = makeRemoteApiCallParams;
+    public MakeRemoteApiCall(Clock clock, RemoteApiService remoteApiService, CommandRepository commandRepository) {
         this.commandRepository = commandRepository;
         this.remoteApiService = remoteApiService;
         this.clock = clock;
     }
 
-    public InteractionResult run() {
-        ICommand command = findSubCommand().orElse(getCommand());
+    public InteractionResult run(MakeRemoteApiCallParams makeRemoteApiCallParams) {
+        this.params = makeRemoteApiCallParams;
 
+        if (isInvalid()) {
+            if (hasErrorFor("commandPresent")) {
+                return getValidatonErrorResult("This will all end in tears.");
+            } else if (hasErrorFor("subCommandPresent")) {
+                String message = String.format("This sub command doesn't exist for %s", params.getCommand());
+                return getValidatonErrorResult(message);
+            }
+        }
+
+        ICommand command = findSubCommand().orElse(getCommand());
         Arguments arguments = command.getArguments();
 
         final List<ArgumentParsedResult> argumentParsedResults = arguments.parse(params.getArguments());
 
         if (arguments.hasParseError()) {
             ArgumentParsedResult failedParsedArgument = argumentParsedResults.get(0);
-            return new InteractionResult.Builder()
-                .messageType(MessageType.user)
-                .message(String.format("`%s` is not found in your command.", failedParsedArgument.getArgumentName()))
-                .type(InteractionResultType.VALIDATION)
-                .build();
+            String message = String.format("`%s` is not found in your command.", failedParsedArgument.getArgumentName());
+            return getValidatonErrorResult(message);
         }
         RemoteApiServiceResponse response = remoteApiService.call(command, remoteServiceParams(argumentParsedResults));
 
@@ -68,6 +74,14 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
             .messageType(response.getMessageType().orElse(MessageType.user))
             .message(response.getMessage())
             .type(response.isSuccessful() ? InteractionResultType.SUCCESS : InteractionResultType.ERROR)
+            .build();
+    }
+
+    private InteractionResult getValidatonErrorResult(String message) {
+        return new InteractionResult.Builder()
+            .messageType(MessageType.user)
+            .message(message)
+            .validationError()
             .build();
     }
 
