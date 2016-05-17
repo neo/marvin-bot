@@ -52,7 +52,6 @@ public class RegexArgument extends AbstractArgument {
         } catch (IndexOutOfBoundsException | IllegalStateException ex) {
             return new ArgumentParsedResult.Builder()
                 .argumentName(name)
-                .matchResult(rawCommand)
                 .pattern(pattern)
                 .failure()
                 .build();

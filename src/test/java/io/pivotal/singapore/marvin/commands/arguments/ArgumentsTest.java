@@ -47,7 +47,7 @@ public class ArgumentsTest {
 
         List<ArgumentParsedResult> result = subject.parse(rawCommand);
         assertTrue(subject.hasParseError());
-        assertThat(result.get(1).getMatchResult(), equalTo("'not a valid event name string'"));
+        assertThat(result.get(1).getMatchResult(), is(emptyString()));
     }
 
     @Test

@@ -37,8 +37,8 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
     //      x create adapter (rename SlackTextParser to be that) to hide irrelevant fields in IncomingSlackRequest
     //      - pass this object to run() method
     //      x MakeRemoteApiCallResult should not return messageType
-    //      - arguments.parse() should not throw an exception (handle it on the lower level)
-    //      - perform precondition check for ensuring that commands exist
+    //      x arguments.parse() should not throw an exception (handle it on the lower level)
+    //      - perform precondition check for ensuring that commands exist and arguments can be parsed
     //      - create a data object for remote service params
     public MakeRemoteApiCall(MakeRemoteApiCallParams makeRemoteApiCallParams, Clock clock, RemoteApiService remoteApiService, CommandRepository commandRepository) {
         this.params = makeRemoteApiCallParams;
