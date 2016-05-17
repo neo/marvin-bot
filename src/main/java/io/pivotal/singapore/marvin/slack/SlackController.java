@@ -6,7 +6,7 @@ import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.slack.interactions.InteractionResult;
 import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall;
-import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCallControllerAdapter;
+import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCallSlackRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
@@ -46,7 +46,7 @@ class SlackController {
         }
 
         MakeRemoteApiCall makeRemoteApiCall = new MakeRemoteApiCall(clock, remoteApiService, commandRepository);
-        InteractionResult result = makeRemoteApiCall.run(new MakeRemoteApiCallControllerAdapter(incomingSlackRequest));
+        InteractionResult result = makeRemoteApiCall.run(new MakeRemoteApiCallSlackRequest(incomingSlackRequest));
 
         // Compiles final response to Slack
         if (result.isSuccess()) {

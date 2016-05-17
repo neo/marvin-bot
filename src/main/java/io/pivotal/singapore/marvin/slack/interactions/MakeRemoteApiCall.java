@@ -25,7 +25,7 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
     private Clock clock;
     private RemoteApiService remoteApiService;
 
-    private MakeRemoteApiCallParams params;
+    private MakeRemoteApiCallRequest params;
 
 
     @Override
@@ -46,8 +46,8 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
         this.clock = clock;
     }
 
-    public InteractionResult run(MakeRemoteApiCallParams makeRemoteApiCallParams) {
-        this.params = makeRemoteApiCallParams;
+    public InteractionResult run(MakeRemoteApiCallRequest makeRemoteApiCallRequest) {
+        this.params = makeRemoteApiCallRequest;
 
         if (isInvalid()) {
             if (hasErrorFor("commandPresent")) {

@@ -4,11 +4,11 @@ import com.google.common.base.Preconditions;
 import io.pivotal.singapore.marvin.slack.IncomingSlackRequest;
 import io.pivotal.singapore.marvin.slack.SlackTextParser;
 
-public class MakeRemoteApiCallControllerAdapter implements MakeRemoteApiCallParams {
+public class MakeRemoteApiCallSlackRequest implements MakeRemoteApiCallRequest {
     private final IncomingSlackRequest incomingSlackRequest;
     private final SlackTextParser slackTextParser;
 
-    public MakeRemoteApiCallControllerAdapter(IncomingSlackRequest incomingSlackRequest) {
+    public MakeRemoteApiCallSlackRequest(IncomingSlackRequest incomingSlackRequest) {
         Preconditions.checkArgument(incomingSlackRequest.isValid());
         this.incomingSlackRequest = incomingSlackRequest;
         this.slackTextParser = new SlackTextParser(incomingSlackRequest.getText());
