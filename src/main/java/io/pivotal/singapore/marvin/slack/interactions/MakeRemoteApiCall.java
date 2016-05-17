@@ -1,6 +1,5 @@
 package io.pivotal.singapore.marvin.slack.interactions;
 
-import com.google.common.collect.ImmutableMap;
 import io.pivotal.singapore.marvin.commands.Command;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
 import io.pivotal.singapore.marvin.commands.ICommand;
@@ -8,21 +7,17 @@ import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResult;
 import io.pivotal.singapore.marvin.commands.arguments.Arguments;
 import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
+import io.pivotal.singapore.marvin.core.RemoteApiServiceRequest;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
 import io.pivotal.singapore.marvin.slack.ValidationObject;
 
 import javax.validation.constraints.AssertTrue;
-import java.time.Clock;
-import java.time.ZonedDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
     private final CommandRepository commandRepository;
-    private Clock clock;
     private RemoteApiService remoteApiService;
 
     private MakeRemoteApiCallRequest params;
@@ -38,12 +33,11 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
     //      x pass this object to run() method
     //      x MakeRemoteApiCallResult should not return messageType
     //      x arguments.parse() should not throw an exception (handle it on the lower level)
+    //      x create a data object for remote service params
     //      - perform precondition check for ensuring that commands exist and arguments can be parsed
-    //      - create a data object for remote service params
-    public MakeRemoteApiCall(Clock clock, RemoteApiService remoteApiService, CommandRepository commandRepository) {
+    public MakeRemoteApiCall(RemoteApiService remoteApiService, CommandRepository commandRepository) {
         this.commandRepository = commandRepository;
         this.remoteApiService = remoteApiService;
-        this.clock = clock;
     }
 
     public InteractionResult run(MakeRemoteApiCallRequest makeRemoteApiCallRequest) {
@@ -68,7 +62,8 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
             String message = String.format("`%s` is not found in your command.", failedParsedArgument.getArgumentName());
             return getValidatonErrorResult(message);
         }
-        RemoteApiServiceResponse response = remoteApiService.call(command, remoteServiceParams(argumentParsedResults));
+        Map<String, String> requestParams = new RemoteApiServiceRequest(makeRemoteApiCallRequest, argumentParsedResults).toMap();
+        RemoteApiServiceResponse response = remoteApiService.call(command, requestParams);
 
         return new InteractionResult.Builder()
             .messageType(response.getMessageType().orElse(MessageType.user))
@@ -82,19 +77,6 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
             .messageType(MessageType.user)
             .message(message)
             .validationError()
-            .build();
-    }
-
-    private Map<String, String> remoteServiceParams(List<ArgumentParsedResult> results) {
-        Map<String, String> parsedArguments = results.stream()
-                .collect(Collectors.toMap(ArgumentParsedResult::getArgumentName,
-                                          ArgumentParsedResult::getMatchResult));
-        return new ImmutableMap.Builder<String, String>()
-            .put("username", String.format("%s@pivotal.io", params.getUserName()))
-            .put("channel", params.getChannelName())
-            .put("received_at", ZonedDateTime.now(clock).format(DateTimeFormatter.ISO_ZONED_DATE_TIME))
-            .put("command", params.getText())
-            .putAll(parsedArguments)
             .build();
     }
 
