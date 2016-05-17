@@ -1,4 +1,4 @@
-package io.pivotal.singapore.marvin.slack;
+package io.pivotal.singapore.marvin.utils;
 
 import com.google.common.base.Preconditions;
 import org.hibernate.validator.internal.engine.path.PathImpl;

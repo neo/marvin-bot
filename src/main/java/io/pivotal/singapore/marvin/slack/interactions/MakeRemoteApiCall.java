@@ -10,7 +10,7 @@ import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceRequest;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
-import io.pivotal.singapore.marvin.slack.ValidationObject;
+import io.pivotal.singapore.marvin.utils.ValidationObject;
 
 import javax.validation.constraints.AssertTrue;
 import java.util.Optional;
