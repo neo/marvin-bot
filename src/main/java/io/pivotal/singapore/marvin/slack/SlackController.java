@@ -38,8 +38,8 @@ class SlackController {
         InteractionRequest interactionRequest = new SlackInteractionRequest(incomingSlackRequest);
 
         Interaction makeRemoteApiCall = new MakeRemoteApiCall(remoteApiService, commandRepository);
-        Interaction parseCommand = new ParseCommand(makeRemoteApiCall, commandRepository);
-        Interaction verifyApiToken = new VerifyApiToken(parseCommand, SLACK_TOKEN);
+        Interaction verifyArgumentParsing = new VerifyArgumentParsing(makeRemoteApiCall, commandRepository);
+        Interaction verifyApiToken = new VerifyApiToken(verifyArgumentParsing, SLACK_TOKEN);
 
         InteractionResult result = verifyApiToken.run(interactionRequest);
 

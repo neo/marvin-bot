@@ -10,13 +10,13 @@ import io.pivotal.singapore.marvin.core.MessageType;
 
 import java.util.Optional;
 
-public class ParseCommand implements Interaction {
+public class VerifyArgumentParsing implements Interaction {
     private final CommandRepository commandRepository;
     private final Interaction decoratedObject;
 
     private InteractionRequest interactionRequest;
 
-    public ParseCommand(Interaction interaction, CommandRepository commandRepository) {
+    public VerifyArgumentParsing(Interaction interaction, CommandRepository commandRepository) {
         this.decoratedObject = interaction;
         this.commandRepository = commandRepository;
     }
