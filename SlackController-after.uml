@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement />
+  <nodes>
+    <node x="615.2572463768117" y="754.5">io.pivotal.singapore.marvin.slack.interactions.Interaction</node>
+    <node x="421.25000000000006" y="1488.0">io.pivotal.singapore.marvin.slack.SlackController</node>
+    <node x="36.500000000000114" y="666.0">io.pivotal.singapore.marvin.core.RemoteApiServiceRequest</node>
+    <node x="47.33695652173935" y="333.0">io.pivotal.singapore.marvin.slack.SlackInteractionRequest</node>
+    <node x="312.6702898550727" y="944.0">io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall</node>
+    <node x="589.7572463768117" y="1288.0">io.pivotal.singapore.marvin.slack.interactions.VerifyApiToken</node>
+    <node x="945.2572463768117" y="743.0">io.pivotal.singapore.marvin.core.RemoteApiService</node>
+    <node x="1130.5072463768117" y="0.0">io.pivotal.singapore.marvin.slack.IncomingSlackRequest</node>
+    <node x="-284.0" y="1250.0">io.pivotal.singapore.marvin.slack.interactions.InteractionResult</node>
+    <node x="796.7572463768117" y="278.0">io.pivotal.singapore.marvin.core.RemoteApiServiceResponse</node>
+    <node x="17.336956521739467" y="22.5">io.pivotal.singapore.marvin.slack.interactions.InteractionRequest</node>
+    <node x="130.3152173913045" y="1266.0">io.pivotal.singapore.marvin.slack.OutgoingSlackResponse</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="io.pivotal.singapore.marvin.slack.OutgoingSlackResponse" target="io.pivotal.singapore.marvin.slack.interactions.InteractionResult">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.SlackController" target="io.pivotal.singapore.marvin.core.RemoteApiService">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall" target="io.pivotal.singapore.marvin.slack.interactions.Interaction">
+      <point x="64.5" y="-136.0" />
+      <point x="635.1702898550727" y="919.0" />
+      <point x="692.7572463768117" y="919.0" />
+      <point x="-77.5" y="25.5" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.core.RemoteApiServiceRequest" target="io.pivotal.singapore.marvin.slack.SlackInteractionRequest">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.SlackInteractionRequest" target="io.pivotal.singapore.marvin.slack.IncomingSlackRequest">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.SlackController" target="io.pivotal.singapore.marvin.slack.IncomingSlackRequest">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.interactions.VerifyApiToken" target="io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall" target="io.pivotal.singapore.marvin.core.RemoteApiService">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.SlackController" target="io.pivotal.singapore.marvin.slack.interactions.VerifyApiToken">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall" target="io.pivotal.singapore.marvin.core.RemoteApiServiceRequest">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.SlackController" target="io.pivotal.singapore.marvin.slack.SlackInteractionRequest">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.interactions.VerifyApiToken" target="io.pivotal.singapore.marvin.slack.interactions.Interaction">
+      <point x="86.0" y="-59.0" />
+      <point x="77.5" y="25.5" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.SlackController" target="io.pivotal.singapore.marvin.slack.OutgoingSlackResponse">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.SlackController" target="io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.core.RemoteApiService" target="io.pivotal.singapore.marvin.core.RemoteApiServiceResponse">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.SlackInteractionRequest" target="io.pivotal.singapore.marvin.slack.interactions.InteractionRequest">
+      <point x="-125.0" y="-114.0" />
+      <point x="0.0" y="91.5" />
+    </edge>
+    <edge source="io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall" target="io.pivotal.singapore.marvin.slack.SlackInteractionRequest">
+      <point x="0.0" y="0.0" />
+      <point x="0.0" y="0.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="1.0" x="692.5" y="493.5" />
+  <SelectedNodes />
+  <Categories>
+    <Category>Fields</Category>
+    <Category>Methods</Category>
+  </Categories>
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
