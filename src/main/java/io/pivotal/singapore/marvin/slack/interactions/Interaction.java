@@ -1,5 +1,5 @@
 package io.pivotal.singapore.marvin.slack.interactions;
 
-interface Interaction {
+public interface Interaction {
     InteractionResult run(InteractionRequest interactionRequest);
 }

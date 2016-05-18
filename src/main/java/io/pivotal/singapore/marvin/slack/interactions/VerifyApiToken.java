@@ -1,20 +1,19 @@
 package io.pivotal.singapore.marvin.slack.interactions;
 
 import io.pivotal.singapore.marvin.core.MessageType;
-import io.pivotal.singapore.marvin.slack.SlackInteractionRequest;
 
 public class VerifyApiToken implements Interaction {
-    private final MakeRemoteApiCall decoratedObject;
+    private final Interaction decoratedObject;
     private final String apiSlackToken;
 
-    public VerifyApiToken(MakeRemoteApiCall makeRemoteApiCall, String apiSlackToken) {
-        this.decoratedObject = makeRemoteApiCall;
+    public VerifyApiToken(Interaction interaction, String apiSlackToken) {
+        this.decoratedObject = interaction;
         this.apiSlackToken = apiSlackToken;
     }
 
     @Override
     public InteractionResult run(InteractionRequest request) {
-        if (isInvalidToken((SlackInteractionRequest) request)) {
+        if (isInvalidToken(request)) {
             return new InteractionResult.Builder()
                 .message("Unrecognized token")
                 .messageType(MessageType.user)
@@ -24,7 +23,7 @@ public class VerifyApiToken implements Interaction {
         return decoratedObject.run(request);
     }
 
-    private boolean isInvalidToken(SlackInteractionRequest request) {
+    private boolean isInvalidToken(InteractionRequest request) {
         return request.getToken().isEmpty() ||
             !this.apiSlackToken.equals(request.getToken());
     }

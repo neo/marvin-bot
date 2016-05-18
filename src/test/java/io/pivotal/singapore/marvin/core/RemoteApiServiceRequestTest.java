@@ -2,7 +2,7 @@ package io.pivotal.singapore.marvin.core;
 
 import com.google.common.collect.ImmutableMap;
 import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResultList;
-import io.pivotal.singapore.marvin.slack.SlackInteractionRequest;
+import io.pivotal.singapore.marvin.slack.interactions.InteractionRequest;
 import io.pivotal.singapore.marvin.utils.FrozenTimeMachine;
 import org.junit.Test;
 
@@ -20,7 +20,7 @@ public class RemoteApiServiceRequestTest {
     @Test
     public void serializesInputs() throws Exception {
         // mock collaborators
-        SlackInteractionRequest mockedRequest = mock(SlackInteractionRequest.class);
+        InteractionRequest mockedRequest = mock(InteractionRequest.class);
         when(mockedRequest.getChannelName()).thenReturn("some channel name");
         when(mockedRequest.getCommand()).thenReturn("some command");
         when(mockedRequest.getUserName()).thenReturn("some user name");

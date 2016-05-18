@@ -10,7 +10,6 @@ import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceRequest;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
-import io.pivotal.singapore.marvin.slack.SlackInteractionRequest;
 import io.pivotal.singapore.marvin.utils.ValidationObject;
 
 import javax.validation.constraints.AssertTrue;
@@ -20,7 +19,7 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> imple
     private final CommandRepository commandRepository;
     private RemoteApiService remoteApiService;
 
-    private SlackInteractionRequest params;
+    private InteractionRequest params;
 
     public MakeRemoteApiCall(RemoteApiService remoteApiService, CommandRepository commandRepository) {
         this.commandRepository = commandRepository;
@@ -34,8 +33,7 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> imple
 
     @Override
     public InteractionResult run(InteractionRequest interactionRequest) {
-        SlackInteractionRequest slackInteractionRequest = (SlackInteractionRequest) interactionRequest;
-        this.params = slackInteractionRequest;
+        this.params = interactionRequest;
 
         if (isInvalid()) {
             if (hasErrorFor("commandPresent")) {
@@ -56,7 +54,7 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> imple
             return getValidationErrorResult(message);
         }
 
-        RemoteApiServiceRequest request = new RemoteApiServiceRequest(slackInteractionRequest, argumentParsedResults);
+        RemoteApiServiceRequest request = new RemoteApiServiceRequest(interactionRequest, argumentParsedResults);
         RemoteApiServiceResponse response = remoteApiService.call(command, request);
 
         return new InteractionResult.Builder()

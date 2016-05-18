@@ -4,7 +4,7 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.pivotal.singapore.marvin.commands.arguments.ArgumentParsedResultList;
-import io.pivotal.singapore.marvin.slack.SlackInteractionRequest;
+import io.pivotal.singapore.marvin.slack.interactions.InteractionRequest;
 
 import java.time.Clock;
 import java.time.ZonedDateTime;
@@ -14,7 +14,7 @@ import java.util.Map;
 
 public class RemoteApiServiceRequest {
     private final ArgumentParsedResultList parsedResultSet;
-    private final SlackInteractionRequest slackInteractionRequest;
+    private final InteractionRequest interactionRequest;
 
     private Clock clock;
 
@@ -24,30 +24,31 @@ public class RemoteApiServiceRequest {
     }
 
     // made package local since only usage is test
-    RemoteApiServiceRequest(SlackInteractionRequest slackInteractionRequest, ArgumentParsedResultList parsedResultSet, Clock clock) {
-        this.slackInteractionRequest = slackInteractionRequest;
+    RemoteApiServiceRequest(InteractionRequest interactionRequest, ArgumentParsedResultList parsedResultSet, Clock clock) {
+        this.interactionRequest = interactionRequest;
         this.parsedResultSet = parsedResultSet;
         this.clock = clock;
     }
 
-    public RemoteApiServiceRequest(SlackInteractionRequest slackInteractionRequest, ArgumentParsedResultList parsedResultSet) {
-        this.slackInteractionRequest = slackInteractionRequest;
+    public RemoteApiServiceRequest(InteractionRequest interactionRequest, ArgumentParsedResultList parsedResultSet) {
+        this.interactionRequest = interactionRequest;
         this.parsedResultSet = parsedResultSet;
         this.clock = Clock.systemUTC();
     }
 
+    @SuppressWarnings("unchecked")
     Map<String, String> toMap() {
         return new ObjectMapper().convertValue(this, HashMap.class);
     }
 
     @JsonProperty
     String getChannel() {
-        return slackInteractionRequest.getChannelName();
+        return interactionRequest.getChannelName();
     }
 
     @JsonProperty
     String getCommand() {
-        return slackInteractionRequest.getCommand();
+        return interactionRequest.getCommand();
     }
 
     @JsonProperty("received_at")
@@ -57,7 +58,7 @@ public class RemoteApiServiceRequest {
 
     @JsonProperty
     String getUsername() {
-        return slackInteractionRequest.getUserName();
+        return interactionRequest.getUserName();
     }
 
     @JsonAnyGetter
