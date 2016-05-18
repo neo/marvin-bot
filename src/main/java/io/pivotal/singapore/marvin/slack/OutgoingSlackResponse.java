@@ -3,6 +3,7 @@ package io.pivotal.singapore.marvin.slack;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.slack.interactions.InteractionResult;
+import org.springframework.http.HttpStatus;
 
 public class OutgoingSlackResponse {
     private String responseType;
@@ -43,5 +44,22 @@ public class OutgoingSlackResponse {
             return text;
         }
         return interactionResult.getMessage();
+    }
+
+    public HttpStatus getStatus() {
+        if (interactionResult == null) {
+            return HttpStatus.INTERNAL_SERVER_ERROR;
+        }
+
+        switch (interactionResult.getType()) {
+            case ERROR:
+                return HttpStatus.INTERNAL_SERVER_ERROR;
+            case SUCCESS:
+                return HttpStatus.OK;
+            case VALIDATION:
+                return HttpStatus.BAD_REQUEST;
+            default:
+                return HttpStatus.I_AM_A_TEAPOT;
+        }
     }
 }

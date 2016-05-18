@@ -9,10 +9,8 @@ import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCallSlackRequ
 import io.pivotal.singapore.marvin.slack.interactions.VerifyApiToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.MediaType;
+import org.springframework.composed.web.rest.json.GetJson;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -32,21 +30,20 @@ class SlackController {
     @Value("${api.slack.token}")
     private String SLACK_TOKEN;
 
-    @RequestMapping(value="/", method= RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @GetJson("/")
     ResponseEntity<OutgoingSlackResponse> index(@RequestParam Map<String, String> params) throws Exception {
-        IncomingSlackRequest incomingSlackRequest = new IncomingSlackRequest(params, SLACK_TOKEN);
+        IncomingSlackRequest incomingSlackRequest = new IncomingSlackRequest(params);
 
         if (incomingSlackRequest.isInvalid()) {
-            if (incomingSlackRequest.hasErrorFor("recognizedToken")) {
-                return ResponseEntity.badRequest().body(new OutgoingSlackResponse("Unrecognized token"));
-            }
             return ResponseEntity.ok(new OutgoingSlackResponse("This will all end in tears."));
         }
 
-        MakeRemoteApiCall makeRemoteApiCall = new MakeRemoteApiCall(remoteApiService, commandRepository);
-        VerifyApiToken verifyApiToken = new VerifyApiToken(makeRemoteApiCall);
+        VerifyApiToken verifyApiToken = new VerifyApiToken(new MakeRemoteApiCall(remoteApiService, commandRepository), SLACK_TOKEN);
         InteractionResult result = verifyApiToken.run(new MakeRemoteApiCallSlackRequest(incomingSlackRequest));
 
-        return ResponseEntity.ok(new OutgoingSlackResponse(result));
+        OutgoingSlackResponse outgoingSlackResponse = new OutgoingSlackResponse(result);
+        return ResponseEntity
+            .status(outgoingSlackResponse.getStatus())
+            .body(outgoingSlackResponse);
     }
 }

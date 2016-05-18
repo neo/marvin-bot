@@ -306,13 +306,13 @@ public class SlackControllerTest {
 
             ResponseEntity<OutgoingSlackResponse> response = controller.index(slackInputParams);
 
-            assertThat(response.getStatusCode(), is(equalTo(HttpStatus.BAD_REQUEST)));
+            assertThat(response.getStatusCode(), is(equalTo(HttpStatus.OK)));
             assertThat(response.getBody().getResponseType(), is(equalTo("ephemeral")));
-            assertThat(response.getBody().getText(), is(equalTo("Unrecognized token")));
+            assertThat(response.getBody().getText(), is(equalTo("This will all end in tears.")));
         }
 
         @Test
-        public void ignoresRequestWhenSlackTokenIsIncorrect() throws Exception {
+        public void badRequestWhenSlackTokenIsIncorrect() throws Exception {
             slackInputParams.put("token", "WRONG TOKEN");
             when(commandRepository.findOneByName("time")).thenReturn(Optional.empty());
 

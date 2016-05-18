@@ -43,4 +43,9 @@ public class MakeRemoteApiCallSlackRequest implements MakeRemoteApiCallRequest {
     public String getText() {
         return incomingSlackRequest.getText();
     }
+
+    @Override
+    public String getToken() {
+        return incomingSlackRequest.getToken();
+    }
 }

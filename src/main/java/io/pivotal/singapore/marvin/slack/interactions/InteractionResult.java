@@ -3,12 +3,6 @@ package io.pivotal.singapore.marvin.slack.interactions;
 import io.pivotal.singapore.marvin.core.MessageType;
 import lombok.Getter;
 
-enum InteractionResultType {
-    SUCCESS,
-    ERROR,
-    VALIDATION,
-}
-
 final public class InteractionResult {
     @Getter private final String message;
     @Getter private final MessageType messageType;

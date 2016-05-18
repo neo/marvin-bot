@@ -15,7 +15,7 @@ import io.pivotal.singapore.marvin.utils.ValidationObject;
 import javax.validation.constraints.AssertTrue;
 import java.util.Optional;
 
-public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
+public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> implements Interaction {
     private final CommandRepository commandRepository;
     private RemoteApiService remoteApiService;
 
@@ -39,7 +39,9 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> {
         this.remoteApiService = remoteApiService;
     }
 
-    public InteractionResult run(MakeRemoteApiCallRequest makeRemoteApiCallRequest) {
+    @Override
+    public InteractionResult run(InteractionRequest interactionRequest) {
+        MakeRemoteApiCallRequest makeRemoteApiCallRequest = (MakeRemoteApiCallRequest) interactionRequest;
         this.params = makeRemoteApiCallRequest;
 
         if (isInvalid()) {

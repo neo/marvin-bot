@@ -1,13 +1,30 @@
 package io.pivotal.singapore.marvin.slack.interactions;
 
-public class VerifyApiToken {
-    final private MakeRemoteApiCall decoratedObject;
+import io.pivotal.singapore.marvin.core.MessageType;
 
-    public VerifyApiToken(MakeRemoteApiCall makeRemoteApiCall) {
-       this.decoratedObject = makeRemoteApiCall;
+public class VerifyApiToken implements Interaction {
+    final private MakeRemoteApiCall decoratedObject;
+    final private String apiSlackToken;
+
+    public VerifyApiToken(MakeRemoteApiCall makeRemoteApiCall, String apiSlackToken) {
+        this.decoratedObject = makeRemoteApiCall;
+        this.apiSlackToken = apiSlackToken;
     }
 
-    public InteractionResult run(MakeRemoteApiCallRequest request) {
+    @Override
+    public InteractionResult run(InteractionRequest request) {
+        if (isInvalidToken(((MakeRemoteApiCallRequest) request))) {
+            return new InteractionResult.Builder()
+                .message("Unrecognized token")
+                .messageType(MessageType.user)
+                .validationError()
+                .build();
+        }
         return decoratedObject.run(request);
+    }
+
+    private boolean isInvalidToken(MakeRemoteApiCallRequest request) {
+        return request.getToken().isEmpty() ||
+            !this.apiSlackToken.equals(request.getToken());
     }
 }
