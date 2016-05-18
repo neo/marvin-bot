@@ -41,8 +41,8 @@ public class MakeRemoteApiCallTest {
         RemoteApiServiceResponse remoteApiServiceResponse = new RemoteApiServiceResponse(true, Collections.emptyMap(), "", "");
         when(remoteApiService.call(any(ICommand.class), any(RemoteApiServiceRequest.class))).thenReturn(remoteApiServiceResponse);
 
-        MakeRemoteApiCall subject = new MakeRemoteApiCall(remoteApiService, commandRepository);
-        subject.run(interactionRequest);
+        MakeRemoteApiCall subject = new MakeRemoteApiCall(remoteApiService, commandRepository, interactionRequest);
+        subject.run();
 
         verify(remoteApiService, times(1)).call(any(ICommand.class), any(RemoteApiServiceRequest.class));
     }
@@ -58,8 +58,8 @@ public class MakeRemoteApiCallTest {
         when(remoteApiService.call(any(ICommand.class), any(RemoteApiServiceRequest.class))).thenReturn(remoteApiServiceResponse);
 
         // act
-        MakeRemoteApiCall subject = new MakeRemoteApiCall(remoteApiService, commandRepository);
-        InteractionResult result = subject.run(interactionRequest);
+        MakeRemoteApiCall subject = new MakeRemoteApiCall(remoteApiService, commandRepository, interactionRequest);
+        InteractionResult result = subject.run();
 
         // assert
         assertThat(result.getMessage(), is(equalTo("some message")));

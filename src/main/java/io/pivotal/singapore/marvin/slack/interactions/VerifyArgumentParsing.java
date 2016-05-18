@@ -13,18 +13,16 @@ import java.util.Optional;
 public class VerifyArgumentParsing implements Interaction {
     private final CommandRepository commandRepository;
     private final Interaction decoratedObject;
+    private final InteractionRequest interactionRequest;
 
-    private InteractionRequest interactionRequest;
-
-    public VerifyArgumentParsing(Interaction interaction, CommandRepository commandRepository) {
+    public VerifyArgumentParsing(Interaction interaction, CommandRepository commandRepository, InteractionRequest interactionRequest) {
         this.decoratedObject = interaction;
         this.commandRepository = commandRepository;
+        this.interactionRequest = interactionRequest;
     }
 
     @Override
-    public InteractionResult run(InteractionRequest interactionRequest) {
-        this.interactionRequest = interactionRequest;
-
+    public InteractionResult run() {
         if (!isCommandPresent()) {
             return new InteractionResult.Builder()
                 .messageType(MessageType.user)
@@ -56,7 +54,7 @@ public class VerifyArgumentParsing implements Interaction {
                 .build();
         }
 
-        return decoratedObject.run(interactionRequest);
+        return decoratedObject.run();
     }
 
     private boolean isCommandPresent() {

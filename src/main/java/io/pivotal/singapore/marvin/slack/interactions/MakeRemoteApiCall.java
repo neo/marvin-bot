@@ -18,15 +18,14 @@ public class MakeRemoteApiCall implements Interaction {
 
     private InteractionRequest interactionRequest;
 
-    public MakeRemoteApiCall(RemoteApiService remoteApiService, CommandRepository commandRepository) {
+    public MakeRemoteApiCall(RemoteApiService remoteApiService, CommandRepository commandRepository, InteractionRequest interactionRequest) {
         this.commandRepository = commandRepository;
         this.remoteApiService = remoteApiService;
+        this.interactionRequest = interactionRequest;
     }
 
     @Override
-    public InteractionResult run(InteractionRequest interactionRequest) {
-        this.interactionRequest = interactionRequest;
-
+    public InteractionResult run() {
         ICommand command = findSubCommand().orElse(getCommand());
         Arguments arguments = command.getArguments();
 
