@@ -5,22 +5,22 @@ import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.slack.interactions.InteractionResult;
 import org.springframework.http.HttpStatus;
 
-public class OutgoingSlackResponse {
+class OutgoingSlackResponse {
     private String responseType;
     private String text;
     private InteractionResult interactionResult;
 
-    public OutgoingSlackResponse(String text) {
+    OutgoingSlackResponse(String text) {
         this.text = text;
         this.responseType = "ephemeral";
     }
 
-    public OutgoingSlackResponse(InteractionResult interactionResult) {
+    OutgoingSlackResponse(InteractionResult interactionResult) {
         this.interactionResult = interactionResult;
     }
 
     @JsonProperty("response_type")
-    public String getResponseType() {
+    String getResponseType() {
         if (interactionResult == null) {
             return responseType;
         }
@@ -39,14 +39,14 @@ public class OutgoingSlackResponse {
     }
 
     @JsonProperty("text")
-    public String getText() {
+    String getText() {
         if (interactionResult == null) {
             return text;
         }
         return interactionResult.getMessage();
     }
 
-    public HttpStatus getStatus() {
+    HttpStatus getStatus() {
         if (interactionResult == null) {
             return HttpStatus.INTERNAL_SERVER_ERROR;
         }

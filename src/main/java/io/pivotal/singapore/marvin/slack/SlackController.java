@@ -5,7 +5,6 @@ import io.pivotal.singapore.marvin.core.CommandParserService;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.slack.interactions.InteractionResult;
 import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCall;
-import io.pivotal.singapore.marvin.slack.interactions.MakeRemoteApiCallSlackRequest;
 import io.pivotal.singapore.marvin.slack.interactions.VerifyApiToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -39,7 +38,7 @@ class SlackController {
         }
 
         VerifyApiToken verifyApiToken = new VerifyApiToken(new MakeRemoteApiCall(remoteApiService, commandRepository), SLACK_TOKEN);
-        InteractionResult result = verifyApiToken.run(new MakeRemoteApiCallSlackRequest(incomingSlackRequest));
+        InteractionResult result = verifyApiToken.run(new SlackInteractionRequest(incomingSlackRequest));
 
         OutgoingSlackResponse outgoingSlackResponse = new OutgoingSlackResponse(result);
         return ResponseEntity

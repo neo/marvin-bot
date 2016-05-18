@@ -10,6 +10,7 @@ import io.pivotal.singapore.marvin.core.MessageType;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceRequest;
 import io.pivotal.singapore.marvin.core.RemoteApiServiceResponse;
+import io.pivotal.singapore.marvin.slack.SlackInteractionRequest;
 import io.pivotal.singapore.marvin.utils.ValidationObject;
 
 import javax.validation.constraints.AssertTrue;
@@ -19,13 +20,7 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> imple
     private final CommandRepository commandRepository;
     private RemoteApiService remoteApiService;
 
-    private MakeRemoteApiCallRequest params;
-
-
-    @Override
-    public MakeRemoteApiCall self() {
-        return this;
-    }
+    private SlackInteractionRequest params;
 
     public MakeRemoteApiCall(RemoteApiService remoteApiService, CommandRepository commandRepository) {
         this.commandRepository = commandRepository;
@@ -33,9 +28,14 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> imple
     }
 
     @Override
+    public MakeRemoteApiCall self() {
+        return this;
+    }
+
+    @Override
     public InteractionResult run(InteractionRequest interactionRequest) {
-        MakeRemoteApiCallRequest makeRemoteApiCallRequest = (MakeRemoteApiCallRequest) interactionRequest;
-        this.params = makeRemoteApiCallRequest;
+        SlackInteractionRequest slackInteractionRequest = (SlackInteractionRequest) interactionRequest;
+        this.params = slackInteractionRequest;
 
         if (isInvalid()) {
             if (hasErrorFor("commandPresent")) {
@@ -56,7 +56,7 @@ public class MakeRemoteApiCall extends ValidationObject<MakeRemoteApiCall> imple
             return getValidationErrorResult(message);
         }
 
-        RemoteApiServiceRequest request = new RemoteApiServiceRequest(makeRemoteApiCallRequest, argumentParsedResults);
+        RemoteApiServiceRequest request = new RemoteApiServiceRequest(slackInteractionRequest, argumentParsedResults);
         RemoteApiServiceResponse response = remoteApiService.call(command, request);
 
         return new InteractionResult.Builder()

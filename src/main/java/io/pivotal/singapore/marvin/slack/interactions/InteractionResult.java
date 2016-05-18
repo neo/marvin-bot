@@ -3,16 +3,22 @@ package io.pivotal.singapore.marvin.slack.interactions;
 import io.pivotal.singapore.marvin.core.MessageType;
 import lombok.Getter;
 
-final public class InteractionResult {
+public final class InteractionResult {
     @Getter private final String message;
     @Getter private final MessageType messageType;
     @Getter private final InteractionResultType type;
+
+    private InteractionResult(Builder builder) {
+        message = builder.message;
+        messageType = builder.messageType;
+        type = builder.type;
+    }
 
     public boolean isSuccess() {
         return type == InteractionResultType.SUCCESS;
     }
 
-    public static class Builder {
+    static class Builder {
         String message;
         MessageType messageType;
         InteractionResultType type;
@@ -50,11 +56,5 @@ final public class InteractionResult {
         public InteractionResult build() {
             return new InteractionResult(this);
         }
-    }
-
-    private InteractionResult(Builder builder) {
-        message = builder.message;
-        messageType = builder.messageType;
-        type = builder.type;
     }
 }
