@@ -32,7 +32,7 @@ public class VerifyArgumentParsing implements Interaction {
         }
 
         if (!isSubCommandPresent()) {
-            String message = String.format("This sub command doesn't exist for %s", interactionRequest.getCommand());
+            final String message = String.format("This sub command doesn't exist for %s", interactionRequest.getCommand());
             return new InteractionResult.Builder()
                 .messageType(MessageType.user)
                 .message(message)
@@ -40,13 +40,13 @@ public class VerifyArgumentParsing implements Interaction {
                 .build();
         }
 
-        ICommand command = findSubCommand().orElse(getCommand());
-        Arguments arguments = command.getArguments();
+        final ICommand command = findSubCommand().orElse(getCommand());
+        final Arguments arguments = command.getArguments();
 
         final ArgumentParsedResultList argumentParsedResults = arguments.parse(interactionRequest.getArguments());
         if (argumentParsedResults.hasErrors()) {
-            ArgumentParsedResult failedParsedArgument = argumentParsedResults.getFirst();
-            String message = String.format("`%s` is not found in your command.", failedParsedArgument.getArgumentName());
+            final ArgumentParsedResult failedParsedArgument = argumentParsedResults.getFirst();
+            final String message = String.format("`%s` is not found in your command.", failedParsedArgument.getArgumentName());
             return new InteractionResult.Builder()
                 .messageType(MessageType.user)
                 .message(message)
@@ -74,6 +74,6 @@ public class VerifyArgumentParsing implements Interaction {
     }
 
     private Optional<Command> findCommand() {
-        return this.commandRepository.findOneByName(interactionRequest.getCommand());
+        return commandRepository.findOneByName(interactionRequest.getCommand());
     }
 }

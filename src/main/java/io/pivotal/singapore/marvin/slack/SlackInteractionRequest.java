@@ -2,7 +2,6 @@ package io.pivotal.singapore.marvin.slack;
 
 import com.google.common.base.Preconditions;
 import io.pivotal.singapore.marvin.slack.interactions.InteractionRequest;
-import io.pivotal.singapore.marvin.utils.ValidationObject;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -52,43 +51,39 @@ public class SlackInteractionRequest implements InteractionRequest {
     public String getToken() {
         return incomingSlackRequest.getToken();
     }
+
+    private class SlackTextParser {
+        private String subCommand = "";
+        private String arguments = "";
+
+        private String[] tokens;
+
+        SlackTextParser(String textCommand) {
+            tokens = textCommand.trim().split(" ");
+
+            if (tokens.length > 1) {
+                this.subCommand = tokens[1];
+            }
+            if(tokens.length > 2) {
+                Queue<String> argumentTokens = new LinkedList(Arrays.asList(tokens));
+                argumentTokens.poll();
+                argumentTokens.poll();
+
+                this.arguments = String.join(" ", argumentTokens);
+            }
+        }
+
+        String getCommand() {
+            return tokens[0];
+        }
+
+        String getSubCommand() {
+            return subCommand;
+        }
+
+        String getArguments() {
+            return arguments;
+        }
+    }
 }
 
-class SlackTextParser extends ValidationObject<SlackTextParser> {
-    private String subCommand = "";
-    private String arguments = "";
-
-    private String[] tokens;
-
-    SlackTextParser(String textCommand) {
-        tokens = textCommand.trim().split(" ");
-
-        if (tokens.length > 1) {
-            this.subCommand = tokens[1];
-        }
-        if(tokens.length > 2) {
-            Queue<String> argumentTokens = new LinkedList(Arrays.asList(tokens));
-            argumentTokens.poll();
-            argumentTokens.poll();
-
-            this.arguments = String.join(" ", argumentTokens);
-        }
-    }
-
-    String getCommand() {
-        return tokens[0];
-    }
-
-    String getSubCommand() {
-        return subCommand;
-    }
-
-    String getArguments() {
-        return arguments;
-    }
-
-    @Override
-    public SlackTextParser self() {
-        return this;
-    }
-}

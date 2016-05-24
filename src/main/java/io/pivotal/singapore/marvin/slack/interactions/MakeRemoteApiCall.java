@@ -14,9 +14,9 @@ import java.util.Optional;
 
 public class MakeRemoteApiCall implements Interaction {
     private final CommandRepository commandRepository;
-    private RemoteApiService remoteApiService;
+    private final RemoteApiService remoteApiService;
 
-    private InteractionRequest interactionRequest;
+    private final InteractionRequest interactionRequest;
 
     public MakeRemoteApiCall(RemoteApiService remoteApiService, CommandRepository commandRepository, InteractionRequest interactionRequest) {
         this.commandRepository = commandRepository;
@@ -26,13 +26,13 @@ public class MakeRemoteApiCall implements Interaction {
 
     @Override
     public InteractionResult run() {
-        ICommand command = findSubCommand().orElse(getCommand());
-        Arguments arguments = command.getArguments();
+        final ICommand command = findSubCommand().orElse(getCommand());
+        final Arguments arguments = command.getArguments();
 
-        final ArgumentParsedResultList argumentParsedResults = arguments.parse(this.interactionRequest.getArguments());
+        final ArgumentParsedResultList argumentParsedResults = arguments.parse(interactionRequest.getArguments());
 
-        RemoteApiServiceRequest request = new RemoteApiServiceRequest(interactionRequest, argumentParsedResults);
-        RemoteApiServiceResponse response = remoteApiService.call(command, request);
+        final RemoteApiServiceRequest request = new RemoteApiServiceRequest(interactionRequest, argumentParsedResults);
+        final RemoteApiServiceResponse response = remoteApiService.call(command, request);
 
         return new InteractionResult.Builder()
             .messageType(response.getMessageType().orElse(MessageType.user))

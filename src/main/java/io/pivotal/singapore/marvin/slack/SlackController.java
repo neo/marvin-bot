@@ -1,7 +1,6 @@
 package io.pivotal.singapore.marvin.slack;
 
 import io.pivotal.singapore.marvin.commands.CommandRepository;
-import io.pivotal.singapore.marvin.core.CommandParserService;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.slack.interactions.*;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,9 +19,6 @@ class SlackController {
 
     @Autowired
     RemoteApiService remoteApiService;
-
-    @Autowired
-    CommandParserService commandParserService;
 
     @Value("${api.slack.token}")
     private String SLACK_TOKEN;

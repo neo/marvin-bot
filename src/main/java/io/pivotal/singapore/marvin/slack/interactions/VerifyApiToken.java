@@ -27,6 +27,6 @@ public class VerifyApiToken implements Interaction {
 
     private boolean isInvalidToken(InteractionRequest request) {
         return request.getToken().isEmpty() ||
-            !this.apiSlackToken.equals(request.getToken());
+            !apiSlackToken.equals(request.getToken());
     }
 }
