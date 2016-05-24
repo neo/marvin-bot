@@ -20,7 +20,7 @@ class IncomingSlackRequest extends ValidationObject<IncomingSlackRequest> {
     }
 
     @Override
-    public IncomingSlackRequest self() {
+    public IncomingSlackRequest getTargetInstance() {
         return this;
     }
 }
