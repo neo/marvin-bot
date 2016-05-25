@@ -1,17 +1,12 @@
 package io.pivotal.singapore.marvin.utils;
 
-import com.google.common.base.Preconditions;
-import org.hibernate.validator.internal.engine.path.PathImpl;
-
-import javax.validation.ConstraintViolation;
-import javax.validation.Validation;
-import javax.validation.Validator;
-import java.util.*;
-import java.util.stream.Collectors;
+import io.pivotal.singapore.marvin.slack.IncomingSlackRequestValidator;
+import org.springframework.validation.BeanPropertyBindingResult;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Validator;
 
 public abstract class ValidationObject<T> {
-    private Set<ConstraintViolation<T>> constraintViolations = Collections.emptySet();
-    private Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
+    private Validator validator = new IncomingSlackRequestValidator();
 
     public abstract T getTargetInstance();
 
@@ -20,7 +15,8 @@ public abstract class ValidationObject<T> {
     }
 
     public boolean isValid() {
-        constraintViolations = this.validator.validate(getTargetInstance());
-        return constraintViolations.isEmpty();
+        BindingResult bindingResult = new BeanPropertyBindingResult(getTargetInstance(), this.getClass().getName());
+        validator.validate(getTargetInstance(), bindingResult);
+        return !bindingResult.hasErrors();
     }
 }
