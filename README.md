@@ -67,4 +67,3 @@ Fix it with:
 3. Recompile the entire project
 
 <sup>Footnote: When CircleCi is building, this will show the status of the last completed build.</sup>
-
