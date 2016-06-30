@@ -1,4 +1,4 @@
-# Marvin - A Depressed SlackBot [![](https://circleci.com/gh/neo/marvin-bot.svg?style=shield)](https://circleci.com/gh/neo/marvin-bot)
+# Marvin - A Depressed SlackBot [![](https://circleci.com/gh/pivotal-sg/marvin-bot.svg?style=shield)](https://circleci.com/gh/pivotal-sg/marvin-bot)
 
 ## Database migrations
 
