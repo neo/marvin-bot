@@ -27,6 +27,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import java.net.URI;
 import java.util.*;
 
 import static io.pivotal.singapore.marvin.utils.CommandFactory.createSubCommand;
@@ -80,7 +81,8 @@ public class SlackControllerTest {
         private Command command;
         private Optional<Command> optionalCommand;
 
-        private String MOCK_SLACK_TOKEN = "TEST TOKEN";
+        private final String MOCK_SLACK_TOKEN = "TEST TOKEN";
+        private final String MOCK_SLACK_CLIENT_ID = "TEST CLIENT ID";
 
         @Before
         public void setUp() {
@@ -376,5 +378,14 @@ public class SlackControllerTest {
             assertThat(response.getBody().getResponseType(), is(equalTo("ephemeral")));
         }
 
+        @Test
+        public void navigatingToStartRedirectsToSlackOAuthWithGetParameters() throws Exception {
+            ReflectionTestUtils.setField(controller, "SLACK_CLIENT_ID", MOCK_SLACK_CLIENT_ID, String.class);
+
+            ResponseEntity responseEntity = controller.start();
+
+            assertThat(responseEntity.getHeaders().getLocation(), is(equalTo(new URI("https://slack.com/oauth/authorize?client_id=TEST+CLIENT+ID&scope=chat%3Awrite%3Auser+chat%3Awrite%3Abot"))));
+            assertThat(responseEntity.getStatusCode(), is(equalTo(HttpStatus.FOUND)));
+        }
     }
 }

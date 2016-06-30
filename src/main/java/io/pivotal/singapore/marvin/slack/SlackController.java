@@ -3,9 +3,12 @@ package io.pivotal.singapore.marvin.slack;
 import io.pivotal.singapore.marvin.commands.CommandRepository;
 import io.pivotal.singapore.marvin.core.RemoteApiService;
 import io.pivotal.singapore.marvin.slack.interactions.*;
+import org.apache.http.client.utils.URIBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.composed.web.Get;
 import org.springframework.composed.web.rest.json.GetJson;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -22,6 +25,9 @@ class SlackController {
 
     @Value("${api.slack.token}")
     private String SLACK_TOKEN;
+
+    @Value("${api.slack.client_id}")
+    private String SLACK_CLIENT_ID;
 
     @GetJson("/")
     ResponseEntity<OutgoingSlackResponse> index(@RequestParam Map<String, String> params) throws Exception {
@@ -43,5 +49,18 @@ class SlackController {
         return ResponseEntity
             .status(outgoingSlackResponse.getStatus())
             .body(outgoingSlackResponse);
+    }
+
+    @Get("/start")
+    public ResponseEntity start() {
+        URIBuilder redirectUri = new URIBuilder()
+            .setScheme("https")
+            .setHost("slack.com/oauth/authorize")
+            .addParameter("client_id", SLACK_CLIENT_ID)
+            .addParameter("scope", "chat:write:user chat:write:bot");
+        return ResponseEntity
+            .status(HttpStatus.FOUND)
+            .header("Location", redirectUri.toString())
+            .build();
     }
 }
